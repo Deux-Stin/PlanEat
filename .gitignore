@@ -39,6 +39,8 @@ yarn-error.*
 *.txt
 *.pptx
 *.zip
+*.old
+./*.old
 
 test.js
 tmp.js

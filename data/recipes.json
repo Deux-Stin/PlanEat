@@ -1,0 +1,117 @@
+[
+  {
+    "id": "c12c2f9d-8a10-4d5e-988f-16a573a30a6d",
+    "name": "Omelette aux champignons",
+    "category": "Petit-déjeuner",
+    "servings": 2,
+    "ingredients": [
+      { "name": "oeufs", "quantity": 3, "unit": "unité", "rayon": "Produits frais" },
+      { "name": "champignons", "quantity": 100, "unit": "g", "rayon": "Fruits et légumes" },
+      { "name": "beurre", "quantity": 10, "unit": "g", "rayon": "Produits laitiers" },
+      { "name": "fromage râpé", "quantity": 30, "unit": "g", "rayon": "Fromagerie" }
+    ],
+    "recipe": [
+      "Couper les champignons en tranches.",
+      "Faire revenir les champignons dans le beurre.",
+      "Battre les oeufs et ajouter les champignons.",
+      "Cuire l'omelette à feu doux et ajouter le fromage râpé."
+    ],
+    "nutritionalValues": {
+      "glucides": "5g",
+      "proteines": "20g",
+      "graisses": "15g"
+    }
+  },
+  {
+    "id": "f674b34c-3fb9-4f9c-8fc8-78f69ffer8cd",
+    "name": "Porridge à l'avoine",
+    "category": "Petit-déjeuner",
+    "servings": 2,
+    "ingredients": [
+      { "name": "flocons d'avoine", "quantity": 100, "unit": "g", "rayon": "Épicerie" },
+      { "name": "lait", "quantity": 250, "unit": "ml", "rayon": "Produits laitiers" },
+      { "name": "banane", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+      { "name": "miel", "quantity": 20, "unit": "g", "rayon": "Épicerie" }
+    ],
+    "recipe": [
+      "Chauffer le lait dans une casserole.",
+      "Ajouter les flocons d'avoine et cuire à feu doux jusqu'à épaississement.",
+      "Ajouter des tranches de banane et un filet de miel."
+    ],
+    "nutritionalValues": {
+      "glucides": "50g",
+      "proteines": "8g",
+      "graisses": "7g"
+    }
+  },
+  {
+    "id": "b174b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
+    "name": "Salade César",
+    "category": ["Déjeuner", "Dîner"],
+    "servings": 2,
+    "ingredients": [
+      { "name": "laitue romaine", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+      { "name": "poulet", "quantity": 150, "unit": "g", "rayon": "Boucherie" },
+      { "name": "parmesan", "quantity": 30, "unit": "g", "rayon": "Fromagerie" },
+      { "name": "croûtons", "quantity": 50, "unit": "g", "rayon": "Épicerie" },
+      { "name": "sauce César", "quantity": 30, "unit": "ml", "rayon": "Épicerie" }
+    ],
+    "recipe": [
+      "Griller le poulet.",
+      "Laver et couper la laitue.",
+      "Mélanger la laitue avec la sauce, le parmesan et les croûtons.",
+      "Ajouter le poulet grillé."
+    ],
+    "nutritionalValues": {
+      "glucides": "20g",
+      "proteines": "25g",
+      "graisses": "10g"
+    }
+  },
+  {
+    "id": "f674b34c-3fz2-4f9c-8fc8-78f69ffcc8cd",
+    "name": "Pâtes Carbonara",
+    "category": ["Déjeuner", "Dîner"],
+    "servings": 2,
+    "ingredients": [
+      { "name": "pâtes", "quantity": 100, "unit": "g", "rayon": "Épicerie" },
+      { "name": "pancetta", "quantity": 50, "unit": "g", "rayon": "Charcuterie" },
+      { "name": "oeuf", "quantity": 1, "unit": "unité", "rayon": "Produits frais" },
+      { "name": "parmesan", "quantity": 25, "unit": "g", "rayon": "Fromagerie" }
+    ],
+    "recipe": [
+      "Cuire les pâtes.",
+      "Faire revenir la pancetta.",
+      "Battre l'oeuf avec le parmesan.",
+      "Mélanger les pâtes avec la pancetta et l'oeuf."
+    ],
+    "nutritionalValues": {
+      "glucides": "30g",
+      "proteines": "12g",
+      "graisses": "7.5g"
+    }
+  },
+  {
+    "id": "kp34b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
+    "name": "Poulet Curry",
+    "category": ["Déjeuner", "Dîner"],
+    "servings": 2,
+    "ingredients": [
+      { "name": "poulet", "quantity": 300, "unit": "g", "rayon": "Boucherie" },
+      { "name": "lait de coco", "quantity": 200, "unit": "ml", "rayon": "Épicerie" },
+      { "name": "pâte de curry", "quantity": 2, "unit": "cuillères à soupe", "rayon": "Épicerie" },
+      { "name": "riz", "quantity": 100, "unit": "g", "rayon": "Épicerie" }
+    ],
+    "recipe": [
+      "Faire cuire le riz.",
+      "Faire revenir le poulet dans une poêle.",
+      "Ajouter la pâte de curry et le lait de coco.",
+      "Laisser mijoter jusqu'à ce que le poulet soit bien cuit."
+    ],
+    "nutritionalValues": {
+      "glucides": "40g",
+      "proteines": "30g",
+      "graisses": "15g"
+    }
+  }
+]
