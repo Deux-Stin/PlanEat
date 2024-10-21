@@ -1,35 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import * as MediaLibrary from 'expo-media-library';
+// import { RNFS } from 'react-native-fs';
 import uuid from 'react-native-uuid';
+
+// console.log('RNFS.ExternalStorageDirectoryPath', RNFS.ExternalStorageDirectoryPath)
+// console.log('RNFS.ExternalDirectoryPath', RNFS.ExternalDirectoryPath)
+// console.log('RNFS.DocumentDirectoryPath',RNFS.DocumentDirectoryPath)
 
 export default function RecipeLibrary({ navigation, route }) {
   const [recipes, setRecipes] = useAsyncStorage('recipes', []);
   const [expandedCategory, setExpandedCategory] = useState(null);
   
-  // Fonction pour sauvegarder les recettes dans le fichier
-  const saveRecipes = async (newRecipes) => {
-    try {
-      setRecipes(newRecipes); // Mettre à jour les recettes dans AsyncStorage
-      console.log('Recettes sauvegardées.');
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde des recettes :', error);
-    }
-  };
+  console.log(recipes)
 
   const addRecipe = (newRecipe) => {
     console.log('addRecipe');
-    setRecipes((prevRecipes) => [...prevRecipes, newRecipe]);
-    saveRecipes([...recipes, newRecipe]); // Mettez à jour les recettes dans AsyncStorage
+    setRecipes((prevRecipes) => {
+      const updatedRecipes = [...prevRecipes, newRecipe];
+      saveRecipes(updatedRecipes); // Appelez saveRecipes avec les recettes mises à jour
+      return updatedRecipes; // Retournez le nouvel état
+    });
   };
   
-
   const deleteRecipe = (recipeToDelete) => {
     console.log('deleteRecipe');
-    const updatedRecipes = recipes.filter(recipe => recipe.name !== recipeToDelete.name);
+    const updatedRecipes = recipes ? recipes.filter(recipe => recipe.id !== recipeToDelete.id) : [];
     saveRecipes(updatedRecipes); // Mettez à jour les recettes
+  };
+
+  // Fonction pour sauvegarder les recettes dans le fichier
+  const saveRecipes = async (newRecipes) => {
+    if (newRecipes && Array.isArray(newRecipes)) {
+      try {
+        setRecipes(newRecipes);
+        console.log('Recettes sauvegardées.');
+      } catch (error) {
+        console.error('Erreur lors de la sauvegarde des recettes :', error);
+      }
+    } else {
+      console.error('Tentative de sauvegarde d\'un tableau invalide.', newRecipes);
+    }
   };
 
  // Vérifier si une mise à jour est nécessaire
@@ -53,7 +68,7 @@ export default function RecipeLibrary({ navigation, route }) {
         // Traitement des recettes
         const updatedRecipes = [...recipes];  // Copie des recettes actuelles
   
-        var nbNewRecipes = 0;
+        let nbNewRecipes = 0;
         newRecipes.forEach(newRecipe => {
           const existingRecipe = updatedRecipes.find(r => r.id === newRecipe.id || r.name === newRecipe.name);
   
@@ -74,13 +89,114 @@ export default function RecipeLibrary({ navigation, route }) {
         });
   
         setRecipes(updatedRecipes);  // Sauvegarder les recettes mises à jour
-        console.log('Recettes mises à jour avec succès, ', nbNewRecipes,' nouvelles ont été ajoutées.');
+        console.log('Recettes mises à jour avec succès, ', nbNewRecipes,' nouvelle(s) ont été ajoutée(s).');
       } else {
         console.log('Aucun fichier sélectionné ou processus annulé.');
       }
     } catch (err) {
       console.error('Erreur lors de l\'importation du fichier :', err);
     }
+  };
+
+  console.log(recipes)
+
+  const exportRecipes = async () => {
+    try {
+
+      // Sanitize the recipes to avoid circular references
+      const sanitizedRecipes = recipes.map(recipe => ({
+        id: recipe.id,
+        name: recipe.name,
+        category: recipe.category,
+        type: recipe.type,
+        season: recipe.season,
+        servings: recipe.servings,
+        ingredients: recipe.ingredients,
+        recipe: recipe.recipe, // Assurez-vous d'inclure uniquement les propriétés nécessaires
+        nutritionalValues: recipe.nutritionalValues,
+        // Ne pas inclure d'autres propriétés qui peuvent causer des références circulaires
+      }));
+
+      // console.log('sanitizedRecipes : ',sanitizedRecipes)
+
+      // Convertir les recettes en JSON
+      const jsonRecipes = JSON.stringify(sanitizedRecipes, null, 2);
+  
+      // Demander la permission d'accès au stockage
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert("Permission refusée", "Veuillez autoriser l'accès au stockage.");
+        return;
+      }
+  
+      // Afficher un menu pour choisir entre partage ou sauvegarde
+      Alert.alert(
+        "Exporter les recettes",
+        "Que souhaitez-vous faire ?",
+        [
+          { text: "Partager", onPress: async () => await shareRecipes(jsonRecipes) },
+          { text: "Enregistrer dans un répertoire", onPress: async () => await saveRecipesToCustomDirectory(jsonRecipes) },
+          { text: "Annuler", style: "cancel" },
+        ]
+      );
+    } catch (error) {
+      console.error('Erreur lors de l\'exportation des recettes :', error);
+    }
+  };
+  
+  const shareRecipes = async (jsonRecipes) => {
+    try {
+      // Créer un fichier temporaire
+      const filePath = `${FileSystem.cacheDirectory}recipes.json`;
+      await FileSystem.writeAsStringAsync(filePath, jsonRecipes);
+  
+      // Partager le fichier
+      await Sharing.shareAsync(filePath);
+    } catch (error) {
+      console.error('Erreur lors du partage des recettes :', error);
+    }
+  };
+  
+  const saveRecipesToCustomDirectory = async (jsonRecipes) => {
+    try {
+      // Demander à l'utilisateur de choisir un répertoire
+      const directoryPath = await selectDirectory();
+
+      if (directoryPath) {
+        // Utiliser un champ de texte ou un modal pour le nom du fichier
+        const fileName = 'recipes'; // Remplacez par votre méthode d'obtention du nom de fichier
+
+        if (!fileName) {
+          Alert.alert('Nom de fichier requis', 'Veuillez entrer un nom de fichier valide.');
+          return;
+        }
+
+        const filePath = `${directoryPath}/${fileName}.json`;
+        await FileSystem.writeAsStringAsync(filePath, jsonRecipes);
+        Alert.alert('Fichier sauvegardé', `Recettes enregistrées dans : ${filePath}`);
+      } else {
+        Alert.alert('Sélection annulée', 'Aucun répertoire n\'a été sélectionné.');
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'enregistrement des recettes :', error);
+    }
+  };
+
+  const selectDirectory = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: '*/*',
+        copyToCacheDirectory: false,
+        multiple: false,
+      });
+
+      if (result.type === 'success') {
+        return result.uri.substring(0, result.uri.lastIndexOf('/'));
+      }
+    } catch (error) {
+      console.error('Erreur lors de la sélection du répertoire :', error);
+    }
+    return null;
   };
 
   const categories = ['Petit-déjeuner', 'Déjeuner', 'Dîner'];
@@ -129,6 +245,7 @@ export default function RecipeLibrary({ navigation, route }) {
       <View style={styles.buttonContainer}>
         <Button title="Ajouter une recette" onPress={() => navigation.navigate('AddRecipe', { addRecipe })} />
         <Button title="Importer un fichier .json" onPress={importRecipesFromJson} />
+        <Button title="Partager mes recettes" onPress={exportRecipes} />
       </View>
     </ScrollView>
   );

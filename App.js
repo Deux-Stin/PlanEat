@@ -1,9 +1,9 @@
 // App.js
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, PermissionsAndroid, Platform  } from 'react-native';
 
 import HomeScreen from './screens/HomeScreen';
 import RecipeLibrary from './screens/RecipeLibrary.js';
@@ -16,7 +16,37 @@ import useInitializeRecipes from './hooks/useInitializeRecipes'; // Export par d
 const Stack = createStackNavigator();
 
 export default function App() {
-  const loading = useInitializeRecipes(); // Initialiser les recettes au démarrage
+
+  // Gestion des autorisations android
+  const requestStoragePermission = async () => {
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Permission d\'accès au stockage',
+          message: 'Cette application a besoin d\'accéder au stockage pour enregistrer des fichiers.',
+          buttonNeutral: 'Plus tard',
+          buttonNegative: 'Annuler',
+          buttonPositive: 'OK',
+        },
+      );
+
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Vous avez accès au stockage');
+        // Appeler ici la fonction pour enregistrer le fichier si nécessaire
+      } else {
+        console.log('Permission refusée');
+      }
+    }
+  };
+
+  useEffect(() => {
+    requestStoragePermission();
+  }, []);
+
+
+  // Initialiser les recettes au démarrage
+  const loading = useInitializeRecipes(); 
 
   if (loading) {
     return (

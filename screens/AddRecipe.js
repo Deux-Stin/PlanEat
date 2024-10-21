@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal } from 'react-native';
 import { Checkbox } from 'react-native-paper';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 // import useStorageRecipes from '../hooks/useStorageRecipes.old';
 import uuid from 'react-native-uuid';
 
-export default function AddRecipe({ route, navigation }) {
+export default function ({ route, navigation }) {
   const { addRecipe } = route.params; // Récupérer la fonction addRecipe
   const [recipes, setRecipes] = useAsyncStorage('recipes', []);
   const [newRecipe, setNewRecipe] = useState({
     id: '',
     name: '',
     category: [],
+    type: [],
+    season: ['printemps','été','automne','hiver'],
     servings: '',
     ingredients: [],
     recipe: [],
@@ -21,6 +23,22 @@ export default function AddRecipe({ route, navigation }) {
       graisses: ''
     }
   });
+
+  // Définir des couleurs pour chaque saison
+  const seasonColors = {
+    printemps: '#E6F3CE', // Exemple de couleur pour le printemps
+    été: '#FFDFBA', // Exemple de couleur pour l'été
+    automne: '#FFFFBA', // Exemple de couleur pour l'automne
+    hiver: '#BAE1FF', // Exemple de couleur pour l'hiver
+    default: '#ccc', // Couleur grise pour les saisons non sélectionnées
+  };
+
+  useEffect(() => {
+    if (route.params?.recipe) {
+      // Permet la récupération de toutes les étapes de la recette à modifier
+      setNewRecipe(route.params.recipe);
+    }
+  }, [route.params?.recipe]);
 
   const [ingredientInput, setIngredientInput] = useState({
     name: '',
@@ -35,8 +53,28 @@ export default function AddRecipe({ route, navigation }) {
   const [rayonModalVisible, setRayonModalVisible] = useState(false);
 
   const availableCategories = ['Petit-déjeuner', 'Déjeuner', 'Dîner'];
+  const availableTypes = ['court', 'long'];
+  const availableSeasons = ['printemps', 'été', 'automne', 'hiver'];
   const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'petite cuillère', 'grande cuillère'];
   const availableRayons = ['Produits frais', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Surgelés', 'Produits laitiers', 'Boissons', 'Hygiène', 'Entretien'];
+
+  const toggleType = (type) => {
+    setNewRecipe((prev) => {
+      const currentTypes = prev.type.includes(type)
+        ? prev.type.filter((t) => t !== type) // Retire le type s'il est déjà sélectionné
+        : [...prev.type, type]; // Ajoute le type s'il n'est pas sélectionné
+      return { ...prev, type: currentTypes };
+    });
+  };
+
+  const toggleSeason = (season) => {
+    setNewRecipe((prev) => {
+      const currentSeasons = prev.season.includes(season)
+        ? prev.season.filter((s) => s !== season) // Retire la saison s'il est déjà sélectionnée
+        : [...prev.season, season]; // Ajoute la saison s'il n'est pas sélectionnée
+      return { ...prev, season: currentSeasons };
+    });
+  };
 
   const toggleCategory = (category) => {
     if (newRecipe.category.includes(category)) {
@@ -93,8 +131,8 @@ export default function AddRecipe({ route, navigation }) {
     setNewRecipe({ ...newRecipe, recipe: updatedSteps });
   };
 
-  const handleSubmit = () => {
-    const { name, category, servings, ingredients, recipe, nutritionalValues } = newRecipe;
+  const handleSubmit = async () => {
+    const { name, category, type, season, servings, ingredients, recipe, nutritionalValues } = newRecipe;
 
     if (!name || category.length === 0 || !servings || ingredients.length === 0 || recipe.length === 0) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires.');
@@ -114,9 +152,11 @@ export default function AddRecipe({ route, navigation }) {
     };
 
     const recipeData = {
-      id: uuid.v4(),
+      id: route.params?.recipe ? newRecipe.id : uuid.v4(), // Utiliser l'ID existant si on modifie
       name,
       category,
+      type: type,
+      season: season,
       servings: parsedServings,
       ingredients,
       recipe,
@@ -130,16 +170,37 @@ export default function AddRecipe({ route, navigation }) {
       return;
     }
 
-    updatedRecipes = [...recipes, recipeData];
-    setRecipes(updatedRecipes); // mettre à jour le useAsyncStorage
-    console.log("recipeData : ", recipeData)
-    // console.log("recipes : ", recipes)
-    Alert.alert('Succès', 'Recette ajoutée avec succès!');
+    // Vérifier si la recette est déjà dans la liste
+    const existingRecipeIndex = recipes.findIndex(r => r.id === recipeData.id);
 
-    // // Met à jour le fichier json stocké en local
-    // useStorageRecipes(updatedRecipes);
+    let updatedRecipes;
+    if (existingRecipeIndex !== -1) {
+      // Si elle existe, on met à jour
+      updatedRecipes = recipes.map(r => r.id === recipeData.id ? recipeData : r);
+    } else {
+      // Sinon, on ajoute la nouvelle recette
+      recipeData.id = uuid.v4();  // Si l'ID est vide, c'est une nouvelle recette
+      updatedRecipes = [...recipes, recipeData];
+    }
 
-    addRecipe(recipeData); // Appelle la fonction pour ajouter la recette
+    try {
+      // updatedRecipes = [...recipes, recipeData];
+      await setRecipes(updatedRecipes); // mettre à jour le useAsyncStorage
+      console.log("recipeData : ", recipeData)
+      // console.log("recipes : ", recipes)
+      Alert.alert('Succès', `Recette ${existingRecipeIndex !== -1 ? 'modifiée' : 'ajoutée'} avec succès!`);
+
+      if (typeof addRecipe !== 'function') {
+        console.error('addRecipe is not a function');
+        // return;
+      } else {
+        addRecipe(recipeData); // Appelle la fonction pour ajouter la recette
+      }
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour des recettes :', error);
+      Alert.alert('Erreur', 'Une erreur s\'est produite lors de la mise à jour des recettes.');
+    }
+    
     navigation.navigate('RecipeLibrary');
   };
 
@@ -156,14 +217,48 @@ export default function AddRecipe({ route, navigation }) {
 
       <View style={styles.categoryContainer}>
         <Text style={styles.label}>Catégorie :</Text>
-        {availableCategories.map((category, index) => (
-          <View key={index} style={styles.checkboxContainer}>
-            <Checkbox
-              status={newRecipe.category.includes(category) ? 'checked' : 'unchecked'}
-              onPress={() => toggleCategory(category)}
-            />
-            <Text style={styles.checkboxLabel}>{category}</Text>
-          </View>
+        <View style={styles.checkboxContainer}>
+          {availableCategories.map((category, index) => (
+            <View key={index} style={styles.checkboxItem}>
+              <Checkbox
+                status={newRecipe.category.includes(category) ? 'checked' : 'unchecked'}
+                onPress={() => toggleCategory(category)}
+              />
+              <Text style={styles.checkboxLabel}>{category}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <Text style={styles.sectionTitle}>Type de recette</Text>
+      <View style={styles.flexContainer}>
+        {availableTypes.map((type) => (
+          <TouchableOpacity
+            key={type}
+            onPress={() => toggleType(type)}
+            style={[
+              styles.typeButton, 
+              newRecipe.type.includes(type) ? styles.selectedTypeButton : styles.unselectedTypeButton]}
+          >
+            <Text style={styles.pickerButtonText}>{type}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <Text style={styles.sectionTitle}>Saison</Text>
+      <View style={styles.flexContainer}>
+        {availableSeasons.map((season) => (
+          <TouchableOpacity
+            key={season}
+            onPress={() => toggleSeason(season)}
+            style={[
+              styles.typeButton,
+              newRecipe.season.includes(season) ? styles.selectedTypeButton : styles.unselectedTypeButton, // Appliquer le style en fonction de la sélection
+              { backgroundColor: newRecipe.season.includes(season) ? seasonColors[season] : '#ccc' } // Couleur grise si non sélectionné
+            ]}
+          >
+            <Text style={styles.pickerButtonText}>{season}</Text>
+          </TouchableOpacity>
         ))}
       </View>
 
@@ -300,6 +395,9 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
+  unselectedTypeButton: {
+    opacity: 0.5, // Optionnel : rendre le bouton légèrement transparent
+  },
   header: {
     fontSize: 22,
     fontWeight: 'bold',
@@ -312,6 +410,27 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
+  },
+  flexContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-evenly',
+    marginBottom: 20,
+  },
+  typeButton: {
+    backgroundColor: '#e0e0e0',
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 5,
+    flexBasis: '48%', // Pour avoir deux boutons par ligne
+    alignItems: 'center',
+  },
+  selectedTypeButton: {
+    backgroundColor: '#FCE7E8', // Couleur de fond pour les éléments sélectionnés
+  },
+  pickerButtonText: {
+    fontSize: 16,
+    color: '#000',
   },
   pickerButton: {
     backgroundColor: '#e0e0e0',
@@ -352,12 +471,21 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   categoryContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    // justifyContent: 'flex-start',
+    marginTop: 5,
     marginBottom: 20,
   },
   checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
+    flexDirection: 'row', // Alignement horizontal
+    flex: 1, // Prend tout l'espace disponible
+    justifyContent: 'space-between', // Espace entre chaque checkbox
+    marginLeft: 10, // Espace entre le label et les checkboxes
+  },
+  checkboxItem: {
+    flexDirection: 'row', // Aligne chaque checkbox avec son texte
+    alignItems: 'center', // Centre les checkbox et le texte
   },
   checkboxLabel: {
     fontSize: 16,
@@ -367,9 +495,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
+    flexWrap: 'wrap', // Ajout de flexWrap
   },
   itemText: {
     fontSize: 16,
+    flex: 1, // Ajout de flex: 1 pour prendre tout l'espace
+    marginRight: 5, // Ajout d'une marge à droite pour séparer le texte du bouton
   },
   removeButton: {
     backgroundColor: '#ff3333',

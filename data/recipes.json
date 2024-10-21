@@ -3,6 +3,8 @@
     "id": "c12c2f9d-8a10-4d5e-988f-16a573a30a6d",
     "name": "Omelette aux champignons",
     "category": "Petit-déjeuner",
+    "type": ["court"],
+    "season": ["printemps","été","automne","hiver"],
     "servings": 2,
     "ingredients": [
       { "name": "oeufs", "quantity": 3, "unit": "unité", "rayon": "Produits frais" },
@@ -26,6 +28,8 @@
     "id": "f674b34c-3fb9-4f9c-8fc8-78f69ffer8cd",
     "name": "Porridge à l'avoine",
     "category": "Petit-déjeuner",
+    "type": ["court"],
+    "season": ["printemps","été","automne","hiver"],
     "servings": 2,
     "ingredients": [
       { "name": "flocons d'avoine", "quantity": 100, "unit": "g", "rayon": "Épicerie" },
@@ -48,6 +52,8 @@
     "id": "b174b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
     "name": "Salade César",
     "category": ["Déjeuner", "Dîner"],
+    "type": ["court"],
+    "season": ["printemps","été"],
     "servings": 2,
     "ingredients": [
       { "name": "laitue romaine", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
@@ -72,6 +78,8 @@
     "id": "f674b34c-3fz2-4f9c-8fc8-78f69ffcc8cd",
     "name": "Pâtes Carbonara",
     "category": ["Déjeuner", "Dîner"],
+    "type": ["court"],
+    "season": ["printemps","été","automne","hiver"],
     "servings": 2,
     "ingredients": [
       { "name": "pâtes", "quantity": 100, "unit": "g", "rayon": "Épicerie" },
@@ -95,6 +103,8 @@
     "id": "kp34b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
     "name": "Poulet Curry",
     "category": ["Déjeuner", "Dîner"],
+    "type": ["long"],
+    "season": ["printemps","automne","hiver"],
     "servings": 2,
     "ingredients": [
       { "name": "poulet", "quantity": 300, "unit": "g", "rayon": "Boucherie" },
