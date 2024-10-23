@@ -6,7 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { ActivityIndicator, View, StyleSheet, PermissionsAndroid, Platform  } from 'react-native';
 
 import HomeScreen from './screens/HomeScreen';
-import RecipeLibrary from './screens/RecipeLibrary.js';
+import RecipeLibrary from './screens/RecipeLibrary';
 import AddRecipe from './screens/AddRecipe';
 import RecipeDetail from './screens/RecipeDetail';
 import MealPlanScreen from './screens/MealPlanScreen';

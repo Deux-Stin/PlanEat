@@ -15,8 +15,29 @@ import uuid from 'react-native-uuid';
 export default function RecipeLibrary({ navigation, route }) {
   const [recipes, setRecipes] = useAsyncStorage('recipes', []);
   const [expandedCategory, setExpandedCategory] = useState(null);
+
+  const [selectedSeasons, setSelectedSeason] = useState([]); // État pour le filtre saison
+  const [selectedType, setSelectedType] = useState([]);
+
+  const seasonColors = {
+    printemps: '#E6F3CE',
+    été: '#FFDFBA',
+    automne: '#FFFFBA',
+    hiver: '#BAE1FF',
+    default: '#ccc',
+  };
+
+  const toggleSeason = (season) => {
+    setSelectedSeason((prev) =>
+      prev.includes(season) ? prev.filter(s => s !== season) : [...prev, season]
+    );
+  };
+
+  const toggleType = (type) => {
+    setSelectedType(selectedType === type ? null : type);
+  };
   
-  console.log(recipes)
+  console.log('recipes :',recipes)
 
   const addRecipe = (newRecipe) => {
     console.log('addRecipe');
@@ -63,33 +84,46 @@ export default function RecipeLibrary({ navigation, route }) {
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const { uri } = result.assets[0];
         const fileContent = await FileSystem.readAsStringAsync(uri);
-        const newRecipes = JSON.parse(fileContent);
+        console.log('Contenu du fichier :', fileContent); // Vérification du contenu
   
-        // Traitement des recettes
-        const updatedRecipes = [...recipes];  // Copie des recettes actuelles
+        let jsonData;
+        try {
+          jsonData = JSON.parse(fileContent);
+        } catch (error) {
+          console.error('Erreur lors de l\'analyse JSON :', error);
+          Alert.alert('Erreur', 'Le fichier JSON est mal formé.');
+          return;
+        }
   
+        // Vérifie si le tableau existe et est un tableau
+        if (!Array.isArray(jsonData.recipes)) {
+          console.error('Les recettes importées ne sont pas un tableau. Vérifiez le format du fichier JSON.');
+          Alert.alert('Erreur', 'Le fichier importé ne contient pas des recettes valides.');
+          return;
+        }
+  
+        const newRecipes = jsonData.recipes; // Accède au tableau de recettes
+        const updatedRecipes = [...recipes];
         let nbNewRecipes = 0;
+  
         newRecipes.forEach(newRecipe => {
           const existingRecipe = updatedRecipes.find(r => r.id === newRecipe.id || r.name === newRecipe.name);
   
           if (!existingRecipe) {
-            // Cas où la recette est nouvelle et unique, ajout direct
             newRecipe.id = uuid.v4();
             updatedRecipes.push(newRecipe);
             nbNewRecipes++;
           } else if (existingRecipe.id !== newRecipe.id && existingRecipe.name === newRecipe.name) {
-            // Cas où le nom est identique mais les ids sont différents, on ignore
             console.log(`Recette "${newRecipe.name}" ignorée car le nom est déjà présent.`);
           } else if (existingRecipe.id === newRecipe.id && existingRecipe.name !== newRecipe.name) {
-            // Cas où l'id est identique mais le nom diffère, générer un nouvel id
             newRecipe.id = uuid.v4();
             updatedRecipes.push(newRecipe);
             nbNewRecipes++;
           }
         });
   
-        setRecipes(updatedRecipes);  // Sauvegarder les recettes mises à jour
-        console.log('Recettes mises à jour avec succès, ', nbNewRecipes,' nouvelle(s) ont été ajoutée(s).');
+        setRecipes(updatedRecipes);
+        Alert.alert('Recettes mises à jour', `${nbNewRecipes} nouvelle(s) recette(s) ont été ajoutée(s).`);
       } else {
         console.log('Aucun fichier sélectionné ou processus annulé.');
       }
@@ -97,8 +131,10 @@ export default function RecipeLibrary({ navigation, route }) {
       console.error('Erreur lors de l\'importation du fichier :', err);
     }
   };
+  
+  
 
-  console.log(recipes)
+  // console.log(recipes)
 
   const exportRecipes = async () => {
     try {
@@ -214,8 +250,58 @@ export default function RecipeLibrary({ navigation, route }) {
     </TouchableOpacity>
   );
 
+  const filterRecipes = () => {
+    return recipes.filter(recipe => {
+      const recipeSeasons = recipe.season || [];
+      const matchesSeason = selectedSeasons.length === 0 || recipeSeasons.some(season => selectedSeasons.includes(season));
+      const matchesType = selectedType === null || (recipe.type && recipe.type.includes(selectedType));
+      // console.log('recipe.type :', recipe.type)
+      // console.log('matchesType', matchesType)
+      return matchesSeason && matchesType;
+    });
+  };
+
+  const renderFilters = () => (
+    <View style={styles.section}>
+      {/* <Text style={styles.filtersHeader}></Text> */}
+      <Text style={styles.sectionTitle}>Filtres</Text>
+      <View style={styles.filterRow}>
+        {Object.keys(seasonColors).slice(0, -1).map(season => (
+          <TouchableOpacity
+            key={season}
+            style={[
+              styles.filterButton,
+              {
+                backgroundColor: selectedSeasons.includes(season) ? seasonColors[season] : '#ccc' // Couleur par défaut
+              }
+            ]}
+            onPress={() => toggleSeason(season)}
+          >
+            <Text style={styles.filterText}>{season.charAt(0).toUpperCase() + season.slice(1)}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      <View style={styles.typeRow}>
+        <TouchableOpacity
+          style={[styles.typeButton, { backgroundColor: selectedType === 'court' ? '#FCE7E8' : '#e0e0e0' }]}
+          onPress={() => toggleType('court')}
+        >
+          <Text style={styles.filterText}>Court</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.typeButton, { backgroundColor: selectedType === 'long' ? '#FCE7E8' : '#e0e0e0' }]}
+          onPress={() => toggleType('long')}
+        >
+          <Text style={styles.filterText}>Long</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+  
+
   const renderCategory = (category) => {
-    const categoryRecipes = recipes.filter((recipe) => recipe.category.includes(category));
+    const categoryRecipes = filterRecipes().filter((recipe) => recipe.category.includes(category));
+
 
     return (
       <View key={category} style={styles.categoryContainer}>
@@ -240,13 +326,29 @@ export default function RecipeLibrary({ navigation, route }) {
     <ScrollView style={styles.container}>
       <Text style={styles.header}>Bibliothèque de recettes</Text>
 
-      {categories.map((category) => renderCategory(category))}
+      {renderFilters()}
 
-      <View style={styles.buttonContainer}>
-        <Button title="Ajouter une recette" onPress={() => navigation.navigate('AddRecipe', { addRecipe })} />
-        <Button title="Importer un fichier .json" onPress={importRecipesFromJson} />
-        <Button title="Partager mes recettes" onPress={exportRecipes} />
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}></Text>
+        {categories.map((category) => renderCategory(category))}
       </View>
+
+      <View style={styles.section}>
+      
+        <View style={styles.buttonContainer}>
+        <Text style={styles.sectionTitle}></Text>
+          <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('AddRecipe', { addRecipe })}>
+            <Text style={styles.mainButtonText}>Ajouter une recette</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.mainButton} onPress={importRecipesFromJson}>
+            <Text style={styles.mainButtonText}>Importer un fichier .json</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.mainButton} onPress={exportRecipes}>
+            <Text style={styles.mainButtonText}>Partager mes recettes</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
     </ScrollView>
   );
 }
@@ -258,10 +360,58 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  filtersContainer: {
+    marginBottom: 20,
+  },
+  filtersHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly', // Espace uniforme entre les boutons
+    marginBottom: 10,
+  },
+  typeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly', // Espace uniforme entre les boutons
+    marginTop: 0, // Ajoute un peu d'espace au-dessus
+  },
+  typeButton: {
+    flex: 1, // Chaque bouton prend l'espace disponible
+    marginHorizontal: 2.5, // Marge horizontale pour espacer les boutons
+    padding: 10, // Padding pour rendre le bouton plus grand
+    alignItems: 'center', // Centre le texte horizontalement
+    justifyContent: 'center', // Centre le texte verticalement
+    borderRadius: 5, // Coins arrondis
+  },
+  filterButton: {
+    padding: 10,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 5,
+    flex: 1, // Ajout pour égaliser la taille des boutons
+    marginHorizontal: 2.5, // Ajoute un léger espacement horizontal entre les boutons
+  },
+  selectedFilter: {
+    backgroundColor: '#b0e0e6',
+  },
+  filterText: {
+    fontSize: 16,
+    textAlign: 'center', // Centrer le texte dans les boutons
+  },
+  filtersContainer: {
+    marginBottom: 20,
+  },
+  filtersHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
   categoryContainer: {
     marginBottom: 10,
@@ -314,5 +464,38 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 20,
+  },
+  mainButton: {
+    backgroundColor: '#007bff',
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 2.5,
+    alignItems: 'center',
+    width: '100%',
+  },
+  mainButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  section: {
+    width: '100%',
+    marginBottom: 0,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#444',
+    marginTop: 20,
+    marginBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    paddingBottom: 5,
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    marginTop: 20,
+    paddingBottom: 40,
   },
 });

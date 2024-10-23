@@ -12,7 +12,7 @@ export default function ({ route, navigation }) {
     id: '',
     name: '',
     category: [],
-    type: [],
+    type: 'court',
     season: ['printemps','été','automne','hiver'],
     servings: '',
     ingredients: [],

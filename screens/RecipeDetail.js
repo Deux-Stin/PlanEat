@@ -50,7 +50,7 @@ export default function RecipeDetail({ route, navigation }) {
         <Text style={styles.sectionTitle}>Détails de la recette</Text>
         <Text style={styles.detailItem}>
           <Text style={styles.detailLabel}>Catégorie: </Text>
-          {recipe.category || "Non spécifié"}
+          {Array.isArray(recipe.category) ? recipe.category.join(', ') : "Non spécifié"}
         </Text>
         <Text style={styles.detailItem}>
           <Text style={styles.detailLabel}>Type: </Text>
@@ -58,7 +58,7 @@ export default function RecipeDetail({ route, navigation }) {
         </Text>
         <Text style={styles.detailItem}>
           <Text style={styles.detailLabel}>Saison: </Text>
-          {recipe.season || "Non spécifié"}
+          {Array.isArray(recipe.season) ? recipe.season.join(', ') : "Non spécifié"}
         </Text>
         <Text style={styles.detailItem}>
           <Text style={styles.detailLabel}>Nombre de parts: </Text>
@@ -95,14 +95,19 @@ export default function RecipeDetail({ route, navigation }) {
       </View>
 
       {/* Section Valeurs nutritionnelles */}
-      <View style={styles.nutritionalSection}>
-        <Text style={styles.sectionTitle}>Valeurs nutritionnelles</Text>
-        <View style={styles.nutritionalRow}>
-          <Text style={styles.itemText}>Glucides: {recipe.nutritionalValues?.glucides || "Non spécifié"}</Text>
-          <Text style={styles.itemText}>Protéines: {recipe.nutritionalValues?.proteines || "Non spécifié"}</Text>
-          <Text style={styles.itemText}>Graisses: {recipe.nutritionalValues?.graisses || "Non spécifié"}</Text>
+      {(recipe.nutritionalValues?.glucides && recipe.nutritionalValues?.glucides !== '0' ||
+        recipe.nutritionalValues?.proteines && recipe.nutritionalValues?.proteines !== '0' ||
+        recipe.nutritionalValues?.graisses && recipe.nutritionalValues?.graisses !== '0') && (
+        <View style={styles.nutritionalSection}>
+          <Text style={styles.sectionTitle}>Valeurs nutritionnelles</Text>
+          <View style={styles.nutritionalRow}>
+            <Text style={styles.itemText}>Glucides: {recipe.nutritionalValues?.glucides || "Non spécifié"}</Text>
+            <Text style={styles.itemText}>Protéines: {recipe.nutritionalValues?.proteines || "Non spécifié"}</Text>
+            <Text style={styles.itemText}>Graisses: {recipe.nutritionalValues?.graisses || "Non spécifié"}</Text>
+          </View>
         </View>
-      </View>
+      )}
+
 
       {/* Boutons Modifier et Supprimer */}
       <View style={styles.buttonContainer}>
