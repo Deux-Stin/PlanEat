@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
 
-// Chemins des fichiers séparés pour les recettes et les listes de courses
 const RECIPES_PATH = `${FileSystem.documentDirectory}recipes.json`;
 const SHOPPING_HISTORY_PATH = `${FileSystem.documentDirectory}shoppingHistory.json`;
 
@@ -10,25 +9,29 @@ export const useAsyncStorage = (key, initialValue) => {
   const [storedValue, setStoredValue] = useState(initialValue);
 
   useEffect(() => {
-    const loadData = async () => {
+    const initializeData = async () => {
       try {
-        // Charger depuis AsyncStorage selon la clé
         const value = await AsyncStorage.getItem(key);
         if (value !== null) {
           setStoredValue(JSON.parse(value));
         } else {
-          // Si la clé n'est pas présente dans AsyncStorage, essayer de lire depuis le fichier JSON
-          if (key === 'recipes') {
-            await loadFromJson(RECIPES_PATH);
-          } else if (key === 'shoppingHistory') {
-            await loadFromJson(SHOPPING_HISTORY_PATH);
+          // Vérifier l'existence du fichier JSON correspondant
+          const filePath = key === 'recipes' ? RECIPES_PATH : SHOPPING_HISTORY_PATH;
+          const fileExists = await FileSystem.getInfoAsync(filePath);
+
+          if (fileExists.exists) {
+            await loadFromJson(filePath);
+          } else {
+            // Si le fichier n'existe pas, initialiser avec la valeur par défaut
+            await saveToJson(filePath, initialValue);
+            setStoredValue(initialValue);
           }
         }
       } catch (error) {
         console.error(`Erreur lors de la lecture de la clé ${key} :`, error);
       }
     };
-    loadData();
+    initializeData();
   }, [key]);
 
   const setValue = async (value) => {
@@ -37,31 +40,27 @@ export const useAsyncStorage = (key, initialValue) => {
       setStoredValue(valueToStore);
       await AsyncStorage.setItem(key, JSON.stringify(valueToStore));
 
-      // Enregistrer dans un fichier JSON séparé selon la clé
-      if (key === 'recipes') {
-        await saveToJson(RECIPES_PATH, valueToStore);
-      } else if (key === 'shoppingHistory') {
-        await saveToJson(SHOPPING_HISTORY_PATH, valueToStore);
-      }
+      const filePath = key === 'recipes' ? RECIPES_PATH : SHOPPING_HISTORY_PATH;
+      await saveToJson(filePath, valueToStore);
+      console.log('valueToStore :', valueToStore)
 
     } catch (error) {
       console.error(`Erreur lors de l'écriture de la clé ${key} :`, error);
     }
   };
 
-  // Charger à partir d'un fichier JSON
   const loadFromJson = async (filePath) => {
     try {
       const fileContent = await FileSystem.readAsStringAsync(filePath);
       const parsedData = JSON.parse(fileContent);
       setStoredValue(parsedData);
       console.log(`Données chargées depuis ${filePath}`);
+      console.log('parsedData :', parsedData)
     } catch (error) {
       console.error(`Erreur lors de la lecture du fichier ${filePath} :`, error);
     }
   };
 
-  // Sauvegarder dans un fichier JSON
   const saveToJson = async (filePath, data) => {
     try {
       await FileSystem.writeAsStringAsync(filePath, JSON.stringify(data));

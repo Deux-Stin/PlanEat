@@ -11,7 +11,7 @@ export default function ({ route, navigation }) {
   const [newRecipe, setNewRecipe] = useState({
     id: '',
     name: '',
-    category: [],
+    category: '',
     type: 'court',
     season: ['printemps','été','automne','hiver'],
     servings: '',
@@ -44,7 +44,7 @@ export default function ({ route, navigation }) {
     name: '',
     quantity: '',
     unit: 'unité', // Unité par défaut
-    rayon: 'Produits frais' // Rayon par défaut
+    rayon: 'Divers' // Rayon par défaut
   });
 
   const [stepInput, setStepInput] = useState('');
@@ -52,11 +52,11 @@ export default function ({ route, navigation }) {
   const [unitModalVisible, setUnitModalVisible] = useState(false);
   const [rayonModalVisible, setRayonModalVisible] = useState(false);
 
-  const availableCategories = ['Petit-déjeuner', 'Déjeuner', 'Dîner'];
+  const availableCategories = ['Petit-déjeuner','Entrée','Plat','Dessert','Cocktail']; //['Petit-déjeuner', 'Déjeuner', 'Dîner'];
   const availableTypes = ['court', 'long'];
   const availableSeasons = ['printemps', 'été', 'automne', 'hiver'];
   const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'petite cuillère', 'grande cuillère'];
-  const availableRayons = ['Produits frais', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Surgelés', 'Produits laitiers', 'Boissons', 'Hygiène', 'Entretien'];
+  const availableRayons = ['Divers','Produits frais', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Surgelés', 'Produits laitiers', 'Boissons', 'Hygiène', 'Entretien'].sort((a, b) => a.localeCompare(b)); // Trie le tableau par ordre alphabétique;
 
   const toggleType = (type) => {
     setNewRecipe((prev) => {
@@ -103,7 +103,7 @@ export default function ({ route, navigation }) {
         ...newRecipe,
         ingredients: [...newRecipe.ingredients, { name, quantity: parsedQuantity, unit, rayon }]
       });
-      setIngredientInput({ name: '', quantity: '', unit: 'unité', rayon: 'Produits frais' }); // Réinitialisation des champs
+      setIngredientInput({ name: '', quantity: '', unit: 'unité', rayon: 'Divers' }); // Réinitialisation des champs
     } else {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs de l\'ingrédient.');
     }
@@ -216,15 +216,15 @@ export default function ({ route, navigation }) {
       />
 
       <View style={styles.categoryContainer}>
-        <Text style={styles.label}>Catégorie :</Text>
+        <Text style={styles.label}></Text>
         <View style={styles.checkboxContainer}>
           {availableCategories.map((category, index) => (
             <View key={index} style={styles.checkboxItem}>
+              <Text style={styles.checkboxLabel}>{category}</Text>
               <Checkbox
                 status={newRecipe.category.includes(category) ? 'checked' : 'unchecked'}
                 onPress={() => toggleCategory(category)}
               />
-              <Text style={styles.checkboxLabel}>{category}</Text>
             </View>
           ))}
         </View>
@@ -262,6 +262,8 @@ export default function ({ route, navigation }) {
         ))}
       </View>
 
+      <Text style={styles.sectionTitle}>Portions</Text>
+      <View style={styles.somespace} />
       <TextInput
         placeholder="Nombre de parts"
         value={newRecipe.servings}
@@ -271,6 +273,7 @@ export default function ({ route, navigation }) {
       />
 
       <Text style={styles.sectionTitle}>Ingrédients</Text>
+      <View style={styles.somespace} />
       {newRecipe.ingredients.map((ingredient, index) => (
         <View key={index} style={styles.itemContainer}>
           <Text style={styles.itemText}>{ingredient.name} - {ingredient.quantity} {ingredient.unit} ({ingredient.rayon})</Text>
@@ -305,7 +308,10 @@ export default function ({ route, navigation }) {
         <Text style={styles.pickerButtonText}>{ingredientInput.rayon}</Text>
       </TouchableOpacity>
 
-      <Button title="Ajouter ingrédient" onPress={handleAddIngredient} />
+      <TouchableOpacity style={styles.mainButtonStep} onPress={handleAddIngredient}>
+        <Text style={styles.mainButtonText}>Ajouter ingrédient</Text>
+      </TouchableOpacity>
+
 
       {/* Modal pour sélectionner l'unité */}
       <Modal visible={unitModalVisible} animationType="slide" transparent={true}>
@@ -320,7 +326,9 @@ export default function ({ route, navigation }) {
                 <Text style={styles.modalOption}>{unit}</Text>
               </TouchableOpacity>
             ))}
-            <Button title="Fermer" onPress={() => setUnitModalVisible(false)} />
+            <TouchableOpacity style={styles.mainButtonStep} onPress={() => setUnitModalVisible(false)}>
+              <Text style={styles.mainButtonText}>Fermer</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -338,12 +346,17 @@ export default function ({ route, navigation }) {
                 <Text style={styles.modalOption}>{rayon}</Text>
               </TouchableOpacity>
             ))}
-            <Button title="Fermer" onPress={() => setRayonModalVisible(false)} />
+            <TouchableOpacity style={styles.mainButtonStep} onPress={() => setRayonModalVisible(false)}>
+              <Text style={styles.mainButtonText}>Fermer</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
+
+      <View style={styles.somespace} />
       <Text style={styles.sectionTitle}>Étapes de la recette</Text>
+      <View style={styles.somespace} />
       {newRecipe.recipe.map((step, index) => (
         <View key={index} style={styles.itemContainer}>
           <Text style={styles.itemText}>Étape {index + 1}: {step}</Text>
@@ -359,9 +372,13 @@ export default function ({ route, navigation }) {
         onChangeText={(text) => setStepInput(text)}
         style={styles.input}
       />
-      <Button title="Ajouter étape" onPress={handleAddStep} />
+      <TouchableOpacity style={styles.mainButtonStep} onPress={handleAddStep}>
+        <Text style={styles.mainButtonText}>Ajouter étape</Text>
+      </TouchableOpacity>
 
-      <Text style={styles.sectionTitle}>Valeurs nutritionnelles</Text>
+      <View style={styles.somespace} />
+      <Text style={styles.sectionTitle}>Valeurs nutritionnelles pour 100g(optionnel)</Text>
+      <View style={styles.somespace} />
       <TextInput
         placeholder="Glucides (ex: 20g)"
         value={newRecipe.nutritionalValues.glucides}
@@ -380,10 +397,20 @@ export default function ({ route, navigation }) {
         onChangeText={(text) => setNewRecipe({ ...newRecipe, nutritionalValues: { ...newRecipe.nutritionalValues, graisses: text } })}
         style={styles.input}
       />
+      <TextInput
+        placeholder="kiloCalories (ex: 400 kCal)"
+        value={newRecipe.nutritionalValues.graisses}
+        onChangeText={(text) => setNewRecipe({ ...newRecipe, nutritionalValues: { ...newRecipe.nutritionalValues, graisses: text } })}
+        style={styles.input}
+      />
 
       <View style={styles.buttonContainer}>
-        <Button title="Ajouter la recette" onPress={handleSubmit} />
-        <Button title="Retour à la bibliothèque" onPress={() => navigation.navigate('RecipeLibrary')} />
+        <TouchableOpacity style={styles.mainButton} onPress={handleSubmit}>
+          <Text style={styles.mainButtonText}>Ajouter la recette</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('RecipeLibrary')}>
+          <Text style={styles.mainButtonText}>Retour à la bibliothèque</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -415,7 +442,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-evenly',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   typeButton: {
     backgroundColor: '#e0e0e0',
@@ -468,23 +495,38 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginVertical: 10,
+    marginVertical: 5,
+    marginTop: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+
+    marginTop: 20,
+    // marginBottom: 20,
+    // borderBottomWidth: 1,
+    // borderBottomColor: '#ddd',
+    paddingBottom: 5,
+    // textAlign: 'center', // A voir si l'aspect centré plait plus
+
   },
   categoryContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     // justifyContent: 'flex-start',
     marginTop: 5,
-    marginBottom: 20,
+    marginBottom: 15,
   },
   checkboxContainer: {
+    backgroundColor: '#eeeeee',
     flexDirection: 'row', // Alignement horizontal
+    borderRadius: 5,
     flex: 1, // Prend tout l'espace disponible
-    justifyContent: 'space-between', // Espace entre chaque checkbox
-    marginLeft: 10, // Espace entre le label et les checkboxes
+    justifyContent: 'space-evenly', // Espace entre chaque checkbox
+    marginLeft: 0, // Espace entre le label et les checkboxes
+    
+    elevation: 10,
   },
   checkboxItem: {
-    flexDirection: 'row', // Aligne chaque checkbox avec son texte
+    flexDirection: 'column', // Aligne chaque checkbox avec son texte
     alignItems: 'center', // Centre les checkbox et le texte
   },
   checkboxLabel: {
@@ -511,7 +553,32 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   buttonContainer: {
-    marginTop: 20,
+    marginTop: 10,
     paddingBottom: 40,
+  },
+  mainButton: {
+    backgroundColor: '#007bff',
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 2.5,
+    alignItems: 'center',
+    width: '100%',
+  },
+  mainButtonStep: {
+    backgroundColor: '#5baaff',
+    padding: 10,
+    borderRadius: 20,
+    marginVertical: 2.5,
+    alignItems: 'center',
+    width: '100%',
+  },
+  mainButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  somespace: {
+    height: 5,
   },
 });

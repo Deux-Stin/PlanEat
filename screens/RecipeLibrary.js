@@ -5,12 +5,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
-// import { RNFS } from 'react-native-fs';
 import uuid from 'react-native-uuid';
-
-// console.log('RNFS.ExternalStorageDirectoryPath', RNFS.ExternalStorageDirectoryPath)
-// console.log('RNFS.ExternalDirectoryPath', RNFS.ExternalDirectoryPath)
-// console.log('RNFS.DocumentDirectoryPath',RNFS.DocumentDirectoryPath)
 
 export default function RecipeLibrary({ navigation, route }) {
   const [recipes, setRecipes] = useAsyncStorage('recipes', []);
@@ -37,7 +32,7 @@ export default function RecipeLibrary({ navigation, route }) {
     setSelectedType(selectedType === type ? null : type);
   };
   
-  console.log('recipes :',recipes)
+  // console.log('recipes :',recipes)
 
   const addRecipe = (newRecipe) => {
     console.log('addRecipe');
@@ -131,8 +126,6 @@ export default function RecipeLibrary({ navigation, route }) {
       console.error('Erreur lors de l\'importation du fichier :', err);
     }
   };
-  
-  
 
   // console.log(recipes)
 
@@ -235,7 +228,7 @@ export default function RecipeLibrary({ navigation, route }) {
     return null;
   };
 
-  const categories = ['Petit-déjeuner', 'Déjeuner', 'Dîner'];
+  const categories = ['Petit-déjeuner','Entrée','Plat','Dessert','Cocktail'];// ['Petit-déjeuner', 'Déjeuner', 'Dîner'];
 
   const toggleCategory = (category) => {
     setExpandedCategory((prevCategory) => (prevCategory === category ? null : category));
@@ -252,6 +245,7 @@ export default function RecipeLibrary({ navigation, route }) {
 
   const filterRecipes = () => {
     return recipes.filter(recipe => {
+      // console.log('recipe.category : ', recipe.category)
       const recipeSeasons = recipe.season || [];
       const matchesSeason = selectedSeasons.length === 0 || recipeSeasons.some(season => selectedSeasons.includes(season));
       const matchesType = selectedType === null || (recipe.type && recipe.type.includes(selectedType));
@@ -301,6 +295,7 @@ export default function RecipeLibrary({ navigation, route }) {
 
   const renderCategory = (category) => {
     const categoryRecipes = filterRecipes().filter((recipe) => recipe.category.includes(category));
+    // console.log("category :", category)
 
 
     return (

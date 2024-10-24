@@ -60,7 +60,8 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
         {/* Page d'accueil */}
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/> 
+
 
         {/* Bibliothèque de recettes */}
         <Stack.Screen name="RecipeLibrary" component={RecipeLibrary} options={{ title: 'Bibliothèque de recettes' }} />

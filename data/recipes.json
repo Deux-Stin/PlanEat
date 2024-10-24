@@ -22,11 +22,12 @@
       "nutritionalValues": {
         "glucides": "5g",
         "proteines": "20g",
-        "graisses": "15g"
+        "graisses": "15g",
+        "kiloCalories": 210
       }
     },
     {
-      "id": "f674b34c-3fb9-4f9c-8fc8-78f69ffer8cd",
+      "id": "f674b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
       "name": "Porridge à l'avoine",
       "category": "Petit-déjeuner",
       "type": "court",
@@ -46,13 +47,14 @@
       "nutritionalValues": {
         "glucides": "50g",
         "proteines": "8g",
-        "graisses": "7g"
+        "graisses": "7g",
+        "kiloCalories": 320
       }
     },
     {
       "id": "b174b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
       "name": "Salade César",
-      "category": ["Déjeuner", "Dîner"],
+      "category": "Plat",
       "type": "court",
       "season": ["printemps", "été"],
       "servings": 2,
@@ -72,13 +74,14 @@
       "nutritionalValues": {
         "glucides": "20g",
         "proteines": "25g",
-        "graisses": "10g"
+        "graisses": "10g",
+        "kiloCalories": 400
       }
     },
     {
-      "id": "f674b34c-3fz2-4f9c-8fc8-78f69ffcc8cd",
+      "id": "f674b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
       "name": "Pâtes Carbonara",
-      "category": ["Déjeuner", "Dîner"],
+      "category": "Plat",
       "type": "court",
       "season": ["printemps", "été", "automne", "hiver"],
       "servings": 2,
@@ -97,13 +100,14 @@
       "nutritionalValues": {
         "glucides": "30g",
         "proteines": "12g",
-        "graisses": "7.5g"
+        "graisses": "7.5g",
+        "kiloCalories": 350
       }
     },
     {
       "id": "kp34b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
       "name": "Poulet Curry",
-      "category": ["Déjeuner", "Dîner"],
+      "category": "Plat",
       "type": "long",
       "season": ["printemps", "automne", "hiver"],
       "servings": 2,
@@ -122,7 +126,140 @@
       "nutritionalValues": {
         "glucides": "40g",
         "proteines": "30g",
-        "graisses": "15g"
+        "graisses": "15g",
+        "kiloCalories": 480
+      }
+    },
+    {
+      "id": "6a6f8825-8bb4-4d4b-88f5-3fc4d5b84a78",
+      "name": "Bruschetta aux tomates",
+      "category": "Entrée",
+      "type": "court",
+      "season": ["printemps", "été"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "pain ciabatta", "quantity": 1, "unit": "unité", "rayon": "Épicerie" },
+        { "name": "tomates", "quantity": 200, "unit": "g", "rayon": "Fruits et légumes" },
+        { "name": "basilic", "quantity": 10, "unit": "g", "rayon": "Fruits et légumes" },
+        { "name": "huile d'olive", "quantity": 30, "unit": "ml", "rayon": "Épicerie" }
+      ],
+      "recipe": [
+        "Couper le pain en tranches et les faire griller.",
+        "Couper les tomates en dés et mélanger avec le basilic et l'huile d'olive.",
+        "Répartir le mélange sur les tranches de pain."
+      ],
+      "nutritionalValues": {
+        "glucides": "30g",
+        "proteines": "4g",
+        "graisses": "15g",
+        "kiloCalories": 250
+      }
+    },
+    {
+      "id": "3eb50a26-9373-4de0-a64b-d64577eecf5a",
+      "name": "Mojito",
+      "category": "Cocktail",
+      "type": "court",
+      "season": ["printemps", "été"],
+      "servings": 1,
+      "ingredients": [
+        { "name": "rhum blanc", "quantity": 50, "unit": "ml", "rayon": "Alcool" },
+        { "name": "menthe", "quantity": 10, "unit": "feuilles", "rayon": "Fruits et légumes" },
+        { "name": "sucre", "quantity": 1, "unit": "cuillère à soupe", "rayon": "Épicerie" },
+        { "name": "citron vert", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "eau gazeuse", "quantity": 100, "unit": "ml", "rayon": "Épicerie" }
+      ],
+      "recipe": [
+        "Écraser la menthe et le sucre dans un verre.",
+        "Ajouter le jus du citron vert et le rhum.",
+        "Remplir le verre de glace et compléter avec de l'eau gazeuse."
+      ],
+      "nutritionalValues": {
+        "glucides": "15g",
+        "proteines": "0g",
+        "graisses": "0g",
+        "kiloCalories": 200
+      }
+    },
+    {
+      "id": "a0282b34-61b6-4642-9d95-e5c85a0a04c8",
+      "name": "Crème brûlée",
+      "category": "Dessert",
+      "type": "long",
+      "season": ["hiver", "été"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "crème fraîche", "quantity": 500, "unit": "ml", "rayon": "Produits laitiers" },
+        { "name": "sucre", "quantity": 100, "unit": "g", "rayon": "Épicerie" },
+        { "name": "jaunes d'œufs", "quantity": 4, "unit": "unités", "rayon": "Produits frais" },
+        { "name": "vanille", "quantity": 1, "unit": "gousse", "rayon": "Épicerie" }
+      ],
+      "recipe": [
+        "Préchauffer le four à 150°C.",
+        "Chauffer la crème avec la gousse de vanille fendue.",
+        "Battre les jaunes d'œufs avec le sucre, puis ajouter la crème chaude.",
+        "Verser dans des ramequins et cuire au bain-marie pendant 40 minutes.",
+        "Refroidir et saupoudrer de sucre, puis caraméliser avec un chalumeau."
+      ],
+      "nutritionalValues": {
+        "glucides": "20g",
+        "proteines": "5g",
+        "graisses": "15g",
+        "kiloCalories": 350
+      }
+    },
+    {
+      "id": "ecb63241-3cb4-4fb8-9274-76f8f9cd13bc",
+      "name": "Tarte Tatin",
+      "category": "Dessert",
+      "type": "long",
+      "season": ["automne", "hiver"],
+      "servings": 6,
+      "ingredients": [
+        { "name": "pommes", "quantity": 1, "unit": "kg", "rayon": "Fruits" },
+        { "name": "sucre", "quantity": 150, "unit": "g", "rayon": "Épicerie" },
+        { "name": "beurre", "quantity": 100, "unit": "g", "rayon": "Produits laitiers" },
+        { "name": "pâte brisée", "quantity": 1, "unit": "unité", "rayon": "Épicerie" }
+      ],
+      "recipe": [
+        "Préchauffer le four à 180°C.",
+        "Peler et couper les pommes en quartiers.",
+        "Faire fondre le beurre et le sucre dans une poêle, ajouter les pommes et caraméliser.",
+        "Transférer les pommes dans un moule, recouvrir de pâte brisée et enfourner pendant 30 minutes."
+      ],
+      "nutritionalValues": {
+        "glucides": "60g",
+        "proteines": "2g",
+        "graisses": "15g",
+        "kiloCalories": 320
+      }
+    },
+    {
+      "id": "7f8a1a74-4582-489c-9446-2d4d4db84a8f",
+      "name": "Tiramisu",
+      "category": "Dessert",
+      "type": "long",
+      "season": ["automne", "hiver"],
+      "servings": 6,
+      "ingredients": [
+        { "name": "mascarpone", "quantity": 500, "unit": "g", "rayon": "Fromagerie" },
+        { "name": "café", "quantity": 200, "unit": "ml", "rayon": "Épicerie" },
+        { "name": "sucre", "quantity": 100, "unit": "g", "rayon": "Épicerie" },
+        { "name": "biscuits à la cuillère", "quantity": 200, "unit": "g", "rayon": "Épicerie" },
+        { "name": "cacao en poudre", "quantity": 30, "unit": "g", "rayon": "Épicerie" }
+      ],
+      "recipe": [
+        "Préparer le café et le laisser refroidir.",
+        "Battre le mascarpone avec le sucre.",
+        "Tremper les biscuits dans le café et les disposer dans un plat.",
+        "Alterner les couches de biscuits et de mélange au mascarpone.",
+        "Saupoudrer de cacao et réfrigérer avant de servir."
+      ],
+      "nutritionalValues": {
+        "glucides": "40g",
+        "proteines": "6g",
+        "graisses": "22g",
+        "kiloCalories": 350
       }
     }
   ]

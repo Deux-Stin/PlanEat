@@ -1,7 +1,7 @@
   import React, { useState, useEffect } from 'react';
   import { useFocusEffect } from '@react-navigation/native'; 
   import { View, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-  import { Text, Button, Checkbox } from 'react-native-paper';
+  import { Text, Button, Checkbox, BottomNavigation } from 'react-native-paper';
   import { Picker } from '@react-native-picker/picker';
   import { Calendar } from 'react-native-calendars';
   import { useAsyncStorage } from '../hooks/useAsyncStorage';
@@ -14,6 +14,7 @@
     const [mealsSelection, setMealsSelection] = useState({});
     const [mealPlan, setMealPlan] = useState({});
     const [recipes] = useAsyncStorage('recipes', []);
+    const [portions, setPortions] = useState(1); // Nombre de portions
 
     // Obtenir la date actuelle
     const today = moment().format('YYYY-MM-DD');
@@ -127,6 +128,7 @@
       }
     
       // Naviguer vers la liste de courses en passant le mealPlan
+      console.log('mealPlan envoyé à la ShoppingListScreen :', mealPlan)
       navigation.navigate('ShoppingListScreen', { mealPlan });
     };    
 
@@ -145,7 +147,7 @@
       });
       setMealsSelection({});
       setMealPlan({}); // Réinitialise le mealPlan à un objet vide
-    
+      setPortions(1);
     };   
     
 
@@ -179,12 +181,27 @@
           </View>
 
           <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Nombre de portions</Text>
+              <View style={styles.portionSelectorContainer}>
+                <Picker
+                  selectedValue={portions}
+                  onValueChange={(itemValue) => setPortions(itemValue)}
+                >
+                  {[1, 2, 3, 4, 5, 6].map((num) => (
+                    <Picker.Item key={num} label={`${num} portion(s)`} value={num} />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+          <View style={styles.section}>
             <Text style={styles.sectionTitle}>Sélection des repas</Text>
 
             {Object.keys(selectedDates).length > 0 ? (
               Object.keys(selectedDates).map((date) => (
                 <View key={date} style={styles.mealSection}>
-                  <Text style={styles.dateText}>Date : {date}</Text>
+                  <View style={styles.dateTextContainer}>
+                    <Text style={styles.dateText}>{moment(date).format('DD/MM/YYYY')}</Text>
+                  </View>
 
                   <View style={styles.checkboxContainer}>
                     <View style={styles.checkboxWrapper}>
@@ -219,17 +236,22 @@
                   {/* Sélection des recettes pour les repas cochés */}
                   {['breakfast', 'lunch', 'dinner'].map((mealType) => (
                     mealsSelection[date]?.[mealType] && (
-                      <View key={mealType}>
-                        <Text>Sélectionnez une recette pour le {mealTypeToCategory[mealType].toLowerCase()}</Text>
-                        <Picker
-                          selectedValue={mealPlan[date]?.[mealType]?.name || ''}
-                          onValueChange={(itemValue) => handleRecipeSelection(date, mealType, itemValue)}
-                        >
-                          <Picker.Item label="Sélectionner une recette" value="" />
-                          {filterRecipesByMealType(mealType).map((recipe, index) => (
-                            <Picker.Item key={index} label={recipe.name} value={recipe.name} />
-                          ))}
-                        </Picker>
+                      <View style={styles.mealAttribution} key={mealType}>
+                        <Text style={styles.textAttribution}>
+                            Sélectionner une recette pour le 
+                            <Text style={styles.boldText}> {mealTypeToCategory[mealType].toLowerCase()}</Text>
+                        </Text>
+                        <View style={styles.pickerContainer} >
+                          <Picker style={styles.picker}
+                            selectedValue={mealPlan[date]?.[mealType]?.name || ''}
+                            onValueChange={(itemValue) => handleRecipeSelection(date, mealType, itemValue)}
+                          >
+                            <Picker.Item label="Sélectionner une recette" value="" />
+                            {filterRecipesByMealType(mealType).map((recipe, index) => (
+                              <Picker.Item key={index} label={recipe.name} value={recipe.name} />
+                            ))}
+                          </Picker>
+                        </View>
                       </View>
                     )
                   ))}
@@ -277,7 +299,7 @@
     // },
     section: {
       width: '100%',
-      marginBottom: 20,
+      marginBottom: 10,
     },
     sectionTitle: {
       fontSize: 22,
@@ -290,6 +312,13 @@
       paddingBottom: 5,
       textAlign: 'center',
     },
+    portionSelectorContainer: {
+      backgroundColor: '#e6e6e6',
+      borderRadius: 5, // Pour arrondir les coins
+      // elevation: 5, // Pour ajouter de l'ombre si nécessaire
+      // padding: 5, // Pour un peu d'espace intérieur
+    },
+    
     mealSelection: {
       marginTop: 20,
       padding: 10,
@@ -301,9 +330,60 @@
     },
     mealSection: {
       marginBottom: 20,
+      padding: 10,
+      borderRadius: 5,
+      marginVertical: 5,
+      backgroundColor: '#e6e6e6',
+      elevation: 5,
+    },
+    mealAttribution: {
+      // backgroundColor: 'red',
+    },
+    textAttribution:{
+      fontSize: 16,
+      marginTop: 10,
+      // marginBottom: 10,
+      borderTopWidth: 1,
+      borderTopColor: '#ccc',
+      padding: 5,
+      textAlign: 'center',
+    },
+    boldText: {
+      fontWeight: 'bold',
+    },
+    test:{
+      // height:100,
+    },
+    pickerContainer:{
+      backgroundColor: '#fff',
+      padding: 0,
+      borderRadius: 5, // Pour arrondir les coins
+      elevation: 5, // Pour ajouter de l'ombre si nécessaire
+      // padding: 5, // Pour un peu d'espace inté
+    },
+
+    picker: {
+      height: 50, // Hauteur du Picker
+      width: '100%', // Largeur pleine
+      backgroundColor: '#red', // Couleur de fond du Picker
+    },
+
+
+
+    dateTextContainer: {
+      borderRadius: 5,
+      padding: 5,
+      backgroundColor: '#d6d6d6',
+      alignSelf: 'flex-start', // Ajuste la largeur au contenu
+      elevation: 2,
+      marginBottom: 10,
     },
     dateText: {
       fontWeight: 'bold',
+      fontSize: 14,
+      // marginLeft: 10,
+      // marginBottom: 10,
+      // backgroundColor: '#fff',
     },
     checkboxContainer: {
       flexDirection: 'row',

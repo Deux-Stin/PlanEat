@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
@@ -7,6 +7,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 
 export default function HomeScreen({ navigation }) {
   const [shoppingHistory, setShoppingHistory] = useAsyncStorage('shoppingHistory', []);
+  const [showHideMenu, setShowHideMenu] = useState(false);
   const swipeableRefs = useRef([]); 
 
   useFocusEffect(
@@ -50,6 +51,10 @@ export default function HomeScreen({ navigation }) {
     </TouchableOpacity>
   );
 
+  const showInfoAlert = () => {
+    Alert.alert("Information", "\nCette application vous permet d'enregistrer vos recettes, d'en importer de nouvelles ou bien de les partager avec vos proches.\n\nElle permet également de planifier vos repas sur une plage calendaire et de générer votre liste de courses en fonction de vos menus et du nombre de portions.\n\nBonne utilisation ! \n\n\n\nPour toute suggestion/bug n'hésitez pas à me contacter : dustyn.naya@gmail.com");
+  };
+
   const renderItem = ({ item, index }) => (
     <Swipeable 
       renderRightActions={() => renderRightActions(item, index)}
@@ -73,6 +78,12 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
+
+      {/* Bouton d'information */}
+      <TouchableOpacity onPress={showInfoAlert} style={styles.infoButton}>
+        <Text style={styles.infoButtonText}>i</Text>
+      </TouchableOpacity>
+
       <FlatList
         data={shoppingHistory}
         renderItem={renderItem}
@@ -112,6 +123,7 @@ export default function HomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 60,
     padding: 20,
     backgroundColor: '#fff',
     alignItems: 'center', 
@@ -177,7 +189,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    height: '80%',
+    height: '90%',
     width: 80,
     marginLeft: 10,
   },
@@ -188,5 +200,22 @@ const styles = StyleSheet.create({
   somespace: {
     height: 5,
     // backgroundColor: '#fff',
-  }
+  },
+  infoButton: {
+    position: 'absolute',
+    zIndex: 10, // Ajout d'un zIndex pour le rendre au-dessus
+    top: 60,
+    right: 30, // Ajuste la position pour qu'il ne soit pas superposé avec le bouton menu
+    width: 40,
+    height: 40,
+    borderRadius: 25,
+    backgroundColor: '#ccc', // Couleur du bouton d'information
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+  },
+  infoButtonText: {
+    color: '#FFFFFF',
+    fontSize: 24,
+  },
 });
