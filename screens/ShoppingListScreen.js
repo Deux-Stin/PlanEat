@@ -12,6 +12,9 @@ export default function ShoppingListScreen({ navigation, route }) {
   const [checkedItems, setCheckedItems] = useState({});
   const [manualItem, setManualItem] = useState('');
   const [newItemQuantity, setnewItemQuantity] = useState(''); // État pour la valeur numérique du modal d'unité
+  const [showHideMenu, setShowHideMenu] = useState(false);
+  const [hideCheckedItems, setHideCheckedItems] = useState(false);
+
   const { mealPlan, historyItem  } = route.params; // Recevoir le mealPlan à partir de la navigation
 
   const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'petite cuillère', 'grande cuillère'];
@@ -43,6 +46,16 @@ export default function ShoppingListScreen({ navigation, route }) {
       setShoppingList(ingredients);
     }
   }, [mealPlan]);
+
+  const toggleHideMenu = () => {
+    setShowHideMenu(!showHideMenu);
+  };
+  
+  const toggleHideCheckedItems = () => {
+    setHideCheckedItems(!hideCheckedItems);
+    setShowHideMenu(false); // Fermer le menu après sélection
+  };
+  
 
   const generateShoppingList = (mealPlan) => {
     const ingredientsList = {};
@@ -132,13 +145,13 @@ export default function ShoppingListScreen({ navigation, route }) {
     }
   };
   
-  const saveShoppingHistory = async (newHistory) => {
-    try {
-      await AsyncStorage.setItem('shoppingHistory', JSON.stringify(newHistory));
-    } catch (error) {
-      console.error('Erreur lors de l\'enregistrement de l\'historique', error);
-    }
-  };
+  // const saveShoppingHistory = async (newHistory) => {
+  //   try {
+  //     await AsyncStorage.setItem('shoppingHistory', JSON.stringify(newHistory));
+  //   } catch (error) {
+  //     console.error('Erreur lors de l\'enregistrement de l\'historique', error);
+  //   }
+  // };
 
   const addManualItem = () => {
     if (manualItem && newItemQuantity) {
@@ -265,31 +278,35 @@ export default function ShoppingListScreen({ navigation, route }) {
   );
 
   return (
-    // <View style={styles.container}>
-    //   <Text variant="headlineMedium" style={styles.title}>Liste de Courses</Text>
-    //   <FlatList
-    //     data={shoppingList}
-    //     renderItem={renderItem}
-    //     keyExtractor={(item, index) => index.toString()}
-    //     style={styles.list}
-    //   />
-    //   <Button mode="contained" onPress={handleSaveShoppingList} style={styles.saveButton}>
-    //     Sauvegarder la liste de courses
-    //   </Button>
-    // </View>
 
     <View style={styles.container}>
-      <ScrollView style={{ flex: 1 }}>
-        <Text style={styles.header}>Liste de courses</Text>
+      <TouchableOpacity onPress={toggleHideMenu} style={styles.menuButton}>
+        <Text style={styles.menuButtonText}>?</Text>
+      </TouchableOpacity>
 
-        {/* Rendu des éléments de la liste de courses */}
-        {Object.keys(shoppingList).length === 0 ? (
-          <Text>Aucune liste de courses générée.</Text>
-        ) : (
-          Object.keys(shoppingList).map((rayon) => (
-            <View key={rayon} style={styles.rayonSection}>
-              <Text style={styles.rayonHeader}>{rayon}</Text>
-              {shoppingList[rayon].map((ingredient) => (
+      {showHideMenu && (
+        <View style={styles.menu}>
+          <TouchableOpacity onPress={toggleHideCheckedItems} style={styles.menuItem}>
+            <Text style={styles.menuItemText}>
+              {hideCheckedItems ? 'Afficher les éléments cochés' : 'Masquer les éléments cochés'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>Liste de courses</Text>
+      </View>
+
+    <ScrollView style={{ flex: 1 }}>
+      {Object.keys(shoppingList).length === 0 ? (
+        <Text>Aucune liste de courses générée.</Text>
+      ) : (
+        Object.keys(shoppingList).map((rayon) => (
+          <View key={rayon} style={styles.rayonSection}>
+            <Text style={styles.rayonHeader}>{rayon}</Text>
+            {shoppingList[rayon].map((ingredient) => (
+              (hideCheckedItems && checkedItems[ingredient.name]) ? null : (
                 <View key={ingredient.name} style={styles.ingredientRow}>
                   <Checkbox
                     status={checkedItems[ingredient.name] ? 'checked' : 'unchecked'}
@@ -310,11 +327,12 @@ export default function ShoppingListScreen({ navigation, route }) {
                     </Button>
                   </View>
                 </View>
-              ))}
-            </View>
-          ))
-        )}
-      </ScrollView>
+              )
+            ))}
+          </View>
+        ))
+      )}
+    </ScrollView>
 
       <View style={styles.somespace}></View>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', marginVertical: 5 }}>
@@ -583,4 +601,38 @@ const styles = StyleSheet.create({
     fontSize: 16, // Taille du texte
     textAlign: 'center', // Centre le texte
   },  
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+  },
+  menuButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    width: 40, // Ajuste la taille selon tes besoins
+    height: 40,
+    borderRadius: 25, // Pour un bouton rond
+    backgroundColor: '#ccc', // Couleur du bouton
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4, // Ombre pour donner un effet de profondeur
+  },
+  menuButtonText: {
+    color: '#FFFFFF', // Couleur du texte
+    fontSize: 24, // Ajuste la taille selon tes besoins
+  },
+  menuItem: {
+    position: 'absolute',
+    textAlign: 'right',
+    top: 35,
+    right: 0,
+    padding: 10, 
+    borderRadius: 10,
+    backgroundColor: '#ccc' 
+  },
+  menuItemText: {
+    color: '#333',
+  },
 });
