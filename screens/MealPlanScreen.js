@@ -1,6 +1,6 @@
   import React, { useState, useEffect } from 'react';
   import { useFocusEffect } from '@react-navigation/native'; 
-  import { View, ScrollView, StyleSheet, Alert } from 'react-native';
+  import { View, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
   import { Text, Button, Checkbox } from 'react-native-paper';
   import { Picker } from '@react-native-picker/picker';
   import { Calendar } from 'react-native-calendars';
@@ -140,54 +140,46 @@
 
     // Reset selections
     const resetSelections = async () => {
-      setSelectedDates({});
+      setSelectedDates({
+        // [today]: { selected: true, selectedColor: 'blue' } // Garde le jour actuel marqué
+      });
       setMealsSelection({});
       setMealPlan({}); // Réinitialise le mealPlan à un objet vide
     
-      // Mettez à jour AsyncStorage via setMealPlan
-      // await setMealPlan({}); // Utilise la fonction setValue de useAsyncStorage
-    };
-    
-    // const resetMealPlan = () => {
-    //   setMealPlan({});
-    //   // Ici, vous devez également mettre à jour AsyncStorage si nécessaire
-    //   setMealPlan({});
-    // };
-    
+    };   
     
 
     return (
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <Text variant="headlineMedium" style={styles.title}>
-            Planifier vos repas
-          </Text>
 
-          <Calendar
-            current={today} // Affiche la date actuelle
-            //{new Date().toISOString().split('T')[0]}
-            onDayPress={handleDayPress}
-            // markedDates={selectedDates}
-            markedDates={{ ...selectedDates, ...markedDates }}
-            hideExtraDays={true}
-            enableSwipeMonths={true}
-            renderArrow={(direction) => (
-              <Text>{direction === 'left' ? '<' : '>'}</Text>
-            )}
-            monthFormat={'MMMM yyyy'}
-            firstDay={1}
-            dayNames={['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']}
-            dayNamesShort={['D', 'L', 'M', 'M', 'J', 'V', 'S']}
-            monthNames={[
-              'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-              'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
-            ]}
-          />
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Planifier vos repas</Text>
 
-          <View style={styles.mealSelection}>
-            <Text variant="titleLarge" style={styles.mealTitle}>
-              Sélection des repas
-            </Text>
+            <Calendar
+              current={today} // Affiche la date actuelle
+              //{new Date().toISOString().split('T')[0]}
+              onDayPress={handleDayPress}
+              // markedDates={selectedDates}
+              markedDates={{ ...selectedDates, ...markedDates }}
+              hideExtraDays={true}
+              enableSwipeMonths={true}
+              renderArrow={(direction) => (
+                <Text>{direction === 'left' ? '<' : '>'}</Text>
+              )}
+              monthFormat={'MMMM yyyy'}
+              firstDay={1}
+              dayNames={['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']}
+              dayNamesShort={['D', 'L', 'M', 'M', 'J', 'V', 'S']}
+              monthNames={[
+                'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+                'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
+              ]}
+            />
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Sélection des repas</Text>
 
             {Object.keys(selectedDates).length > 0 ? (
               Object.keys(selectedDates).map((date) => (
@@ -249,14 +241,18 @@
           </View>
         </ScrollView>
 
-        {/* Bouton fixe en bas */}
-        <Button mode="contained" onPress={handleSaveMealPlan} style={styles.saveButton}>
-          Enregistrer et générer la liste de courses
-        </Button>
-        {/* Ajoutez ce bouton dans le rendu */}
-        <Button mode="contained" onPress={resetSelections} style={styles.resetButton}>
-          Réinitialiser
-        </Button>
+        {/* Boutons fixes en bas */}
+        <View style={styles.section}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.mainButton} onPress={handleSaveMealPlan}>
+              <Text style={styles.mainButtonText}>Enregistrer et générer la liste de courses</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.mainButton} onPress={resetSelections}>
+              <Text style={styles.mainButtonText}>Réinitialiser</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
       </View>
     );
   }
@@ -266,12 +262,33 @@
       flex: 1,
     },
     scrollContainer: {
-      paddingBottom: 100, // Pour laisser de l'espace pour le bouton fixe
+      paddingBottom: 10, // Pour laisser de l'espace pour le bouton fixe
     },
     title: {
       fontWeight: 'bold',
       textAlign: 'center',
       marginBottom: 20,
+    },
+    // title: {
+    //   fontSize: 40,
+    //   marginTop: 20,
+    //   marginBottom: 60,
+    //   textAlign: 'center',
+    // },
+    section: {
+      width: '100%',
+      marginBottom: 20,
+    },
+    sectionTitle: {
+      fontSize: 22,
+      fontWeight: 'bold',
+      color: '#444',
+      marginTop: 20,
+      marginBottom: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ddd',
+      paddingBottom: 5,
+      textAlign: 'center',
     },
     mealSelection: {
       marginTop: 20,
@@ -296,11 +313,25 @@
     checkboxWrapper: {
       alignItems: 'center',
     },
-    saveButton: {
-      position: 'absolute',
-      bottom: 20,
-      left: 20,
-      right: 20,
-      padding: 10,
+    buttonContainer: {
+      flexDirection: 'column', // Les boutons seront côte à côte
+      justifyContent: 'center', // Centrer horizontalement
+      alignItems: 'center', // Centrer verticalement
+      marginTop: 10,
+      paddingBottom: 5,
+    },
+    mainButton: {
+      backgroundColor: '#007bff', // Couleur identique
+      padding: 15,
+      borderRadius: 10,
+      marginVertical: 5, // Espace entre les boutons
+      alignItems: 'center',
+      width: '95%', // Ajuster la largeur pour ne pas prendre toute la place
+    },
+    mainButtonText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: 'bold',
+      textAlign: 'center',
     },
   });

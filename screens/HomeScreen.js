@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { View, Text, FlatList, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,9 +7,8 @@ import { Swipeable } from 'react-native-gesture-handler';
 
 export default function HomeScreen({ navigation }) {
   const [shoppingHistory, setShoppingHistory] = useAsyncStorage('shoppingHistory', []);
-  const swipeableRefs = useRef([]); // Référence pour les éléments swipeables
+  const swipeableRefs = useRef([]); 
 
-  // Recharge l'historique à chaque fois que l'écran est focalisé
   useFocusEffect(
     React.useCallback(() => {
       loadShoppingHistory();
@@ -55,14 +54,13 @@ export default function HomeScreen({ navigation }) {
     <Swipeable 
       renderRightActions={() => renderRightActions(item, index)}
       onSwipeableWillOpen={() => {
-        // Fermer tous les autres swipes ouverts
         swipeableRefs.current.forEach((ref, i) => {
           if (ref && i !== index) {
-            ref.close(); // Fermer le swipe d'un autre élément
+            ref.close(); 
           }
         });
       }}
-      ref={ref => (swipeableRefs.current[index] = ref)} // Ajouter la référence
+      ref={ref => (swipeableRefs.current[index] = ref)} 
     >
       <TouchableOpacity
         style={styles.historyButton}
@@ -74,48 +72,49 @@ export default function HomeScreen({ navigation }) {
   );
 
   return (
-    <ScrollView 
-      contentContainerStyle={styles.container} // Utiliser contentContainerStyle pour le ScrollView
-    >
-      <Text style={styles.title}>Bienvenue dans PlanEat !</Text>
-      
-      {/* Section des boutons */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Accès rapide</Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('RecipeLibrary')}>
-            <Text style={styles.mainButtonText}>Bibliothèque de recettes</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('MealPlanScreen', {fromHome: true})}>
-            <Text style={styles.mainButtonText}>Planifier vos repas</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('ShoppingListScreen', { mealPlan: {} })}>
-            <Text style={styles.mainButtonText}>Voir ma liste de courses</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Section historique */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Historique des listes de courses</Text>
-        <FlatList
-          data={shoppingHistory}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => index.toString()}
-          style={styles.historyList}
-          nestedScrollEnabled // Autorise le défilement imbriqué
-        />
-      </View>
-    </ScrollView>
-  );
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <FlatList
+        data={shoppingHistory}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        style={styles.historyList}
+        ListHeaderComponent={() => (
+          <View style={styles.container}>
+            <Text style={styles.title}>Bienvenue dans PlanEat !</Text>
+            
+            {/* Section des boutons */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Accès rapide</Text>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('RecipeLibrary')}>
+                  <Text style={styles.mainButtonText}>Bibliothèque de recettes</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('MealPlanScreen', {fromHome: true})}>
+                  <Text style={styles.mainButtonText}>Planifier vos repas</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('ShoppingListScreen', { mealPlan: {} })}>
+                  <Text style={styles.mainButtonText}>Voir ma liste de courses</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+  
+            {/* Section historique */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Historique des listes de courses</Text>
+            </View>
+          </View>
+        )}
+      />
+      <View style={styles.somespace} />
+    </View>
+    );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1, // Permet au conteneur de croître selon le contenu
     padding: 20,
     backgroundColor: '#fff',
-    alignItems: 'center', // Centre les éléments horizontalement
+    alignItems: 'center', 
   },
   title: {
     fontSize: 40,
@@ -139,10 +138,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttonContainer: {
-    flexDirection: 'column',   // Arrange les boutons verticalement
-    alignItems: 'center',      // Centre les boutons horizontalement
+    flexDirection: 'column',   
+    alignItems: 'center',      
     marginTop: 10,
-    width: '100%',             // Assure que les boutons prennent toute la largeur disponible
+    width: '100%',             
   },
   mainButton: {
     backgroundColor: '#007bff',
@@ -165,9 +164,9 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#f0f0f0',
     borderRadius: 5,
-    marginBottom: 10,
+    marginBottom: 5,
     justifyContent: 'center',
-    alignItems: 'center', // Centre le texte verticalement et horizontalement
+    alignItems: 'center',
   },
   historyButtonText: {
     fontSize: 16,
@@ -186,4 +185,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+  somespace: {
+    height: 5,
+    // backgroundColor: '#fff',
+  }
 });
