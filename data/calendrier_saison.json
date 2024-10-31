@@ -1,0 +1,64 @@
+{
+    "calendrier": {
+        "janvier": {
+            "legumes": ["Ail", "Betterave", "Carotte", "Céleri", "Chou", "Courge", "Endive", "Épinard", "Frisée", "Mâche", "Navet", "Panais", "Poireau", "Topinambour"],
+            "fruits": ["Amande sèche", "Citron", "Clémentine", "Kaki", "Kiwi", "Mandarine", "Orange", "Pamplemousse", "Physalis", "Poire", "Pomme"],
+            "cereales_legumineuses": ["Lentille"]
+        },
+        "fevrier": {
+            "legumes": ["Ail", "Betterave", "Carotte", "Céleri-rave", "Chou", "Endive", "Épinard", "Frisée", "Mâche", "Navet", "Panais", "Poireau", "Radis", "Salsifi", "Topinambour"],
+            "fruits": ["Amande sèche", "Citron", "Clémentine", "Kiwi", "Mandarine", "Orange", "Pamplemousse", "Physalis", "Poire", "Pomme"],
+            "cereales_legumineuses": ["Lentille"]
+        },
+        "mars": {
+            "legumes": ["Ail", "Asperge", "Betterave", "Blette", "Carotte", "Céleri-rave", "Chou", "Crosne", "Endive", "Épinard", "Frisée", "Navet", "Panais", "Poireau", "Radis", "Salsifi", "Topinambour"],
+            "fruits": ["Amande sèche", "Citron", "Kiwi", "Orange", "Pamplemousse", "Poire", "Pomme"],
+            "cereales_legumineuses": ["Lentille"]
+        },
+        "avril": {
+            "legumes": ["Ail", "Artichaut", "Asperge", "Betterave", "Blette", "Carotte", "Chou-fleur", "Concombre", "Endive", "Épinard", "Frisée", "Laitue", "Navet", "Oignon", "Petit pois", "Poireau", "Radis"],
+            "fruits": ["Amande sèche", "Citron", "Pamplemousse", "Poire", "Pomme"],
+            "cereales_legumineuses": []
+        },
+        "mai": {
+            "legumes": ["Ail", "Artichaut", "Asperge", "Aubergine", "Betterave", "Blette", "Carotte", "Chou-fleur", "Concombre", "Courgette", "Épinard", "Laitue", "Navet", "Oignon", "Petit pois", "Radis"],
+            "fruits": ["Amande sèche", "Cerise", "Fraise", "Pamplemousse", "Rhubarbe", "Tomate"],
+            "cereales_legumineuses": []
+        },
+        "juin": {
+            "legumes": ["Ail", "Artichaut", "Asperge", "Aubergine", "Blette", "Brocoli", "Carotte", "Chou romanesco", "Concombre", "Courgette", "Épinard", "Fenouil", "Haricot vert", "Laitue", "Navet", "Petit pois", "Poivron", "Radis"],
+            "fruits": ["Abricot", "Amande sèche", "Brugnon", "Cassis", "Cerise", "Citron", "Fraise", "Framboise", "Groseille", "Melon", "Pamplemousse", "Pastèque", "Pêche", "Pomme", "Prune", "Rhubarbe", "Tomate"],
+            "cereales_legumineuses": ["Avoine", "Orge d’hiver", "Pois", "Seigle"]
+        },
+        "juillet": {
+            "legumes": ["Ail", "Artichaut", "Asperge", "Aubergine", "Betterave", "Blette", "Brocoli", "Carotte", "Céleri-branche", "Concombre", "Courgette", "Épinard", "Fenouil", "Haricot vert", "Laitue", "Petit pois", "Poivron", "Radis"],
+            "fruits": ["Abricot", "Amande fraiche", "Amande sèche", "Brugnon", "Cassis", "Cerise", "Figue", "Fraise", "Framboise", "Groseille", "Melon", "Myrtille", "Nectarine", "Pastèque", "Pêche", "Poire", "Prune", "Rhubarbe", "Tomate"],
+            "cereales_legumineuses": ["Avoine", "Blé dur", "Blé tendre", "Féveroles et fèves", "Haricot blanc", "Maïs", "Orge", "Pois", "Seigle"]
+        },
+        "aout": {
+            "legumes": ["Ail", "Artichaut", "Aubergine", "Betterave", "Blette", "Brocoli", "Carotte", "Céleri-branche", "Chou", "Courge", "Courgette", "Épinard", "Fenouil", "Frisée", "Haricot vert", "Laitue", "Poivron", "Radis"],
+            "fruits": ["Abricot", "Amande fraiche", "Amande sèche", "Baie de goji", "Brugnon", "Cassis", "Figue", "Fraise", "Framboise", "Groseille", "Melon", "Mirabelle", "Mûre", "Myrtille", "Nectarine", "Noisette", "Pastèque", "Pêche", "Poire", "Pomme", "Prune", "Pruneau", "Raisin", "Tomate"],
+            "cereales_legumineuses": ["Avoine", "Blé dur", "Blé tendre", "Féveroles et fèves", "Haricot blanc", "Maïs", "Orge", "Quinoa", "Seigle"]
+        },
+        "septembre": {
+            "legumes": ["Ail", "Artichaut", "Aubergine", "Betterave", "Blette", "Brocoli", "Carotte", "Céleri-branche", "Chou", "Concombre", "Courge", "Courgette", "Épinard", "Fenouil", "Frisée", "Haricot vert", "Laitue", "Panais", "Patate douce", "Poireau", "Poivron", "Potiron", "Radis"],
+            "fruits": ["Amande sèche", "Baie de goji", "Coing", "Figue", "Melon", "Mirabelle", "Mûre", "Myrtille", "Noisette", "Noix", "Pastèque", "Pêche", "Poire", "Pomme", "Prune", "Pruneau", "Raisin", "Tomate"],
+            "cereales_legumineuses": ["Haricot blanc", "Maïs", "Quinoa", "Riz", "Sarrasin", "Tournesol"]
+        },
+        "octobre": {
+            "legumes": ["Ail", "Aubergine", "Betterave", "Blette", "Brocoli", "Carotte", "Céleri", "Chou", "Concombre", "Courge", "Courgette", "Échalote", "Endive", "Épinard", "Fenouil", "Frisée", "Haricot vert", "Laitue", "Navet", "Panais", "Patate douce", "Poireau", "Radis", "Rutabaga", "Salsifi", "Topinambour"],
+            "fruits": ["Amande sèche", "Baie de goji", "Châtaigne", "Citron", "Coing", "Figue", "Framboise", "Kaki", "Myrtille", "Noisette", "Noix", "Physalis", "Poire", "Pomme", "Raisin", "Tomate"],
+            "cereales_legumineuses": ["Haricot blanc", "Maïs", "Quinoa", "Riz", "Sarrasin", "Soja"]
+        },
+        "novembre": {
+            "legumes": ["Ail", "Betterave", "Brocoli", "Cardon", "Carotte", "Céleri", "Chou", "Courge", "Crosne", "Échalote", "Endive", "Épinard", "Fenouil", "Frisée", "Mâche", "Navet", "Panais", "Poireau", "Radis", "Rutabaga", "Salsifi", "Topinambour"],
+            "fruits": ["Amande sèche", "Châtaigne", "Citron", "Clémentine", "Coing", "Kaki", "Kiwi", "Mandarine", "Orange", "Physalis", "Poire", "Pomme"],
+            "cereales_legumineuses": ["Lentille", "Maïs"]
+        },
+        "decembre": {
+            "legumes": ["Ail", "Betterave", "Carotte", "Céleri", "Chou", "Courge", "Crosne", "Échalote", "Endive", "Épinard", "Frisée", "Mâche", "Navet", "Panais", "Poireau", "Radis", "Rutabaga", "Salsifi", "Topinambour"],
+            "fruits": ["Amande sèche", "Châtaigne", "Citron", "Clémentine", "Kaki", "Kiwi", "Mandarine", "Orange", "Physalis", "Poire", "Pomme"],
+            "cereales_legumineuses": ["Avoine", "Blé dur", "Blé tendre", "Féveroles et fèves", "Lentille", "Orge", "Pois", "Seigle"]
+        }
+    }
+}
