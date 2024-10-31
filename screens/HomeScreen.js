@@ -4,10 +4,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Swipeable } from 'react-native-gesture-handler';
+import { globalStyles } from '../globalStyles';
 
 export default function HomeScreen({ navigation }) {
   const [shoppingHistory, setShoppingHistory] = useAsyncStorage('shoppingHistory', []);
-  const [showHideMenu, setShowHideMenu] = useState(false);
   const swipeableRefs = useRef([]); 
 
   useFocusEffect(
@@ -91,27 +91,33 @@ export default function HomeScreen({ navigation }) {
         style={styles.historyList}
         ListHeaderComponent={() => (
           <View style={styles.container}>
-            <Text style={styles.title}>Bienvenue dans PlanEat !</Text>
+            <Text style={[styles.title, globalStyles.textTitleUn]}>Bienvenue dans PlanEat</Text>
             
             {/* Section des boutons */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Accès rapide</Text>
+              <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Accès rapide</Text>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('RecipeLibrary')}>
-                  <Text style={styles.mainButtonText}>Bibliothèque de recettes</Text>
+                  <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Bibliothèque de recettes</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('MealPlanScreen', {fromHome: true})}>
-                  <Text style={styles.mainButtonText}>Planifier vos repas</Text>
+                  <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Planifier vos repas</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('ShoppingListScreen', { mealPlan: {} })}>
-                  <Text style={styles.mainButtonText}>Voir ma liste de courses</Text>
+                  <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Voir ma liste de courses</Text>
                 </TouchableOpacity>
+
+                {/* Nouveau bouton pour accéder au calendrier des fruits et légumes */}
+                <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('SeasonalCalendarScreen')}>
+                  <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Calendrier des fruits et légumes</Text>
+                </TouchableOpacity>
+                
               </View>
             </View>
   
             {/* Section historique */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Historique des listes de courses</Text>
+              <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Historique des listes de courses</Text>
             </View>
           </View>
         )}
@@ -129,9 +135,9 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
   },
   title: {
-    fontSize: 40,
-    marginTop: 20,
-    marginBottom: 60,
+    fontSize: 120,
+    marginTop: 50,
+    marginBottom: 30,
     textAlign: 'center',
   },
   section: {
@@ -139,8 +145,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: 40,
+    // fontWeight: 'bold',
     color: '#444',
     marginTop: 20,
     marginBottom: 10,
@@ -166,7 +172,7 @@ const styles = StyleSheet.create({
   mainButtonText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     textAlign: 'center',
   },
   historyList: {

@@ -365,7 +365,7 @@
     picker: {
       height: 50, // Hauteur du Picker
       width: '100%', // Largeur pleine
-      backgroundColor: '#red', // Couleur de fond du Picker
+      backgroundColor: '#ffffff', // Couleur de fond du Picker
     },
 
 

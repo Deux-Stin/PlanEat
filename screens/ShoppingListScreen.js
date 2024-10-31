@@ -15,6 +15,9 @@ export default function ShoppingListScreen({ navigation, route }) {
   const [showHideMenu, setShowHideMenu] = useState(false);
   const [hideCheckedItems, setHideCheckedItems] = useState(false);
 
+  const [showHideMenu, setShowHideMenu] = useState(false);
+  const [hideCheckedItems, setHideCheckedItems] = useState(false);
+
   const { mealPlan, historyItem  } = route.params; // Recevoir le mealPlan à partir de la navigation
 
   const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'petite cuillère', 'grande cuillère'];
@@ -46,6 +49,16 @@ export default function ShoppingListScreen({ navigation, route }) {
       setShoppingList(ingredients);
     }
   }, [mealPlan]);
+
+  const toggleHideMenu = () => {
+    setShowHideMenu(!showHideMenu);
+  };
+  
+  const toggleHideCheckedItems = () => {
+    setHideCheckedItems(!hideCheckedItems);
+    setShowHideMenu(false); // Fermer le menu après sélection
+  };
+  
 
   const toggleHideMenu = () => {
     setShowHideMenu(!showHideMenu);
@@ -289,7 +302,23 @@ export default function ShoppingListScreen({ navigation, route }) {
       )}
 
       <View style={styles.headerContainer}>
+      <TouchableOpacity onPress={toggleHideMenu} style={styles.menuButton}>
+        <Text style={styles.menuButtonText}>?</Text>
+      </TouchableOpacity>
+
+      {showHideMenu && (
+        <View style={styles.menu}>
+          <TouchableOpacity onPress={toggleHideCheckedItems} style={styles.menuItem}>
+            <Text style={styles.menuItemText}>
+              {hideCheckedItems ? 'Afficher les éléments cochés' : 'Masquer les éléments cochés'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <View style={styles.headerContainer}>
         <Text style={styles.header}>Liste de courses</Text>
+      </View>
       </View>
 
     <ScrollView style={{ flex: 1 }}>
@@ -321,6 +350,12 @@ export default function ShoppingListScreen({ navigation, route }) {
                     </Button>
                   </View>
                 </View>
+              )
+            ))}
+          </View>
+        ))
+      )}
+    </ScrollView>
               )
             ))}
           </View>
@@ -624,7 +659,42 @@ const styles = StyleSheet.create({
     right: 0,
     padding: 10, 
     borderRadius: 10,
-    // backgroundColor: '#ccc' 
+    backgroundColor: '#ccc' 
+  },
+  menuItemText: {
+    color: '#333',
+  },
+  },  
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+  },
+  menuButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    width: 40, // Ajuste la taille selon tes besoins
+    height: 40,
+    borderRadius: 25, // Pour un bouton rond
+    backgroundColor: '#ccc', // Couleur du bouton
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4, // Ombre pour donner un effet de profondeur
+  },
+  menuButtonText: {
+    color: '#FFFFFF', // Couleur du texte
+    fontSize: 24, // Ajuste la taille selon tes besoins
+  },
+  menuItem: {
+    position: 'absolute',
+    textAlign: 'right',
+    top: 35,
+    right: 0,
+    padding: 10, 
+    borderRadius: 10,
+    backgroundColor: '#ccc' 
   },
   menuItemText: {
     color: '#333',
