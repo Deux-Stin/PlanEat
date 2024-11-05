@@ -64,17 +64,21 @@ export default function App() {
   // Initialiser les recettes au démarrage
   const loading = useInitializeRecipes(); 
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
+  // Attendre le changement des polices
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
 
-  if (fontsLoaded) {
-    SplashScreen.hideAsync(); // Ou tout autre écran de chargement
-  }
+    // Afficher un écran de chargement si les polices ou les données sont encore en cours de chargement
+    if (!fontsLoaded || loading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      );
+    }
 
 
   return (

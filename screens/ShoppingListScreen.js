@@ -15,9 +15,6 @@ export default function ShoppingListScreen({ navigation, route }) {
   const [showHideMenu, setShowHideMenu] = useState(false);
   const [hideCheckedItems, setHideCheckedItems] = useState(false);
 
-  const [showHideMenu, setShowHideMenu] = useState(false);
-  const [hideCheckedItems, setHideCheckedItems] = useState(false);
-
   const { mealPlan, historyItem  } = route.params; // Recevoir le mealPlan à partir de la navigation
 
   const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'petite cuillère', 'grande cuillère'];
@@ -49,16 +46,6 @@ export default function ShoppingListScreen({ navigation, route }) {
       setShoppingList(ingredients);
     }
   }, [mealPlan]);
-
-  const toggleHideMenu = () => {
-    setShowHideMenu(!showHideMenu);
-  };
-  
-  const toggleHideCheckedItems = () => {
-    setHideCheckedItems(!hideCheckedItems);
-    setShowHideMenu(false); // Fermer le menu après sélection
-  };
-  
 
   const toggleHideMenu = () => {
     setShowHideMenu(!showHideMenu);
@@ -302,153 +289,147 @@ export default function ShoppingListScreen({ navigation, route }) {
       )}
 
       <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={toggleHideMenu} style={styles.menuButton}>
-        <Text style={styles.menuButtonText}>?</Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={toggleHideMenu} style={styles.menuButton}>
+          <Text style={styles.menuButtonText}>?</Text>
+        </TouchableOpacity>
 
-      {showHideMenu && (
-        <View style={styles.menu}>
-          <TouchableOpacity onPress={toggleHideCheckedItems} style={styles.menuItem}>
-            <Text style={styles.menuItemText}>
-              {hideCheckedItems ? 'Afficher les éléments cochés' : 'Masquer les éléments cochés'}
-            </Text>
+        {showHideMenu && (
+          <View style={styles.menu}>
+            <TouchableOpacity onPress={toggleHideCheckedItems} style={styles.menuItem}>
+              <Text style={styles.menuItemText}>
+                {hideCheckedItems ? 'Afficher les éléments cochés' : 'Masquer les éléments cochés'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <View style={styles.headerContainer}>
+          <Text style={styles.header}>Liste de courses</Text>
+        </View>
+      </View>
+
+      <ScrollView style={{ flex: 1 }}>
+        {Object.keys(shoppingList).length === 0 ? (
+          <Text>Aucune liste de courses générée.</Text>
+        ) : (
+          Object.keys(shoppingList).map((rayon) => (
+            <View key={rayon} style={styles.rayonSection}>
+              <Text style={styles.rayonHeader}>{rayon}</Text>
+              {(shoppingList[rayon] || []).map((ingredient) => (
+                (hideCheckedItems && checkedItems[ingredient.name]) ? null : (
+                  <View key={ingredient.name} style={styles.ingredientRow}>
+                    <Checkbox
+                      status={checkedItems[ingredient.name] ? 'checked' : 'unchecked'}
+                      onPress={() => setCheckedItems({
+                        ...checkedItems,
+                        [ingredient.name]: !checkedItems[ingredient.name]
+                      })}
+                    />
+                    <Text style={styles.ingredientText}>
+                      {ingredient.name} - {ingredient.quantity} {ingredient.unit}
+                    </Text>
+                    <View style={styles.buttonGroup}>
+                      <Button onPress={() => decrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' ? 10 : 1)}>
+                        -
+                      </Button>
+                      <Button onPress={() => incrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' ? 10 : 1)}>
+                        +
+                      </Button>
+                    </View>
+                  </View>
+                )
+              ))}
+            </View>
+          ))
+        )}
+      </ScrollView>
+    
+        <View style={styles.somespace}></View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', marginVertical: 5 }}>
+          <TextInput
+            placeholder="Ajouter un nouvel élément"
+            value={manualItem}
+            onChangeText={setManualItem}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Quantité"
+            value={newItemQuantity}
+            onChangeText={setnewItemQuantity}
+            keyboardType="numeric" // Affiche le clavier numérique
+            style={styles.numericInput} // Nouveau style pour le champ de quantité
+          />
+          <TouchableOpacity onPress={() => setUnitModalVisible(true)} style={styles.unitButton}>
+            <Text style={styles.buttonModalText}>{selectedUnit}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => setRayonModalVisible(true)} style={styles.dropdownButton}>
+            <Text style={styles.buttonModalText}>{selectedRayon}</Text>
           </TouchableOpacity>
         </View>
-      )}
-
-      <View style={styles.headerContainer}>
-        <Text style={styles.header}>Liste de courses</Text>
-      </View>
-      </View>
-
-    <ScrollView style={{ flex: 1 }}>
-      {Object.keys(shoppingList).length === 0 ? (
-        <Text>Aucune liste de courses générée.</Text>
-      ) : (
-        Object.keys(shoppingList).map((rayon) => (
-          <View key={rayon} style={styles.rayonSection}>
-            <Text style={styles.rayonHeader}>{rayon}</Text>
-            {(shoppingList[rayon] || []).map((ingredient) => (
-              (hideCheckedItems && checkedItems[ingredient.name]) ? null : (
-                <View key={ingredient.name} style={styles.ingredientRow}>
-                  <Checkbox
-                    status={checkedItems[ingredient.name] ? 'checked' : 'unchecked'}
-                    onPress={() => setCheckedItems({
-                      ...checkedItems,
-                      [ingredient.name]: !checkedItems[ingredient.name]
-                    })}
-                  />
-                  <Text style={styles.ingredientText}>
-                    {ingredient.name} - {ingredient.quantity} {ingredient.unit}
-                  </Text>
-                  <View style={styles.buttonGroup}>
-                    <Button onPress={() => decrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' ? 10 : 1)}>
-                      -
-                    </Button>
-                    <Button onPress={() => incrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' ? 10 : 1)}>
-                      +
-                    </Button>
-                  </View>
-                </View>
-              )
-            ))}
-          </View>
-        ))
-      )}
-    </ScrollView>
-              )
-            ))}
-          </View>
-        ))
-      )}
-    </ScrollView>
-
-      <View style={styles.somespace}></View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', marginVertical: 5 }}>
-        <TextInput
-          placeholder="Ajouter un nouvel élément"
-          value={manualItem}
-          onChangeText={setManualItem}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Quantité"
-          value={newItemQuantity}
-          onChangeText={setnewItemQuantity}
-          keyboardType="numeric" // Affiche le clavier numérique
-          style={styles.numericInput} // Nouveau style pour le champ de quantité
-        />
-        <TouchableOpacity onPress={() => setUnitModalVisible(true)} style={styles.unitButton}>
-          <Text style={styles.buttonModalText}>{selectedUnit}</Text>
+      
+      
+        <TouchableOpacity style={styles.AddButtonNotFlex} onPress={addManualItem}>
+          <Text style={styles.mainButtonText}>Ajouter à la liste</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => setRayonModalVisible(true)} style={styles.dropdownButton}>
-          <Text style={styles.buttonModalText}>{selectedRayon}</Text>
-        </TouchableOpacity>
-      </View>
-    
-    
-      <TouchableOpacity style={styles.AddButtonNotFlex} onPress={addManualItem}>
-        <Text style={styles.mainButtonText}>Ajouter à la liste</Text>
-      </TouchableOpacity>
+        <View style={styles.somespace}></View>
 
-      <View style={styles.somespace}></View>
-
-      {/* Modal pour sélectionner l'unité */}
-      <Modal visible={unitModalVisible} animationType="slide" transparent={true}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Choisir une unité</Text>
-            {availableUnits.map((unit) => (
-              <TouchableOpacity key={unit} onPress={() => {
-                setSelectedUnit(unit);
-                setUnitModalVisible(false);
-              }}>
-                <Text style={styles.modalOption}>{unit}</Text>
+        {/* Modal pour sélectionner l'unité */}
+        <Modal visible={unitModalVisible} animationType="slide" transparent={true}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Choisir une unité</Text>
+              {availableUnits.map((unit) => (
+                <TouchableOpacity key={unit} onPress={() => {
+                  setSelectedUnit(unit);
+                  setUnitModalVisible(false);
+                }}>
+                  <Text style={styles.modalOption}>{unit}</Text>
+                </TouchableOpacity>
+              ))}
+              <TouchableOpacity onPress={() => setUnitModalVisible(false)} style={styles.closeButton}>
+                <Text style={styles.closeButtonText}>Fermer</Text>
               </TouchableOpacity>
-            ))}
-            <TouchableOpacity onPress={() => setUnitModalVisible(false)} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Fermer</Text>
-            </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      {/* Modal pour sélectionner le rayon */}
-      <Modal visible={rayonModalVisible} animationType="slide" transparent={true}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Choisir une catégorie</Text>
-            {availableRayons.map((rayon) => (
-              <TouchableOpacity key={rayon} onPress={() => {
-                setSelectedRayon(rayon);
-                setRayonModalVisible(false);
-              }}>
-                <Text style={styles.modalOption}>{rayon}</Text>
+        {/* Modal pour sélectionner le rayon */}
+        <Modal visible={rayonModalVisible} animationType="slide" transparent={true}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Choisir une catégorie</Text>
+              {availableRayons.map((rayon) => (
+                <TouchableOpacity key={rayon} onPress={() => {
+                  setSelectedRayon(rayon);
+                  setRayonModalVisible(false);
+                }}>
+                  <Text style={styles.modalOption}>{rayon}</Text>
+                </TouchableOpacity>
+              ))}
+              <TouchableOpacity onPress={() => setUnitModalVisible(false)} style={styles.closeButton}>
+                <Text style={styles.closeButtonText}>Fermer</Text>
               </TouchableOpacity>
-            ))}
-            <TouchableOpacity onPress={() => setUnitModalVisible(false)} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Fermer</Text>
-            </TouchableOpacity>
+            </View>
           </View>
+        </Modal>
+
+
+        {/* Boutons "Sauvegarder" et "Copier" sur la même ligne */}
+        <View style={styles.actionButtons}>
+          <TouchableOpacity style={styles.mainButton} onPress={handleSaveShoppingList}>
+            <Text style={styles.mainButtonText}>Sauvegarder la liste</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.mainButton} onPress={handleCopy}>
+            <Text style={styles.mainButtonText}>Copier</Text>
+          </TouchableOpacity>
         </View>
-      </Modal>
 
-
-      {/* Boutons "Sauvegarder" et "Copier" sur la même ligne */}
-      <View style={styles.actionButtons}>
-        <TouchableOpacity style={styles.mainButton} onPress={handleSaveShoppingList}>
-          <Text style={styles.mainButtonText}>Sauvegarder la liste</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.mainButton} onPress={handleCopy}>
-          <Text style={styles.mainButtonText}>Copier</Text>
+        <TouchableOpacity style={styles.mainButtonNotFlex} onPress={() => navigation.navigate('HomeScreen')}>
+          <Text style={styles.mainButtonText}>Retour au menu principal</Text>
         </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.mainButtonNotFlex} onPress={() => navigation.navigate('HomeScreen')}>
-        <Text style={styles.mainButtonText}>Retour au menu principal</Text>
-      </TouchableOpacity>
-    </View>
 
   );
 }
@@ -664,7 +645,6 @@ const styles = StyleSheet.create({
   menuItemText: {
     color: '#333',
   },
-  },  
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
