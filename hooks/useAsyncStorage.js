@@ -4,6 +4,7 @@ import * as FileSystem from 'expo-file-system';
 
 const RECIPES_PATH = `${FileSystem.documentDirectory}recipes.json`;
 const SHOPPING_HISTORY_PATH = `${FileSystem.documentDirectory}shoppingHistory.json`;
+const FAVORIS_PATH = `${FileSystem.documentDirectory}favoris.json`;
 
 export const useAsyncStorage = (key, initialValue) => {
   const [storedValue, setStoredValue] = useState(initialValue);
@@ -16,7 +17,15 @@ export const useAsyncStorage = (key, initialValue) => {
           setStoredValue(JSON.parse(value));
         } else {
           // Vérifier l'existence du fichier JSON correspondant
-          const filePath = key === 'recipes' ? RECIPES_PATH : SHOPPING_HISTORY_PATH;
+          let filePath;
+          if (key === 'recipes') {
+            filePath = RECIPES_PATH;
+          } else if (key === 'shoppingHistory') {
+            filePath = SHOPPING_HISTORY_PATH;
+          } else if (key === 'favoris') {
+            filePath = FAVORIS_PATH;
+          }
+
           const fileExists = await FileSystem.getInfoAsync(filePath);
 
           if (fileExists.exists) {
@@ -38,11 +47,20 @@ export const useAsyncStorage = (key, initialValue) => {
     try {
       const valueToStore = value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
-      await AsyncStorage.setItem(key, JSON.stringify(valueToStore));
 
-      const filePath = key === 'recipes' ? RECIPES_PATH : SHOPPING_HISTORY_PATH;
+      let filePath;
+      if (key === 'recipes') {
+        filePath = RECIPES_PATH;
+      } else if (key === 'shoppingHistory') {
+        filePath = SHOPPING_HISTORY_PATH;
+      } else if (key === 'favoris') {
+        filePath = FAVORIS_PATH;
+      }
+      console.log('key : ', key)
+
+      await AsyncStorage.setItem(key, JSON.stringify(valueToStore));
       await saveToJson(filePath, valueToStore);
-      console.log('valueToStore :', valueToStore)
+      console.log('valueToStore :', valueToStore);
 
     } catch (error) {
       console.error(`Erreur lors de l'écriture de la clé ${key} :`, error);
@@ -63,8 +81,13 @@ export const useAsyncStorage = (key, initialValue) => {
 
   const saveToJson = async (filePath, data) => {
     try {
-      await FileSystem.writeAsStringAsync(filePath, JSON.stringify(data));
-      console.log(`Données sauvegardées dans ${filePath}`);
+      console.log('data : ', data)
+      if (data !== null && data !== undefined) {
+        await FileSystem.writeAsStringAsync(filePath, JSON.stringify(data));
+        console.log(`Données sauvegardées dans ${filePath}`);
+      } else {
+        console.error(`Les données à sauvegarder sont nulles ou indéfinies et ne peuvent pas être écrites dans ${filePath}`);
+      }
     } catch (error) {
       console.error(`Erreur lors de la sauvegarde dans le fichier ${filePath} :`, error);
     }

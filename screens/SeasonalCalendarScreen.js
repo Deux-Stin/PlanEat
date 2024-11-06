@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, forwardRef, useState, useLayoutEffect, memo } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { InteractionManager } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import { globalStyles } from '../globalStyles';
 
 const calendrier = {
@@ -98,7 +100,49 @@ const CustomFlatList = forwardRef((props, ref) => {
 export default function SeasonalCalendarScreen({ navigation }) {
     const [favoris, setFavoris] = useState({});
     const [showOnlyFavoris, setShowOnlyFavoris] = useState(false);
-    const [menuVisible, setMenuVisible] = useState(false); // pour gérer la visibilité du menu
+    const [menuVisible, setMenuVisible] = useState(false);
+
+    // Utilisation de useAsyncStorage pour gérer les favoris
+    const [favorisData, setFavorisData] = useAsyncStorage('favoris', []);
+
+    // Chargement initial des favoris
+    useEffect(() => {
+        // Chargement initial des favoris depuis AsyncStorage
+        if (favorisData) {
+            setFavoris(favorisData); // Pas besoin de JSON.parse ici, favorisData est déjà un objet JSON
+        }
+    }, [favorisData]);
+    
+    useEffect(() => {
+        const saveFavoris = () => {
+            try {
+                console.log('Favoris avant sauvegarde :', favoris);
+                setFavoris(favoris); // Sauvegarde directe avec setFavoris
+                console.log('Favoris sauvegardés avec succès :', favoris);
+            } catch (error) {
+                console.error('Erreur lors de la sauvegarde des favoris :', error);
+            }
+        };
+        saveFavoris();
+    }, [favoris]);
+
+    // Sauvegarder les favoris dans AsyncStorage à chaque changement
+    useEffect(() => {
+        const saveFavoris = async () => {
+            try {
+                await setFavorisData(favoris);
+                console.log('Favoris sauvegardés :', favoris);
+            } catch (error) {
+                console.error('Erreur lors de la sauvegarde des favoris :', error);
+            }
+        };
+
+        // Sauvegarde les favoris seulement quand il y a un changement
+        if (favoris) {
+            saveFavoris();
+        }
+    }, [favoris, setFavorisData]);
+    
 
     // Paramétrage de l'en-tête avec le bouton retour et le bouton favoris avec "i"
     useLayoutEffect(() => {
@@ -157,31 +201,55 @@ export default function SeasonalCalendarScreen({ navigation }) {
     };
     
     const isFavori = (category, item) => {
-    return favoris[category]?.includes(item);
+        return favoris[category]?.includes(item);
     };
 
     // Ajout de la fonction pour gérer les favoris globalement
     const handleToggleFavoris = (item) => {
         setFavoris((prevFavoris) => {
             const updatedFavoris = { ...prevFavoris };
-
-            // Vérifie si l'élément est déjà favori dans le mois actuel
-            const isFavori = updatedFavoris[item];
-
-            // Parcourt chaque mois et met à jour les favoris globalement
+            let itemIsFavori = false;
+    
+            // Parcours chaque mois pour voir si l'élément est favori dans une des catégories
             months.forEach((month) => {
-                if (calendrier[month].legumes.includes(item) || calendrier[month].fruits.includes(item) || calendrier[month].cereales_legumineuses.includes(item)) {
-                    if (isFavori) {
-                        delete updatedFavoris[item];
-                    } else {
-                        updatedFavoris[item] = true;
+                const categories = ["legumes", "fruits", "cereales_legumineuses"];
+                categories.forEach((category) => {
+                    if (calendrier[month][category].includes(item)) {
+                        const categoryFavoris = updatedFavoris[category] || [];
+                        if (categoryFavoris.includes(item)) {
+                            itemIsFavori = true;
+                        }
                     }
-                }
+                });
             });
-
+    
+            // Si l'élément est déjà favori, on le retire de chaque catégorie
+            if (itemIsFavori) {
+                months.forEach((month) => {
+                    const categories = ["legumes", "fruits", "cereales_legumineuses"];
+                    categories.forEach((category) => {
+                        if (calendrier[month][category].includes(item)) {
+                            updatedFavoris[category] = (updatedFavoris[category] || []).filter(favItem => favItem !== item);
+                        }
+                    });
+                });
+            } 
+            // Sinon, on l'ajoute à chaque catégorie où il est présent
+            else {
+                months.forEach((month) => {
+                    const categories = ["legumes", "fruits", "cereales_legumineuses"];
+                    categories.forEach((category) => {
+                        if (calendrier[month][category].includes(item)) {
+                            updatedFavoris[category] = [...(updatedFavoris[category] || []), item];
+                        }
+                    });
+                });
+            }
+    
             return updatedFavoris;
         });
     };
+    
 
     const handleResetFavoris = () => {
         setFavoris({});
@@ -243,27 +311,6 @@ export default function SeasonalCalendarScreen({ navigation }) {
         index,
     });
 
-    useEffect(() => {
-        const totalWidth = (itemWidth + itemMargin * 2) * months.length; // Largeur totale de la liste
-        const centerOffset = totalWidth / 2 - itemWidth / 2; // Offset pour centrer le mois
-
-        const scrollToCurrentMonth = () => {
-            if (flatListRef.current) {
-                flatListRef.current.scrollToIndex({
-                    index: currentMonthIndex,
-                    animated: true,
-                    viewPosition: 0.5, // Centrer l'élément
-                    // Ajuster l'offset en fonction de la position du mois
-                    offset: currentMonthIndex === 0 ? -centerOffset : (currentMonthIndex === months.length - 1 ? centerOffset : 0),
-                });
-            }
-        };
-
-        const timer = setTimeout(scrollToCurrentMonth, 300); // Attendre 300 ms avant de scroller
-
-        return () => clearTimeout(timer); // Nettoyer le timer
-    }, [currentMonthIndex]);
-
     const darkenColor = (color) => {
         const colorObj = hexToRgb(color);
         const darkenedColor = {
@@ -288,6 +335,34 @@ export default function SeasonalCalendarScreen({ navigation }) {
     const rgbToHex = (r, g, b) => {
         return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
     };
+
+    useEffect(() => {
+        const totalWidth = (itemWidth + itemMargin * 2) * months.length; // Largeur totale de la liste
+        const centerOffset = totalWidth / 2 - itemWidth / 2; // Offset pour centrer le mois
+
+        const scrollToCurrentMonth = () => {
+            if (flatListRef.current) {
+                flatListRef.current.scrollToIndex({
+                    index: currentMonthIndex,
+                    animated: true,
+                    viewPosition: 0.5, // Centrer l'élément
+                    // Ajuster l'offset en fonction de la position du mois
+                    offset: currentMonthIndex === 0 ? -centerOffset : (currentMonthIndex === months.length - 1 ? centerOffset : 0),
+                });
+            }
+        };
+
+        const interactionPromise = InteractionManager.runAfterInteractions(() => {
+            // Démarrer le scroll après que toutes les interactions soient terminées
+            const timer = setTimeout(scrollToCurrentMonth, 0); // Peut être ajusté si nécessaire
+    
+            return () => clearTimeout(timer); // Nettoyer le timer après l'animation
+        });
+    
+        // Nettoyer l'interaction au démontage
+        return () => interactionPromise.cancel();
+
+    }, [currentMonthIndex]);
 
     return (
         <View style={styles.container}>

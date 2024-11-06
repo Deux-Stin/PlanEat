@@ -319,7 +319,7 @@ export default function RecipeLibrary({ navigation, route }) {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Bibliothèque de recettes</Text>
+      {/* <Text style={styles.header}>Bibliothèque de recettes</Text> */}
 
       {renderFilters()}
 

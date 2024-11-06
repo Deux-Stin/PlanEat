@@ -206,7 +206,7 @@ export default function ({ route, navigation }) {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Ajouter une nouvelle recette</Text>
+      {/* <Text style={styles.header}>Ajouter une nouvelle recette</Text> */}
 
       <TextInput
         placeholder="Nom de la recette"

@@ -55,7 +55,6 @@ export default function ShoppingListScreen({ navigation, route }) {
     setHideCheckedItems(!hideCheckedItems);
     setShowHideMenu(false); // Fermer le menu après sélection
   };
-  
 
   const generateShoppingList = (mealPlan) => {
     const ingredientsList = {};
@@ -274,37 +273,31 @@ export default function ShoppingListScreen({ navigation, route }) {
   return (
 
     <View style={styles.container}>
-      <TouchableOpacity onPress={toggleHideMenu} style={styles.menuButton}>
-        <Text style={styles.menuButtonText}>?</Text>
-      </TouchableOpacity>
-
-      {showHideMenu && (
-        <View style={styles.menu}>
-          <TouchableOpacity onPress={toggleHideCheckedItems} style={styles.menuItem}>
-            <Text style={styles.menuItemText}>
-              {hideCheckedItems ? 'Afficher les éléments cochés' : 'Masquer les éléments cochés'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={toggleHideMenu} style={styles.menuButton}>
           <Text style={styles.menuButtonText}>?</Text>
         </TouchableOpacity>
 
-        {showHideMenu && (
-          <View style={styles.menu}>
-            <TouchableOpacity onPress={toggleHideCheckedItems} style={styles.menuItem}>
-              <Text style={styles.menuItemText}>
-                {hideCheckedItems ? 'Afficher les éléments cochés' : 'Masquer les éléments cochés'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        <Modal
+          transparent={true}
+          visible={showHideMenu}
+          animationType="fade"
+          onRequestClose={() => setShowHideMenu(false)}
+        >
+          <TouchableOpacity style={styles.modalOverlay} onPress={() => setShowHideMenu(false)}>
+            {/* <View style={styles.menu}> */}
+              <TouchableOpacity onPress={toggleHideCheckedItems} style={styles.menuItem}>
+                <Text style={styles.menuItemText}>
+                  {hideCheckedItems ? 'Afficher les éléments cochés' : 'Masquer les éléments cochés'}
+                </Text>
+              </TouchableOpacity>
+            {/* </View> */}
+          </TouchableOpacity>
+        </Modal>
+
 
         <View style={styles.headerContainer}>
-          <Text style={styles.header}>Liste de courses</Text>
+          {/* <Text style={styles.header}>Liste de courses</Text> */}
         </View>
       </View>
 
@@ -312,40 +305,51 @@ export default function ShoppingListScreen({ navigation, route }) {
         {Object.keys(shoppingList).length === 0 ? (
           <Text>Aucune liste de courses générée.</Text>
         ) : (
-          Object.keys(shoppingList).map((rayon) => (
-            <View key={rayon} style={styles.rayonSection}>
-              <Text style={styles.rayonHeader}>{rayon}</Text>
-              {(shoppingList[rayon] || []).map((ingredient) => (
-                (hideCheckedItems && checkedItems[ingredient.name]) ? null : (
-                  <View key={ingredient.name} style={styles.ingredientRow}>
-                    <Checkbox
-                      status={checkedItems[ingredient.name] ? 'checked' : 'unchecked'}
-                      onPress={() => setCheckedItems({
-                        ...checkedItems,
-                        [ingredient.name]: !checkedItems[ingredient.name]
-                      })}
-                    />
-                    <Text style={styles.ingredientText}>
-                      {ingredient.name} - {ingredient.quantity} {ingredient.unit}
-                    </Text>
-                    <View style={styles.buttonGroup}>
-                      <Button onPress={() => decrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' ? 10 : 1)}>
-                        -
-                      </Button>
-                      <Button onPress={() => incrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' ? 10 : 1)}>
-                        +
-                      </Button>
+          Object.keys(shoppingList).map((rayon) => {
+            // Vérifier si tous les éléments sont masqués (tous les éléments sont cochés)
+            const allItemsHidden = shoppingList[rayon].every((ingredient) => 
+              hideCheckedItems && checkedItems[ingredient.name]
+            );
+
+            return (
+              <View key={rayon} style={styles.rayonSection}>
+                {/* Affichage conditionnel du nom du rayon */}
+                {!allItemsHidden && <Text style={styles.rayonHeader}>{rayon}</Text>}
+
+                {/* Parcours des ingrédients de chaque rayon */}
+                {(shoppingList[rayon] || []).map((ingredient) => (
+                  (hideCheckedItems && checkedItems[ingredient.name]) ? null : (
+                    <View key={ingredient.name} style={styles.ingredientRow}>
+                      <Checkbox
+                        status={checkedItems[ingredient.name] ? 'checked' : 'unchecked'}
+                        onPress={() => setCheckedItems({
+                          ...checkedItems,
+                          [ingredient.name]: !checkedItems[ingredient.name]
+                        })}
+                      />
+                      <Text style={styles.ingredientText}>
+                        {ingredient.name} - {ingredient.quantity} {ingredient.unit}
+                      </Text>
+                      <View style={styles.buttonGroup}>
+                        <Button onPress={() => decrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' ? 10 : 1)}>
+                          -
+                        </Button>
+                        <Button onPress={() => incrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' ? 10 : 1)}>
+                          +
+                        </Button>
+                      </View>
                     </View>
-                  </View>
-                )
-              ))}
-            </View>
-          ))
+                  )
+                ))}
+              </View>
+            );
+          })
         )}
       </ScrollView>
+
     
         <View style={styles.somespace}></View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', marginVertical: 5 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: -20, marginVertical: 5 }}>
           <TextInput
             placeholder="Ajouter un nouvel élément"
             value={manualItem}
@@ -363,7 +367,7 @@ export default function ShoppingListScreen({ navigation, route }) {
             <Text style={styles.buttonModalText}>{selectedUnit}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setRayonModalVisible(true)} style={styles.dropdownButton}>
+          <TouchableOpacity onPress={() => setRayonModalVisible(true)} style={styles.rayonButton}>
             <Text style={styles.buttonModalText}>{selectedRayon}</Text>
           </TouchableOpacity>
         </View>
@@ -403,12 +407,13 @@ export default function ShoppingListScreen({ navigation, route }) {
               {availableRayons.map((rayon) => (
                 <TouchableOpacity key={rayon} onPress={() => {
                   setSelectedRayon(rayon);
+                  console.log('Fermeture du modal rayon');
                   setRayonModalVisible(false);
                 }}>
                   <Text style={styles.modalOption}>{rayon}</Text>
                 </TouchableOpacity>
               ))}
-              <TouchableOpacity onPress={() => setUnitModalVisible(false)} style={styles.closeButton}>
+              <TouchableOpacity onPress={() => setRayonModalVisible(false)} style={styles.closeButton}>
                 <Text style={styles.closeButtonText}>Fermer</Text>
               </TouchableOpacity>
             </View>
@@ -417,6 +422,7 @@ export default function ShoppingListScreen({ navigation, route }) {
 
 
         {/* Boutons "Sauvegarder" et "Copier" sur la même ligne */}
+        <View style={{height: 5 }}></View>
         <View style={styles.actionButtons}>
           <TouchableOpacity style={styles.mainButton} onPress={handleSaveShoppingList}>
             <Text style={styles.mainButtonText}>Sauvegarder la liste</Text>
@@ -503,7 +509,7 @@ const styles = StyleSheet.create({
     flex: 1, // Ajustez la largeur du bouton pour qu'il s'adapte
     marginHorizontal: 2.5, // Espacement entre les boutons
   },
-  dropdownButton: {
+  rayonButton: {
       backgroundColor: '#9acbff',
       padding: 15,
       borderRadius: 10,
@@ -523,9 +529,9 @@ const styles = StyleSheet.create({
   },
   actionButtons: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
+    justifyContent: 'space-between',
     // width: '100%',
-    justifyContent: 'space-evenly',
+    // justifyContent: 'space-evenly',
     flexWrap: 'wrap',
     marginVertical: 2.5,
   },  
@@ -568,7 +574,7 @@ const styles = StyleSheet.create({
   },
   somespace: {
     // padding: 10,
-    height: 20,
+    height: 10,
     // backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
@@ -582,7 +588,7 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: 'white',
     margin: 20,
-    padding: 20,
+    padding: 40,
     borderRadius: 10,
     elevation: 5, // Pour l'ombre sur Android
   },
@@ -613,47 +619,27 @@ const styles = StyleSheet.create({
   },  
   headerContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-  },
-  menuButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 40, // Ajuste la taille selon tes besoins
-    height: 40,
-    borderRadius: 25, // Pour un bouton rond
-    backgroundColor: '#ccc', // Couleur du bouton
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4, // Ombre pour donner un effet de profondeur
+    // padding: 10,
+    paddingBottom: 15,
+    // backgroundColor: 'red',
   },
-  menuButtonText: {
-    color: '#FFFFFF', // Couleur du texte
-    fontSize: 24, // Ajuste la taille selon tes besoins
+    modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    // justifyContent: 'center',
+    // alignItems: 'center',
   },
-  menuItem: {
-    position: 'absolute',
-    textAlign: 'right',
-    top: 35,
-    right: 0,
-    padding: 10, 
-    borderRadius: 10,
-    backgroundColor: '#ccc' 
-  },
-  menuItemText: {
-    color: '#333',
-  },
-  headerContainer: {
+  menu: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
+    justifyContent: 'flex-start',
+    position: 'relative',
   },
   menuButton: {
     position: 'absolute',
-    top: 10,
+    // top: 10,
     right: 10,
     width: 40, // Ajuste la taille selon tes besoins
     height: 40,
@@ -662,21 +648,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4, // Ombre pour donner un effet de profondeur
+    zIndex: 2,
   },
   menuButtonText: {
     color: '#FFFFFF', // Couleur du texte
     fontSize: 24, // Ajuste la taille selon tes besoins
+    textAlign: 'center',
   },
   menuItem: {
     position: 'absolute',
-    textAlign: 'right',
-    top: 35,
-    right: 0,
+    // textAlign: 'right',
+    top: 72.5,
+    right: 80,
     padding: 10, 
     borderRadius: 10,
     backgroundColor: '#ccc' 
   },
   menuItemText: {
+    // position: 'relative',
+    // top: '100',
+    // right: '60',
     color: '#333',
   },
 });

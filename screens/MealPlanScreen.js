@@ -156,7 +156,8 @@
         <ScrollView contentContainerStyle={styles.scrollContainer}>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Planifier vos repas</Text>
+            <View style={styles.somespace}></View>
+            {/* <Text style={styles.sectionTitle}>Planifier vos repas</Text> */}
 
             <Calendar
               current={today} // Affiche la date actuelle
@@ -413,5 +414,12 @@
       fontSize: 16,
       fontWeight: 'bold',
       textAlign: 'center',
+    },
+    somespace: {
+      // padding: 10,
+      height: 20,
+      // backgroundColor: '#fff',
+      // borderBottomWidth: 1,
+      // borderBottomColor: '#ddd',
     },
   });

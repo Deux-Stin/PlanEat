@@ -124,7 +124,7 @@ export default function App() {
         <Stack.Screen name="MealPlanScreen" component={MealPlanScreen} options={{ title: 'Planifier vos repas' }} />
 
         {/* Liste de courses */}
-        <Stack.Screen name="ShoppingListScreen" component={ShoppingListScreen} options={{ title: 'Liste de courses' }} />
+        <Stack.Screen name="ShoppingListScreen" component={ShoppingListScreen} options={{ title: 'Liste de courses', headerShown: true }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
