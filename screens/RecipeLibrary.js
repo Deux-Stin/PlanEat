@@ -132,7 +132,6 @@ export default function RecipeLibrary({ navigation, route }) {
   const exportRecipes = async () => {
     try {
 
-      // Sanitize the recipes to avoid circular references
       const sanitizedRecipes = recipes.map(recipe => ({
         id: recipe.id,
         name: recipe.name,
@@ -184,6 +183,23 @@ export default function RecipeLibrary({ navigation, route }) {
     } catch (error) {
       console.error('Erreur lors du partage des recettes :', error);
     }
+  };
+
+  const deleteAllRecipes = () => {
+    Alert.alert(
+      "Confirmation",
+      "Voulez-vous vraiment supprimer toutes les recettes ?",
+      [
+        { text: "Annuler", style: "cancel" },
+        { 
+          text: "Oui", 
+          onPress: () => {
+            setRecipes([]);
+            saveRecipes([]);
+          }
+        }
+      ]
+    );
   };
   
   const saveRecipesToCustomDirectory = async (jsonRecipes) => {
@@ -294,8 +310,8 @@ export default function RecipeLibrary({ navigation, route }) {
   
 
   const renderCategory = (category) => {
-    const categoryRecipes = filterRecipes().filter((recipe) => recipe.category.includes(category));
-    // console.log("category :", category)
+    const categoryRecipes = filterRecipes().filter((recipe) => recipe.category === category);
+    console.log("Recettes dans la catégorie:", category, categoryRecipes);
 
 
     return (
@@ -340,6 +356,9 @@ export default function RecipeLibrary({ navigation, route }) {
           </TouchableOpacity>
           <TouchableOpacity style={styles.mainButton} onPress={exportRecipes}>
             <Text style={styles.mainButtonText}>Partager mes recettes</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.mainButton} onPress={deleteAllRecipes}>
+            <Text style={styles.mainButtonText}>Supprimer mes recettes</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -490,7 +509,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttonContainer: {
-    marginTop: 20,
+    marginTop: 5,
     paddingBottom: 40,
   },
 });

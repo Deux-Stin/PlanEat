@@ -32,6 +32,7 @@ export default function RecipeDetail({ route, navigation }) {
   };
 
   const handleEdit = () => {
+    console.log('recipe : ', recipe)
     navigation.navigate('AddRecipe', {
       recipe,
       addRecipe: addRecipe
@@ -50,11 +51,11 @@ export default function RecipeDetail({ route, navigation }) {
         <Text style={styles.sectionTitle}>Détails de la recette</Text>
         <Text style={styles.detailItem}>
           <Text style={styles.detailLabel}>Catégorie: </Text>
-          {Array.isArray(recipe.category) ? recipe.category.join(', ') : "Non spécifié"}
+          {recipe.category || "Non spécifié"}
         </Text>
         <Text style={styles.detailItem}>
           <Text style={styles.detailLabel}>Type: </Text>
-          {Array.isArray(recipe.type) ? recipe.type.join(', ') : "Non spécifié"}
+          {recipe.type || "Non spécifié"}
         </Text>
         <Text style={styles.detailItem}>
           <Text style={styles.detailLabel}>Saison: </Text>
@@ -97,16 +98,38 @@ export default function RecipeDetail({ route, navigation }) {
       {/* Section Valeurs nutritionnelles */}
       {(recipe.nutritionalValues?.glucides && recipe.nutritionalValues?.glucides !== '0' ||
         recipe.nutritionalValues?.proteines && recipe.nutritionalValues?.proteines !== '0' ||
-        recipe.nutritionalValues?.graisses && recipe.nutritionalValues?.graisses !== '0') && (
+        recipe.nutritionalValues?.graisses && recipe.nutritionalValues?.graisses !== '0' ||
+        recipe.nutritionalValues?.kiloCalories && recipe.nutritionalValues?.kiloCalories !== '0') && (
         <View style={styles.nutritionalSection}>
           <Text style={styles.sectionTitle}>Valeurs nutritionnelles</Text>
+          
+          {/* Ligne pour Glucides et Protéines */}
           <View style={styles.nutritionalRow}>
-            <Text style={styles.itemText}>Glucides: {recipe.nutritionalValues?.glucides || "Non spécifié"}</Text>
-            <Text style={styles.itemText}>Protéines: {recipe.nutritionalValues?.proteines || "Non spécifié"}</Text>
-            <Text style={styles.itemText}>Graisses: {recipe.nutritionalValues?.graisses || "Non spécifié"}</Text>
+            <View style={styles.nutritionalItem}>
+              <Text style={styles.itemLabel}>Glucides:</Text>
+              <Text style={styles.itemValue}>{recipe.nutritionalValues?.glucides || "Non spécifié"}</Text>
+            </View>
+            <View style={styles.nutritionalItem}>
+              <Text style={styles.itemLabel}>Protéines:</Text>
+              <Text style={styles.itemValue}>{recipe.nutritionalValues?.proteines || "Non spécifié"}</Text>
+            </View>
+          </View>
+          
+          {/* Ligne pour Graisses et kCalories */}
+          <View style={styles.nutritionalRow}>
+            <View style={styles.nutritionalItem}>
+              <Text style={styles.itemLabel}>Graisses:</Text>
+              <Text style={styles.itemValue}>{recipe.nutritionalValues?.graisses || "Non spécifié"}</Text>
+            </View>
+            <View style={styles.nutritionalItem}>
+              <Text style={styles.itemLabel}>kCalories:</Text>
+              <Text style={styles.itemValue}>{recipe.nutritionalValues?.kiloCalories || "Non spécifié"}</Text>
+            </View>
           </View>
         </View>
       )}
+
+
 
 
       {/* Boutons Modifier et Supprimer */}
@@ -157,18 +180,30 @@ const styles = StyleSheet.create({
   },
   nutritionalSection: {
     marginBottom: 20,
-    width: '100%', // Occupe toute la largeur disponible
+    width: '70%',
   },
   nutritionalRow: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly', // Espacement égal entre les éléments
+    justifyContent: 'space-between', // Répartit uniformément les éléments sur chaque ligne
     alignItems: 'center',
-    marginTop: 10,
+    marginVertical: 5, // Espace entre chaque ligne
   },
-  itemText: {
+  nutritionalItem: {
+    width: '45%', // Assure que chaque élément occupe la moitié de la ligne
+    flexDirection: 'row',
+    justifyContent: 'flex-start', // Alignement à gauche pour l’étiquette
+    alignItems: 'center',
+  },
+  itemLabel: {
     fontSize: 16,
-    textAlign: 'center', // Pour centrer le texte verticalement
+    textAlign: 'right', // Aligne les labels à droite
+    paddingRight: 5, // Espace entre le label et la valeur
   },
+  itemValue: {
+    fontSize: 16,
+    textAlign: 'left', // Aligne les valeurs à gauche de leur propre cellule
+  },  
+  
   detailItem: {
     fontSize: 16,
     marginBottom: 8,

@@ -23,7 +23,7 @@
         "glucides": "5g",
         "proteines": "20g",
         "graisses": "15g",
-        "kiloCalories": 210
+        "kiloCalories": "210kCal"
       }
     },
     {
@@ -48,7 +48,7 @@
         "glucides": "50g",
         "proteines": "8g",
         "graisses": "7g",
-        "kiloCalories": 320
+        "kiloCalories": "320kCal"
       }
     },
     {
@@ -75,7 +75,7 @@
         "glucides": "20g",
         "proteines": "25g",
         "graisses": "10g",
-        "kiloCalories": 400
+        "kiloCalories": "400kCal"
       }
     },
     {
@@ -101,7 +101,7 @@
         "glucides": "30g",
         "proteines": "12g",
         "graisses": "7.5g",
-        "kiloCalories": 350
+        "kiloCalories": "350kCal"
       }
     },
     {
@@ -127,7 +127,7 @@
         "glucides": "40g",
         "proteines": "30g",
         "graisses": "15g",
-        "kiloCalories": 480
+        "kiloCalories": "480kCal"
       }
     },
     {
@@ -152,7 +152,7 @@
         "glucides": "30g",
         "proteines": "4g",
         "graisses": "15g",
-        "kiloCalories": 250
+        "kiloCalories": "250kCal"
       }
     },
     {
@@ -178,7 +178,7 @@
         "glucides": "15g",
         "proteines": "0g",
         "graisses": "0g",
-        "kiloCalories": 200
+        "kiloCalories": "200kCal"
       }
     },
     {
@@ -205,7 +205,7 @@
         "glucides": "20g",
         "proteines": "5g",
         "graisses": "15g",
-        "kiloCalories": 350
+        "kiloCalories": "350kCal"
       }
     },
     {
@@ -231,7 +231,7 @@
         "glucides": "60g",
         "proteines": "2g",
         "graisses": "15g",
-        "kiloCalories": 320
+        "kiloCalories": "320kCal"
       }
     },
     {
@@ -259,7 +259,7 @@
         "glucides": "40g",
         "proteines": "6g",
         "graisses": "22g",
-        "kiloCalories": 350
+        "kiloCalories": "350kCal"
       }
     }
   ]

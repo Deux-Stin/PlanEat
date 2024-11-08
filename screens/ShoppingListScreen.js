@@ -58,32 +58,47 @@ export default function ShoppingListScreen({ navigation, route }) {
 
   const generateShoppingList = (mealPlan) => {
     const ingredientsList = {};
-  
-    // Parcourir le mealPlan pour collecter les ingrédients
+
+    // Parcourir chaque date dans le mealPlan
     Object.entries(mealPlan).forEach(([date, meals]) => {
-      Object.entries(meals).forEach(([mealType, recipe]) => {
-        if (recipe && recipe.ingredients && recipe.ingredients.length > 0) {
-          recipe.ingredients.forEach((ingredient) => {
-            const { name, quantity, unit, rayon } = ingredient;
-  
-            // Créer une nouvelle section pour le rayon si elle n'existe pas
-            if (!ingredientsList[rayon]) {
-              ingredientsList[rayon] = [];
-            }
-  
-            // Vérifier si l'ingrédient existe déjà dans le même rayon pour combiner les quantités
-            const existingIngredient = ingredientsList[rayon].find((item) => item.name === name);
-            if (existingIngredient) {
-              existingIngredient.quantity += quantity;
+        // Pour chaque type de repas (ex : breakfast, lunch, dinner)
+        Object.entries(meals).forEach(([mealType, mealContent]) => {
+            // Vérifier si le repas contient des sous-catégories comme "plat", "dessert", etc.
+            if (typeof mealContent === 'object' && !Array.isArray(mealContent)) {
+                // Si oui, parcourir chaque sous-catégorie
+                Object.entries(mealContent).forEach(([subMealType, recipe]) => {
+                    addIngredientsToList(recipe, ingredientsList);
+                });
             } else {
-              ingredientsList[rayon].push({ name, quantity, unit });
+                // Si ce n'est pas un objet avec des sous-catégories, traiter le repas directement
+                addIngredientsToList(mealContent, ingredientsList);
             }
-          });
-        }
-      });
+        });
     });
-  
+
     return ingredientsList;
+  };
+
+  // Fonction pour ajouter les ingrédients à la liste d'achats
+  const addIngredientsToList = (recipe, ingredientsList) => {
+      if (recipe && recipe.ingredients && Array.isArray(recipe.ingredients)) {
+          recipe.ingredients.forEach((ingredient) => {
+              const { name, quantity, unit, rayon } = ingredient;
+
+              // Créer une nouvelle section pour le rayon si elle n'existe pas
+              if (!ingredientsList[rayon]) {
+                  ingredientsList[rayon] = [];
+              }
+
+              // Vérifier si l'ingrédient existe déjà dans le même rayon pour combiner les quantités
+              const existingIngredient = ingredientsList[rayon].find((item) => item.name === name);
+              if (existingIngredient) {
+                  existingIngredient.quantity += quantity; // Si l'ingrédient existe, on combine les quantités
+              } else {
+                  ingredientsList[rayon].push({ name, quantity, unit }); // Sinon, on ajoute un nouvel ingrédient
+              }
+          });
+      }
   };
   
 

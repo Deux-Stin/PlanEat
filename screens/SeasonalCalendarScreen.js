@@ -429,6 +429,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 10, // Marge à gauche et à droite
         },
     monthContainer: {
+        marginVertical: 30,
         marginHorizontal: 10,
         padding: 15,
         borderRadius: 10,
