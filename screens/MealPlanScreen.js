@@ -14,7 +14,7 @@ export default function MealPlanScreen({ navigation, route}) {
   const [mealsSelection, setMealsSelection] = useState({});
   const [mealPlan, setMealPlan] = useState({});
   const [recipes] = useAsyncStorage('recipes', []);
-  const [portions, setPortions] = useState(1); // Nombre de portions
+  const [portions, setPortions] = useState(2); // Nombre de portions par défaut
 
   // Obtenir la date actuelle
   const today = moment().format('YYYY-MM-DD');
@@ -99,29 +99,36 @@ export default function MealPlanScreen({ navigation, route}) {
   };
   
   
-  const handleRecipeSelection = (date, mealType, recipeName, category) => {
+  const handleRecipeSelection = (date, mealType, recipeName, category, portions) => {
     console.log('Sélectionner recette:', recipeName, 'pour', category);
     const selectedRecipe = recipes.find((recipe) => recipe.name === recipeName);
 
     setMealPlan((prevMealPlan) => {
       const updatedMealPlan = { ...prevMealPlan };
 
-      console.log('prevMealPlan',prevMealPlan);
+      // console.log('prevMealPlan',prevMealPlan);
   
+      // console.log('portions :',portions)
       if (!updatedMealPlan[date]) updatedMealPlan[date] = {};
   
       if (mealType === 'breakfast') {
-        updatedMealPlan[date][mealType] = selectedRecipe;
+        updatedMealPlan[date][mealType] = {
+          ...selectedRecipe,
+          servingsSelected: portions
+        }
       } else {
         // console.log('selectedRecipe : ', selectedRecipe)
         // console.log('updatedMealPlan[date][mealType]', updatedMealPlan[date][mealType])
         updatedMealPlan[date][mealType] = {
           ...updatedMealPlan[date][mealType],
-          [category]: selectedRecipe, // Ajoute la recette à la catégorie spécifique
+          [category]: {
+            ...selectedRecipe, // Ajoute la recette à la catégorie spécifique
+            servingsSelected: portions
+          }
         };
       }
   
-      console.log('updatedMealPlan',updatedMealPlan);
+      // console.log('updatedMealPlan',updatedMealPlan);
       return updatedMealPlan;
     });
   };
@@ -190,7 +197,7 @@ export default function MealPlanScreen({ navigation, route}) {
     });
     setMealsSelection({});
     setMealPlan({}); // Réinitialise le mealPlan à un objet vide
-    setPortions(1);
+    setPortions(2);
   };   
   
 
@@ -290,7 +297,7 @@ export default function MealPlanScreen({ navigation, route}) {
                         <View style={styles.pickerContainer}>
                           <Picker
                             selectedValue={mealPlan[date]?.[mealType]?.name || ''}
-                            onValueChange={(itemValue) => handleRecipeSelection(date, mealType, itemValue, 'breakfast')}
+                            onValueChange={(itemValue) => handleRecipeSelection(date, mealType, itemValue, 'breakfast', portions)}
                           >
                             <Picker.Item label="Sélectionner une recette" value="" />
                             {filterRecipesByMealType(mealType).map((recipe, index) => (
@@ -304,9 +311,9 @@ export default function MealPlanScreen({ navigation, route}) {
                             <Text>{category.charAt(0).toUpperCase() + category.slice(1)}</Text>
                             <Picker
                               selectedValue={mealPlan[date]?.[mealType]?.[category]?.name || ''}
-                              onValueChange={(itemValue) => handleRecipeSelection(date, mealType, itemValue, category)} 
+                              onValueChange={(itemValue) => handleRecipeSelection(date, mealType, itemValue, category, portions)} 
                             >
-                              <Picker.Item label={`Sélectionner une ${category}`} value="" />
+                              <Picker.Item label={`Sélectionner un(e) ${category}`} value="" />
                               {filterRecipesByCategory(category).map((recipe, index) => (
                                 <Picker.Item key={index} label={recipe.name} value={recipe.name} />
                               ))}

@@ -58,48 +58,60 @@ export default function ShoppingListScreen({ navigation, route }) {
 
   const generateShoppingList = (mealPlan) => {
     const ingredientsList = {};
-
-    // Parcourir chaque date dans le mealPlan
+  
     Object.entries(mealPlan).forEach(([date, meals]) => {
-        // Pour chaque type de repas (ex : breakfast, lunch, dinner)
-        Object.entries(meals).forEach(([mealType, mealContent]) => {
-            // Vérifier si le repas contient des sous-catégories comme "plat", "dessert", etc.
-            if (typeof mealContent === 'object' && !Array.isArray(mealContent)) {
-                // Si oui, parcourir chaque sous-catégorie
-                Object.entries(mealContent).forEach(([subMealType, recipe]) => {
-                    addIngredientsToList(recipe, ingredientsList);
-                });
-            } else {
-                // Si ce n'est pas un objet avec des sous-catégories, traiter le repas directement
-                addIngredientsToList(mealContent, ingredientsList);
+      Object.entries(meals).forEach(([mealType, mealContent]) => {
+        if (mealContent.ingredients) {
+          const recipe = mealContent;
+          const servingsSelected = recipe.servingsSelected || recipe.servings;
+          const servings = recipe.servings;
+  
+          recipe.ingredients.forEach((ingredient) => {
+            const { name, quantity, unit, rayon } = ingredient;
+            const adjustedQuantity = quantity * (servingsSelected / servings);
+  
+            if (!ingredientsList[rayon]) {
+              ingredientsList[rayon] = [];
             }
-        });
+  
+            const existingIngredient = ingredientsList[rayon].find((item) => item.name === name);
+            if (existingIngredient) {
+              existingIngredient.quantity += adjustedQuantity;
+            } else {
+              ingredientsList[rayon].push({ name, quantity: adjustedQuantity, unit });
+            }
+          });
+        } else {
+          Object.entries(mealContent).forEach(([subMealType, recipeData]) => {
+            if (recipeData.ingredients) {
+              const servingsSelected = recipeData.servingsSelected || recipeData.servings;
+              const servings = recipeData.servings;
+  
+              recipeData.ingredients.forEach((ingredient) => {
+                const { name, quantity, unit, rayon } = ingredient;
+                const adjustedQuantity = quantity * (servingsSelected / servings);
+  
+                if (!ingredientsList[rayon]) {
+                  ingredientsList[rayon] = [];
+                }
+  
+                const existingIngredient = ingredientsList[rayon].find((item) => item.name === name);
+                if (existingIngredient) {
+                  existingIngredient.quantity += adjustedQuantity;
+                } else {
+                  ingredientsList[rayon].push({ name, quantity: adjustedQuantity, unit });
+                }
+              });
+            }
+          });
+        }
+      });
     });
-
+  
     return ingredientsList;
   };
-
-  // Fonction pour ajouter les ingrédients à la liste d'achats
-  const addIngredientsToList = (recipe, ingredientsList) => {
-      if (recipe && recipe.ingredients && Array.isArray(recipe.ingredients)) {
-          recipe.ingredients.forEach((ingredient) => {
-              const { name, quantity, unit, rayon } = ingredient;
-
-              // Créer une nouvelle section pour le rayon si elle n'existe pas
-              if (!ingredientsList[rayon]) {
-                  ingredientsList[rayon] = [];
-              }
-
-              // Vérifier si l'ingrédient existe déjà dans le même rayon pour combiner les quantités
-              const existingIngredient = ingredientsList[rayon].find((item) => item.name === name);
-              if (existingIngredient) {
-                  existingIngredient.quantity += quantity; // Si l'ingrédient existe, on combine les quantités
-              } else {
-                  ingredientsList[rayon].push({ name, quantity, unit }); // Sinon, on ajoute un nouvel ingrédient
-              }
-          });
-      }
-  };
+  
+  
   
 
   const handleSaveShoppingList = async () => {
