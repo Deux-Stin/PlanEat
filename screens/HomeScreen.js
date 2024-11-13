@@ -104,12 +104,12 @@ export default function HomeScreen({ navigation }) {
                   <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Planifier vos repas</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('ShoppingListScreen', { mealPlan: {} })}>
-                  <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Voir ma liste de courses</Text>
+                  <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Voir ma dernière liste de courses</Text>
                 </TouchableOpacity>
 
                 {/* Nouveau bouton pour accéder au calendrier des fruits et légumes */}
                 <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('SeasonalCalendarScreen')}>
-                  <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Calendrier des fruits et légumes</Text>
+                  <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Calendrier de saison</Text>
                 </TouchableOpacity>
                 
               </View>

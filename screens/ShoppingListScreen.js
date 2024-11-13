@@ -68,17 +68,25 @@ export default function ShoppingListScreen({ navigation, route }) {
   
           recipe.ingredients.forEach((ingredient) => {
             const { name, quantity, unit, rayon } = ingredient;
-            const adjustedQuantity = quantity * (servingsSelected / servings);
+            const adjustedQuantity = parseFloat(adjustQuantity(quantity, servingsSelected, servings));
   
             if (!ingredientsList[rayon]) {
               ingredientsList[rayon] = [];
             }
   
             const existingIngredient = ingredientsList[rayon].find((item) => item.name === name);
+  
             if (existingIngredient) {
-              existingIngredient.quantity += adjustedQuantity;
+              const totalQuantity = addQuantities(existingIngredient.quantity, adjustedQuantity, unit);
+              existingIngredient.quantity = totalQuantity.quantity;
+              existingIngredient.unit = totalQuantity.unit;
             } else {
-              ingredientsList[rayon].push({ name, quantity: adjustedQuantity, unit });
+              const formattedQuantity = formatQuantity(adjustedQuantity, unit);
+              ingredientsList[rayon].push({
+                name,
+                quantity: formattedQuantity.quantity,
+                unit: formattedQuantity.unit,
+              });
             }
           });
         } else {
@@ -89,17 +97,25 @@ export default function ShoppingListScreen({ navigation, route }) {
   
               recipeData.ingredients.forEach((ingredient) => {
                 const { name, quantity, unit, rayon } = ingredient;
-                const adjustedQuantity = quantity * (servingsSelected / servings);
+                const adjustedQuantity = parseFloat(adjustQuantity(quantity, servingsSelected, servings));
   
                 if (!ingredientsList[rayon]) {
                   ingredientsList[rayon] = [];
                 }
   
                 const existingIngredient = ingredientsList[rayon].find((item) => item.name === name);
+  
                 if (existingIngredient) {
-                  existingIngredient.quantity += adjustedQuantity;
+                  const totalQuantity = addQuantities(existingIngredient.quantity, adjustedQuantity, unit);
+                  existingIngredient.quantity = totalQuantity.quantity;
+                  existingIngredient.unit = totalQuantity.unit;
                 } else {
-                  ingredientsList[rayon].push({ name, quantity: adjustedQuantity, unit });
+                  const formattedQuantity = formatQuantity(adjustedQuantity, unit);
+                  ingredientsList[rayon].push({
+                    name,
+                    quantity: formattedQuantity.quantity,
+                    unit: formattedQuantity.unit,
+                  });
                 }
               });
             }
@@ -108,10 +124,82 @@ export default function ShoppingListScreen({ navigation, route }) {
       });
     });
   
-    return ingredientsList;
+    const sortedIngredientsList = Object.keys(ingredientsList)
+      .sort((a, b) => a.localeCompare(b))
+      .reduce((acc, rayon) => {
+        acc[rayon] = ingredientsList[rayon].sort((a, b) => a.name.localeCompare(b.name));
+        return acc;
+      }, {});
+  
+    return sortedIngredientsList;
   };
   
+  // Fonction pour formater les quantités en g/ml si elles sont inférieures à 1 kg ou 1 l
+  const formatQuantity = (quantity, unit) => {
+    if (unit === "kg" && quantity < 1) {
+      return { quantity: (quantity * 1000).toFixed(0), unit: "g" };
+    } else if (unit === "l" && quantity < 1) {
+      return { quantity: (quantity * 1000).toFixed(0), unit: "ml" };
+    } else {
+      return { quantity: Number.isInteger(quantity) ? quantity : quantity.toFixed(2), unit };
+    }
+  };
   
+  const addQuantities = (existingQuantity, newQuantity, unit) => {
+    let existing = parseFloat(existingQuantity);
+    let added = parseFloat(newQuantity);
+  
+    if (unit === "kg" || unit === "g") {
+      if (existingQuantity.unit === "kg" && unit === "kg") {
+        existing *= 1000;
+      } else if (existingQuantity.unit === "g") {
+        unit = "g";
+      }
+      const total = existing + added * (unit === "kg" ? 1000 : 1);
+      const roundedTotal = total >= 1000
+        ? Math.round(total / 1000 * 100) / 100 // Arrondir à deux décimales pour les kg
+        : Math.round(total);                   // Arrondir à l'entier le plus proche pour les grammes
+      return {
+        quantity: roundedTotal,
+        unit: total >= 1000 ? "kg" : "g"
+      };
+    } else if (unit === "l" || unit === "ml") {
+      if (existingQuantity.unit === "l" && unit === "l") {
+        existing *= 1000;
+      } else if (existingQuantity.unit === "ml") {
+        unit = "ml";
+      }
+  
+      const total = existing + added * (unit === "l" ? 1000 : 1);
+      const roundedTotal = total >= 1000
+        ? Math.round(total / 1000 * 100) / 100 // Arrondir à deux décimales pour les litres
+        : Math.round(total);                   // Arrondir à l'entier le plus proche pour les millilitres
+      return {
+        quantity: roundedTotal,
+        unit: total >= 1000 ? "l" : "ml"
+      };
+    } else {
+      // Autres unités, arrondies à deux décimales
+      const total = existing + added;
+      const roundedTotal = Math.round(total * 100) / 100;
+      console.log('quantity :', roundedTotal, ' unit :', unit)
+      return {
+        quantity: roundedTotal,
+        unit
+      };
+    }
+  };
+  
+  // Convertir une fraction en nombre décimal
+  const fractionToDecimal = (fraction) => {
+    const [num, denom] = fraction.split('/').map(Number);
+    return num / denom;
+  };
+
+  const adjustQuantity = (quantity, servingsSelected, servings) => {
+    const adjustedQuantity = quantity * (servingsSelected / servings);
+    return adjustedQuantity.toFixed(2);  // Garder en décimal avec deux décimales
+  };
   
 
   const handleSaveShoppingList = async () => {
@@ -122,11 +210,8 @@ export default function ShoppingListScreen({ navigation, route }) {
     const now = moment().format(`DD/MM/YYYY à HH:mm`);
     let title;
 
-    if (startDate === endDate) {
-        title = `${now} - menus du ${startDate}`;
-    } else {
-        title = `${now} - menus du ${startDate} au ${endDate}`;
-    }
+    if (startDate === endDate) { title = `${now} - menus du ${startDate}`; } 
+    else { title = `${now} - menus du ${startDate} au ${endDate}`; }
     
     const newEntry = {
         date: `${now}`,
@@ -145,10 +230,6 @@ export default function ShoppingListScreen({ navigation, route }) {
       } catch (error) {
         console.error('Erreur lors de l\'enregistrement de l\'historique', error);
       }
-    // await saveShoppingHistory(sortedHistory);
-    // console.log('updatedHistory', updatedHistory);
-
-
     Alert.alert('Cool !','Liste de courses sauvegardée avec succès !');
 
     // Recharge l'historique ici pour mettre à jour la page d'accueil
@@ -180,7 +261,7 @@ export default function ShoppingListScreen({ navigation, route }) {
     
       const newItem = {
         name: manualItem,
-        quantity: parseFloat(newItemQuantity), // Utiliser la valeur numérique choisie
+        quantity: parseFloat(Math.abs(newItemQuantity)), // Utiliser la valeur numérique choisie
         unit: selectedUnit,  // Utiliser l'unité sélectionnée
         rayon: selectedRayon, // Utiliser la catégorie sélectionnée
       };
@@ -211,29 +292,105 @@ export default function ShoppingListScreen({ navigation, route }) {
     setShoppingList(prevList => {
       const updatedList = { ...prevList };
       const ingredient = updatedList[rayon].find(item => item.name === name);
+  
       if (ingredient) {
-        ingredient.quantity += increment;
+        // Si quantity est une chaîne (et potentiellement une fraction), on la convertit
+        let currentQuantity;
+        if (typeof ingredient.quantity === 'string' && ingredient.quantity.includes('/')) {
+          // Si la quantité est une fraction, la convertir en décimal
+          currentQuantity = parseFloat(fractionToDecimal(ingredient.quantity));
+        } else {
+          // Sinon, c'est une valeur numérique (ou une chaîne de type nombre)
+          currentQuantity = parseFloat(ingredient.quantity);
+        }
+  
+        // Ajouter l'incrément
+        currentQuantity += increment;
+  
+        if (ingredient.unit === 'g' || ingredient.unit === 'ml') {
+          if (currentQuantity >= 1000) {
+            // Convertir en kg si la quantité atteint ou dépasse 1000g
+            ingredient.quantity = (currentQuantity / 1000).toFixed(2);
+            ingredient.unit = ingredient.unit === 'g' ? 'kg' : 'l';
+          } else {
+            ingredient.quantity = Math.round(currentQuantity); // On garde en grammes
+          }
+        } 
+        // Si l'unité est "kg", convertir en g avant d'ajouter l'incrément
+        else if (ingredient.unit === 'kg' || ingredient.unit === 'L') {
+          console.log('increment', increment)
+          currentQuantity *= 1000;  // Convertir en grammes avant l'ajout
+          console.log('currentQuantity : ', currentQuantity)
+          currentQuantity += increment; // Ajouter l'incrément en grammes
+          console.log('currentQuantity : ', currentQuantity)
+
+          if (currentQuantity >= 1000) {
+            // Convertir en kg si la quantité atteint ou dépasse 1000g
+            ingredient.quantity = (currentQuantity / 1000).toFixed(2);
+            ingredient.unit = ingredient.unit === 'kg' ? 'kg' : 'L';
+          } else {
+            ingredient.quantity = Math.round(currentQuantity); // Retour en grammes
+            ingredient.unit = ingredient.unit === 'kg' ? 'g' : 'ml';
+          }
+        } 
+        // Si l'unité est "unité", garder la quantité en décimal
+        else { // if (ingredient.unit === 'unité')
+          ingredient.quantity = currentQuantity.toFixed(1);  // Garder la décimale
+        }
       }
       return updatedList;
     });
   };
-
+  
   const decrementQuantity = (rayon, name, decrement) => {
     setShoppingList(prevList => {
       const updatedList = { ...prevList };
       const ingredient = updatedList[rayon].find(item => item.name === name);
+  
       if (ingredient) {
-        if (ingredient.quantity > decrement) {
-          ingredient.quantity -= decrement;
+        // S'assurer que quantity est un nombre (ou convertir une fraction en nombre)
+        let currentQuantity = parseFloat(ingredient.quantity);
+        if (isNaN(currentQuantity)) {
+          currentQuantity = fractionToDecimal(ingredient.quantity);  // Conversion en nombre si c'est une fraction
+        }
+  
+        // Décrémenter la quantité
+        currentQuantity -= decrement;
+  
+        if (currentQuantity > 0) {
+          // Si l'unité est "g", on garde en grammes et on ajuste si nécessaire
+          if (ingredient.unit === 'g') {
+            if (currentQuantity < 1000) {
+              ingredient.quantity = Math.round(currentQuantity);  // Rester en grammes
+            } else {
+              ingredient.quantity = (currentQuantity / 1000).toFixed(1); // Convertir en kg
+              ingredient.unit = 'kg';
+            }
+          } 
+          // Si l'unité est "kg", convertit d'abord en grammes et gère l'incrément
+          else if (ingredient.unit === 'kg') {
+            currentQuantity *= 1000; // Convertir en grammes avant la décrémentation
+            currentQuantity -= decrement; // Décrémenter en grammes
+            if (currentQuantity < 1000) {
+              ingredient.quantity = Math.round(currentQuantity);  // Retour en grammes
+              ingredient.unit = 'g';
+            } else {
+              ingredient.quantity = (currentQuantity / 1000).toFixed(1); // Retour en kg
+            }
+          }
+          // Si l'unité est "unité", on garde la quantité en décimal
+          else {
+            ingredient.quantity = currentQuantity.toFixed(1);
+          }
         } else {
-          // Supprimer l'ingrédient si la quantité devient 0 ou moins
+          // Si la quantité devient 0 ou négative, supprimer l'ingrédient
           updatedList[rayon] = updatedList[rayon].filter(item => item.name !== name);
         }
       }
       return updatedList;
     });
   };
-
+  
   const handleCopy = () => {
     const listText = Object.keys(shoppingList).map(rayon =>
       `${rayon}:\n` + shoppingList[rayon].map(item => `${item.name}: ${item.quantity} ${item.unit}`).join('\n')
@@ -288,14 +445,6 @@ export default function ShoppingListScreen({ navigation, route }) {
         setShoppingList(updatedShoppingList);
     }
 };
-
-
-
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Text>{item.name} : {item.quantity}</Text>
-    </View>
-  );
 
   return (
 
@@ -358,10 +507,10 @@ export default function ShoppingListScreen({ navigation, route }) {
                         {ingredient.name} - {ingredient.quantity} {ingredient.unit}
                       </Text>
                       <View style={styles.buttonGroup}>
-                        <Button onPress={() => decrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' ? 10 : 1)}>
+                        <Button onPress={() => decrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' || ingredient.unit === 'ml' ? (ingredient.quantity < 1000 ? 10 : 100) : 1)}>
                           -
                         </Button>
-                        <Button onPress={() => incrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' ? 10 : 1)}>
+                        <Button onPress={() => incrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' || ingredient.unit === 'ml' ? (ingredient.quantity < 1000 ? 10 : 100) : 1)}>
                           +
                         </Button>
                       </View>

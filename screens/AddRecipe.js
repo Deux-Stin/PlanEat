@@ -12,7 +12,7 @@ export default function ({ route, navigation }) {
     id: '',
     name: '',
     category: '',
-    type: 'court',
+    duration: 'court',
     season: ['printemps','été','automne','hiver'],
     servings: '',
     ingredients: [],
@@ -53,19 +53,18 @@ export default function ({ route, navigation }) {
   const [rayonModalVisible, setRayonModalVisible] = useState(false);
 
   const availableCategories = ['Petit-déjeuner','Entrée','Plat','Dessert','Cocktail'];
-  const availableTypes = ['court', 'long'];
+  const availableDuration = ['court', 'long'];
   const availableSeasons = ['printemps', 'été', 'automne', 'hiver'];
   const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'petite cuillère', 'grande cuillère'];
   const availableRayons = ['Divers','Produits frais', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Surgelés', 'Produits laitiers', 'Boissons', 'Hygiène', 'Entretien'].sort((a, b) => a.localeCompare(b)); // Trie le tableau par ordre alphabétique;
 
-  const toggleType = (type) => {
-    setNewRecipe((prev) => {
-      const currentTypes = prev.type.includes(type)
-        ? prev.type.filter((t) => t !== type) // Retire le type s'il est déjà sélectionné
-        : [...prev.type, type]; // Ajoute le type s'il n'est pas sélectionné
-      return { ...prev, type: currentTypes };
-    });
+  const toggleDuration = (duration) => {
+    setNewRecipe((prev) => ({
+      ...prev,
+      duration: prev.duration === duration ? '' : duration, // Si la durée est déjà sélectionnée, la désélectionner, sinon l'ajouter
+    }));
   };
+  
 
   const toggleSeason = (season) => {
     setNewRecipe((prev) => {
@@ -77,18 +76,12 @@ export default function ({ route, navigation }) {
   };
 
   const toggleCategory = (category) => {
-    if (newRecipe.category.includes(category)) {
-      setNewRecipe({
-        ...newRecipe,
-        category: newRecipe.category.filter((c) => c !== category)
-      });
-    } else {
-      setNewRecipe({
-        ...newRecipe,
-        category: [...newRecipe.category, category]
-      });
-    }
+    setNewRecipe((prev) => ({
+      ...prev,
+      category: prev.category === category ? '' : category, // Si la catégorie est déjà sélectionnée, la désélectionner, sinon l'ajouter
+    }));
   };
+  
 
   const handleAddIngredient = () => {
     const { name, quantity, unit, rayon } = ingredientInput;
@@ -132,7 +125,7 @@ export default function ({ route, navigation }) {
   };
 
   const handleSubmit = async () => {
-    const { name, category, type, season, servings, ingredients, recipe, nutritionalValues } = newRecipe;
+    const { name, category, duration, season, servings, ingredients, recipe, nutritionalValues } = newRecipe;
 
     if (!name || category.length === 0 || !servings || ingredients.length === 0 || recipe.length === 0) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires.');
@@ -155,7 +148,7 @@ export default function ({ route, navigation }) {
       id: route.params?.recipe ? newRecipe.id : uuid.v4(), // Utiliser l'ID existant si on modifie
       name,
       category,
-      type: type,
+      duration: duration,
       season: season,
       servings: parsedServings,
       ingredients,
@@ -230,17 +223,17 @@ export default function ({ route, navigation }) {
         </View>
       </View>
 
-      <Text style={styles.sectionTitle}>Type de recette</Text>
+      <Text style={styles.sectionTitle}>Durée de la recette</Text>
       <View style={styles.flexContainer}>
-        {availableTypes.map((type) => (
+        {availableDuration.map((duration) => (
           <TouchableOpacity
-            key={type}
-            onPress={() => toggleType(type)}
+            key={duration}
+            onPress={() => toggleDuration(duration)}
             style={[
-              styles.typeButton, 
-              newRecipe.type.includes(type) ? styles.selectedTypeButton : styles.unselectedTypeButton]}
+              styles.durationButton, 
+              newRecipe.duration.includes(duration) ? styles.selectedDurationButton : styles.unselectedDurationButton]}
           >
-            <Text style={styles.pickerButtonText}>{type}</Text>
+            <Text style={styles.pickerButtonText}>{duration}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -252,8 +245,8 @@ export default function ({ route, navigation }) {
             key={season}
             onPress={() => toggleSeason(season)}
             style={[
-              styles.typeButton,
-              newRecipe.season.includes(season) ? styles.selectedTypeButton : styles.unselectedTypeButton, // Appliquer le style en fonction de la sélection
+              styles.durationButton,
+              newRecipe.season.includes(season) ? styles.selectedDurationButton : styles.unselectedDurationButton, // Appliquer le style en fonction de la sélection
               { backgroundColor: newRecipe.season.includes(season) ? seasonColors[season] : '#ccc' } // Couleur grise si non sélectionné
             ]}
           >
@@ -377,7 +370,7 @@ export default function ({ route, navigation }) {
       </TouchableOpacity>
 
       <View style={styles.somespace} />
-      <Text style={styles.sectionTitle}>Valeurs nutritionnelles pour 100g(optionnel)</Text>
+      <Text style={styles.sectionTitle}>Valeurs nutritionnelles pour 100g (optionnel)</Text>
       <View style={styles.somespace} />
       <TextInput
         placeholder="Glucides (ex: 20g)"
@@ -398,7 +391,7 @@ export default function ({ route, navigation }) {
         style={styles.input}
       />
       <TextInput
-        placeholder="kiloCalories (ex: 400 kCal)"
+        placeholder="kCal (ex: 400 kCal)"
         value={newRecipe.nutritionalValues.graisses}
         onChangeText={(text) => setNewRecipe({ ...newRecipe, nutritionalValues: { ...newRecipe.nutritionalValues, graisses: text } })}
         style={styles.input}
@@ -422,7 +415,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
-  unselectedTypeButton: {
+  unselectedDurationButton: {
     opacity: 0.5, // Optionnel : rendre le bouton légèrement transparent
   },
   header: {
@@ -444,7 +437,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     marginBottom: 10,
   },
-  typeButton: {
+  durationButton: {
     backgroundColor: '#e0e0e0',
     padding: 10,
     marginVertical: 5,
@@ -452,7 +445,7 @@ const styles = StyleSheet.create({
     flexBasis: '48%', // Pour avoir deux boutons par ligne
     alignItems: 'center',
   },
-  selectedTypeButton: {
+  selectedDurationButton: {
     backgroundColor: '#FCE7E8', // Couleur de fond pour les éléments sélectionnés
   },
   pickerButtonText: {

@@ -4,7 +4,7 @@
       "id": "c12c2f9d-8a10-4d5e-988f-16a573a30a6d",
       "name": "Omelette aux champignons",
       "category": "Petit-déjeuner",
-      "type": "court",
+      "duration": "court",
       "season": ["printemps", "été", "automne", "hiver"],
       "servings": 2,
       "ingredients": [
@@ -30,7 +30,7 @@
       "id": "f674b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
       "name": "Porridge à l'avoine",
       "category": "Petit-déjeuner",
-      "type": "court",
+      "duration": "court",
       "season": ["printemps", "été", "automne", "hiver"],
       "servings": 2,
       "ingredients": [
@@ -55,7 +55,7 @@
       "id": "b174b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
       "name": "Salade César",
       "category": "Plat",
-      "type": "court",
+      "duration": "court",
       "season": ["printemps", "été"],
       "servings": 2,
       "ingredients": [
@@ -82,7 +82,7 @@
       "id": "f674b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
       "name": "Pâtes Carbonara",
       "category": "Plat",
-      "type": "court",
+      "duration": "court",
       "season": ["printemps", "été", "automne", "hiver"],
       "servings": 2,
       "ingredients": [
@@ -108,7 +108,7 @@
       "id": "kp34b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
       "name": "Poulet Curry",
       "category": "Plat",
-      "type": "long",
+      "duration": "long",
       "season": ["printemps", "automne", "hiver"],
       "servings": 2,
       "ingredients": [
@@ -134,7 +134,7 @@
       "id": "6a6f8825-8bb4-4d4b-88f5-3fc4d5b84a78",
       "name": "Bruschetta aux tomates",
       "category": "Entrée",
-      "type": "court",
+      "duration": "court",
       "season": ["printemps", "été"],
       "servings": 4,
       "ingredients": [
@@ -159,7 +159,7 @@
       "id": "3eb50a26-9373-4de0-a64b-d64577eecf5a",
       "name": "Mojito",
       "category": "Cocktail",
-      "type": "court",
+      "duration": "court",
       "season": ["printemps", "été"],
       "servings": 1,
       "ingredients": [
@@ -185,7 +185,7 @@
       "id": "a0282b34-61b6-4642-9d95-e5c85a0a04c8",
       "name": "Crème brûlée",
       "category": "Dessert",
-      "type": "long",
+      "duration": "long",
       "season": ["hiver", "été"],
       "servings": 4,
       "ingredients": [
@@ -212,7 +212,7 @@
       "id": "ecb63241-3cb4-4fb8-9274-76f8f9cd13bc",
       "name": "Tarte Tatin",
       "category": "Dessert",
-      "type": "long",
+      "duration": "long",
       "season": ["automne", "hiver"],
       "servings": 6,
       "ingredients": [
@@ -238,7 +238,7 @@
       "id": "7f8a1a74-4582-489c-9446-2d4d4db84a8f",
       "name": "Tiramisu",
       "category": "Dessert",
-      "type": "long",
+      "duration": "long",
       "season": ["automne", "hiver"],
       "servings": 6,
       "ingredients": [

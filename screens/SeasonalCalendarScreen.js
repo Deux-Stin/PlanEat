@@ -263,11 +263,11 @@ export default function SeasonalCalendarScreen({ navigation }) {
           .map(item => (
             <TouchableOpacity
               key={item}
-              style={[styles.itemButton, { borderColor: isFavori(month, category, item) ? 'red' : '#ccc' }]}
+              style={[styles.itemButton, { borderColor: isFavori(category, item) ? 'red' : '#ccc' }]}
               onPress={() => toggleFavoris(category, item)}
             >
                 <Text 
-                  style={[styles.itemText, isFavori(month, category, item) && styles.favoriText]}
+                  style={[styles.itemText, isFavori(category, item) && styles.favoriText]}
                 >
                 {item} {isFavori(category, item) ? '❤️ ' : ''}
                 </Text>
@@ -313,6 +313,7 @@ export default function SeasonalCalendarScreen({ navigation }) {
 
     const darkenColor = (color) => {
         const colorObj = hexToRgb(color);
+        // console.log(colorObj)
         const darkenedColor = {
             r: Math.max(0, colorObj.r - 300),
             g: Math.max(0, colorObj.g - 300),
@@ -468,19 +469,18 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     itemButton: {
-        borderWidth: 1,
-        // borderColor: '#ccc',
+        borderWidth: 0.5,
         // backgroundColor: '#e0e0e0', // Couleur de fond pour les boutons
         // padding: 5,
         paddingHorizontal: 5,
         paddingVertical : 3,
         margin: 2.5,
-        borderRadius: 5,
+        borderRadius: 10,
         flexBasis: '30%', // Ajuste la largeur selon tes besoins
         alignItems: 'center',
     },
     favoriText: {
-        fontStyle: 'italic',
+        // fontStyle: 'italic',
         color: 'red',
       },
     itemText: {

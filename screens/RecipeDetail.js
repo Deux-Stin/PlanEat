@@ -54,8 +54,8 @@ export default function RecipeDetail({ route, navigation }) {
           {recipe.category || "Non spécifié"}
         </Text>
         <Text style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Type: </Text>
-          {recipe.type || "Non spécifié"}
+          <Text style={styles.detailLabel}>Durée: </Text>
+          {recipe.duration || "Non spécifié"}
         </Text>
         <Text style={styles.detailItem}>
           <Text style={styles.detailLabel}>Saison: </Text>
@@ -122,7 +122,7 @@ export default function RecipeDetail({ route, navigation }) {
               <Text style={styles.itemValue}>{recipe.nutritionalValues?.graisses || "Non spécifié"}</Text>
             </View>
             <View style={styles.nutritionalItem}>
-              <Text style={styles.itemLabel}>kCalories:</Text>
+              <Text style={styles.itemLabel}>kCal:</Text>
               <Text style={styles.itemValue}>{recipe.nutritionalValues?.kiloCalories || "Non spécifié"}</Text>
             </View>
           </View>

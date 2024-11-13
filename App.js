@@ -1,6 +1,6 @@
 // App.js
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef  } from 'react';
 import { useFonts } from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -8,8 +8,9 @@ import { ActivityIndicator, View, Text, StyleSheet, PermissionsAndroid, Platform
 import { globalStyles } from './globalStyles';
 // import AppLoading from 'expo-app-loading'; // Utilisez cette ligne si vous avez encore besoin de l'écran de chargement
 import * as SplashScreen from 'expo-splash-screen';
+import LottieView from 'lottie-react-native';
 
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync(); // Bloque l'affichage du splash jusqu'à ce qu'il soit explicitement masqué
 
 import HomeScreen from './screens/HomeScreen';
 import RecipeLibrary from './screens/RecipeLibrary';
@@ -24,6 +25,11 @@ const Stack = createStackNavigator();
 
 export default function App() {
 
+  const [isAnimationDone, setIsAnimationDone] = useState(false);
+  const [resourcesReady, setResourcesReady] = useState(false);
+  const [animationCount, setAnimationCount] = useState(0);
+  const animationRef = useRef(null);
+
   const [fontsLoaded] = useFonts({
     POLYA: require('./assets/fonts/POLYA/POLYA.otf'),
     rubik_moonrocks : require('./assets/fonts/rubik-moonrocks/RubikMoonrocks-Regular.ttf'),
@@ -32,6 +38,9 @@ export default function App() {
     montserrat_armenian: require('./assets/fonts/montserrat-armenian/Montserratarm-ExtraLight.otf'),
     montserrat_alternates: require('./assets/fonts/montserrat-alternates/MontserratAlternates-Regular.ttf'),
   });
+
+    // Initialiser les recettes au démarrage
+    const loading = useInitializeRecipes(); 
 
   // Gestion des autorisations android
   const requestStoragePermission = async () => {
@@ -61,25 +70,40 @@ export default function App() {
   }, []);
 
 
-  // Initialiser les recettes au démarrage
-  const loading = useInitializeRecipes(); 
-
-  // Attendre le changement des polices
+  // Déclenche la mise à jour de l'état quand les ressources sont prêtes
   useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
+    if (fontsLoaded && !loading) {
+      setResourcesReady(true);
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, loading]);
 
-    // Afficher un écran de chargement si les polices ou les données sont encore en cours de chargement
-    if (!fontsLoaded || loading) {
-      return (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
-        </View>
-      );
+  // Fonction appelée quand l'animation se termine
+  const handleAnimationFinish = () => {
+    if (animationCount < 1) {
+      setAnimationCount(animationCount + 1);
+      animationRef.current?.play(); // Redémarre l'animation si elle n'est pas terminée
+    } else if (resourcesReady) {
+      setIsAnimationDone(true); // Passe à l'écran principal quand tout est prêt
     }
+  };
 
+
+  // Affiche l'écran de chargement si les ressources ou l'animation ne sont pas prêtes
+  if (!isAnimationDone) {
+    return (
+      <View style={styles.splashContainer}>
+        <LottieView
+          ref={animationRef}
+          source={require('./assets/images/monkey_animation_lottie_light.json')}
+          autoPlay
+          loop={false}
+          speed={1}
+          onAnimationFinish={handleAnimationFinish}
+          style={styles.lottie}
+        />
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>
@@ -131,9 +155,14 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
+  splashContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#F9F9F9',
+  },
+  lottie: {
+    width: 300,
+    height: 300,
   },
 });

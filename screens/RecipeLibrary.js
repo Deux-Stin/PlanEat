@@ -12,7 +12,7 @@ export default function RecipeLibrary({ navigation, route }) {
   const [expandedCategory, setExpandedCategory] = useState(null);
 
   const [selectedSeasons, setSelectedSeason] = useState([]); // État pour le filtre saison
-  const [selectedType, setSelectedType] = useState([]);
+  const [selectedDuration, setSelectedDuration] = useState([]);
 
   const seasonColors = {
     printemps: '#E6F3CE',
@@ -28,8 +28,8 @@ export default function RecipeLibrary({ navigation, route }) {
     );
   };
 
-  const toggleType = (type) => {
-    setSelectedType(selectedType === type ? null : type);
+  const toggleDuration = (duration) => {
+    setSelectedDuration(selectedDuration === duration ? null : duration);
   };
   
   // console.log('recipes :',recipes)
@@ -136,7 +136,7 @@ export default function RecipeLibrary({ navigation, route }) {
         id: recipe.id,
         name: recipe.name,
         category: recipe.category,
-        type: recipe.type,
+        duration: recipe.duration,
         season: recipe.season,
         servings: recipe.servings,
         ingredients: recipe.ingredients,
@@ -252,6 +252,7 @@ export default function RecipeLibrary({ navigation, route }) {
 
   const renderRecipe = (recipe) => (
     <TouchableOpacity
+      key={recipe.id}
       style={styles.recipeItem}
       onPress={() => navigation.navigate('RecipeDetail', { recipe, deleteRecipe })}
     >
@@ -264,10 +265,10 @@ export default function RecipeLibrary({ navigation, route }) {
       // console.log('recipe.category : ', recipe.category)
       const recipeSeasons = recipe.season || [];
       const matchesSeason = selectedSeasons.length === 0 || recipeSeasons.some(season => selectedSeasons.includes(season));
-      const matchesType = selectedType === null || (recipe.type && recipe.type.includes(selectedType));
-      // console.log('recipe.type :', recipe.type)
-      // console.log('matchesType', matchesType)
-      return matchesSeason && matchesType;
+      const matchesDuration = selectedDuration === null || (recipe.duration && recipe.duration.includes(selectedDuration));
+      // console.log('recipe.duration :', recipe.duration)
+      // console.log('matchesDuration', matchesDuration)
+      return matchesSeason && matchesDuration;
     });
   };
 
@@ -291,16 +292,16 @@ export default function RecipeLibrary({ navigation, route }) {
           </TouchableOpacity>
         ))}
       </View>
-      <View style={styles.typeRow}>
+      <View style={styles.durationRow}>
         <TouchableOpacity
-          style={[styles.typeButton, { backgroundColor: selectedType === 'court' ? '#FCE7E8' : '#e0e0e0' }]}
-          onPress={() => toggleType('court')}
+          style={[styles.durationButton, { backgroundColor: selectedDuration === 'court' ? '#FCE7E8' : '#e0e0e0' }]}
+          onPress={() => toggleDuration('court')}
         >
           <Text style={styles.filterText}>Court</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.typeButton, { backgroundColor: selectedType === 'long' ? '#FCE7E8' : '#e0e0e0' }]}
-          onPress={() => toggleType('long')}
+          style={[styles.durationButton, { backgroundColor: selectedDuration === 'long' ? '#FCE7E8' : '#e0e0e0' }]}
+          onPress={() => toggleDuration('long')}
         >
           <Text style={styles.filterText}>Long</Text>
         </TouchableOpacity>
@@ -310,9 +311,11 @@ export default function RecipeLibrary({ navigation, route }) {
   
 
   const renderCategory = (category) => {
-    const categoryRecipes = filterRecipes().filter((recipe) => recipe.category === category);
-    console.log("Recettes dans la catégorie:", category, categoryRecipes);
+    const categoryRecipes = filterRecipes()
+      .filter((recipe) => recipe.category === category)
+      .sort((a, b) => a.name.localeCompare(b.name)); // Trie les recettes par nom alphabétique
 
+    console.log("Recettes dans la catégorie:", category, categoryRecipes);
 
     return (
       <View key={category} style={styles.categoryContainer}>
@@ -392,12 +395,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly', // Espace uniforme entre les boutons
     marginBottom: 10,
   },
-  typeRow: {
+  durationRow: {
     flexDirection: 'row',
     justifyContent: 'space-evenly', // Espace uniforme entre les boutons
     marginTop: 0, // Ajoute un peu d'espace au-dessus
   },
-  typeButton: {
+  durationButton: {
     flex: 1, // Chaque bouton prend l'espace disponible
     marginHorizontal: 2.5, // Marge horizontale pour espacer les boutons
     padding: 10, // Padding pour rendre le bouton plus grand
