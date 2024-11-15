@@ -21,6 +21,7 @@ import ShoppingListScreen from './screens/ShoppingListScreen';
 import useInitializeRecipes from './hooks/useInitializeRecipes'; // Export par défaut
 import SeasonalCalendarScreen from './screens/SeasonalCalendarScreen';
 import MealPlanSummaryScreen from './screens/MealPlanSummaryScreen';
+import OCRScreen from './screens/OCRScreen';
 import { MealPlanProvider } from './screens/MealPlanContext';
 
 const Stack = createStackNavigator();
@@ -71,7 +72,6 @@ export default function App() {
     requestStoragePermission();
   }, []);
 
-
   // Déclenche la mise à jour de l'état quand les ressources sont prêtes
   useEffect(() => {
     if (fontsLoaded && !loading) {
@@ -110,53 +110,57 @@ export default function App() {
   return (
     <MealPlanProvider>
 
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="HomeScreen">
-        {/* Page d'accueil */}
-        <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }}/> 
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="HomeScreen">
+          {/* Page d'accueil */}
+          <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
 
-        {/* Bibliothèque de recettes */}
-        <Stack.Screen name="RecipeLibrary" component={RecipeLibrary} options={{ title: 'Bibliothèque de recettes' }} />
+          {/* Bibliothèque de recettes */}
+          <Stack.Screen name="RecipeLibrary" component={RecipeLibrary} options={{ title: 'Bibliothèque de recettes' }} />
 
-        {/* Ajouter une recette */}
-        <Stack.Screen name="AddRecipe" component={AddRecipe} options={{ title: 'Ajouter une Recette' }} />
+          {/* Ajouter une recette */}
+          <Stack.Screen name="AddRecipe" component={AddRecipe} options={{ title: 'Ajouter une Recette' }} />
 
-        {/* Détails de la recette */}
-        <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ title: 'Détails de la Recette' }} />
+          {/* Détails de la recette */}
+          <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ title: 'Détails de la Recette' }} />
 
-        {/* Calendrier de saison */}
-        <Stack.Screen 
-          name="SeasonalCalendarScreen" 
-          component={SeasonalCalendarScreen} 
-          options={({ navigation }) => ({
-            title: 'Calendrier des saisons',
-            headerShown: true,
-            // headerLeft: () => (
-            //   <Button onPress={() => navigation.goBack()} title="Retour" />
-            // ),
-            // headerRight: () => (
-            //   <TouchableOpacity
-            //     style={styles.favorisButton}
-            //     onPress={() => setShowOnlyFavoris(prev => !prev)}
-            //   >
-            //     <Text style={styles.favorisButtonText}>
-            //       {showOnlyFavoris ? 'Réinitialiser' : 'Afficher les favoris'}
-            //     </Text>
-            //   </TouchableOpacity>
-            // ),
-          })}
-        />
+          {/* Calendrier de saison */}
+          <Stack.Screen
+            name="SeasonalCalendarScreen"
+            component={SeasonalCalendarScreen}
+            options={({ navigation }) => ({
+              title: 'Calendrier des saisons',
+              headerShown: true,
+              // headerLeft: () => (
+              //   <Button onPress={() => navigation.goBack()} title="Retour" />
+              // ),
+              // headerRight: () => (
+              //   <TouchableOpacity
+              //     style={styles.favorisButton}
+              //     onPress={() => setShowOnlyFavoris(prev => !prev)}
+              //   >
+              //     <Text style={styles.favorisButtonText}>
+              //       {showOnlyFavoris ? 'Réinitialiser' : 'Afficher les favoris'}
+              //     </Text>
+              //   </TouchableOpacity>
+              // ),
+            })}
+          />
 
-        {/* Planifier les repas */}
-        <Stack.Screen name="MealPlanScreen" component={MealPlanScreen} options={{ title: 'Planifier vos repas' }} />
+          {/* Planifier les repas */}
+          <Stack.Screen name="MealPlanScreen" component={MealPlanScreen} options={{ title: 'Planifier vos repas' }} />
 
-        {/* Page de résumé des menus attribués selon la date */}
-        <Stack.Screen name="MealPlanSummaryScreen" component={MealPlanSummaryScreen} />
+          {/* Page de résumé des menus attribués selon la date */}
+          <Stack.Screen name="MealPlanSummaryScreen" component={MealPlanSummaryScreen} />
 
-        {/* Liste de courses */}
-        <Stack.Screen name="ShoppingListScreen" component={ShoppingListScreen} options={{ title: 'Liste de courses', headerShown: true }} />
-      </Stack.Navigator>
-    </NavigationContainer>
+          {/* Liste de courses */}
+          <Stack.Screen name="ShoppingListScreen" component={ShoppingListScreen} options={{ title: 'Liste de courses', headerShown: true }} />
+
+          {/* OCRScreen */}
+          <Stack.Screen name="OCRScreen" component={OCRScreen} options={{ title: 'OCRScreen', headerShown: true }} />
+
+        </Stack.Navigator>
+      </NavigationContainer>
 
     </MealPlanProvider>
   );

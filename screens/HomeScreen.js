@@ -104,6 +104,10 @@ export default function HomeScreen({ navigation }) {
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Accès rapide</Text>
               <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('OCRScreen')}>
+                  <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>OCRScreen</Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('RecipeLibrary')}>
                   <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Bibliothèque de recettes</Text>
                 </TouchableOpacity>
