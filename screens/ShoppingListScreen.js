@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, ScrollView, TextInput, TouchableOpacity, Alert, StyleSheet, Modal } from 'react-native';
 import { Text, Button, Checkbox } from 'react-native-paper';
 import * as Clipboard from 'expo-clipboard';
@@ -8,49 +8,76 @@ import moment from 'moment';
 
 export default function ShoppingListScreen({ navigation, route }) {
   const [shoppingList, setShoppingList] = useState({});
-  const [shoppingHistory, setShoppingHistory] = useState([]);
+  const [mealPlanHistory, setMealPlanHistory] = useState([]);
+  const [shoppingListReady, setShoppingListReady] = useState(false); // Nouvel état pour suivre l'état de shoppingList
   const [checkedItems, setCheckedItems] = useState({});
   const [manualItem, setManualItem] = useState('');
   const [newItemQuantity, setnewItemQuantity] = useState(''); // État pour la valeur numérique du modal d'unité
   const [showHideMenu, setShowHideMenu] = useState(false);
   const [hideCheckedItems, setHideCheckedItems] = useState(false);
 
-  const { mealPlan, historyItem  } = route.params; // Recevoir le mealPlan à partir de la navigation
+  const { mealPlan } = route.params; // Recevoir le mealPlan à partir de la navigation
 
   const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'petite cuillère', 'grande cuillère'];
-  const availableRayons = ['Divers','Produits frais', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Surgelés', 'Produits laitiers', 'Boissons', 'Hygiène', 'Entretien'].sort((a, b) => a.localeCompare(b)); // Trie le tableau par ordre alphabétique
+  const availableRayons = ['Divers', 'Produits frais', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Surgelés', 'Produits laitiers', 'Boissons', 'Hygiène', 'Entretien'].sort((a, b) => a.localeCompare(b)); // Trie le tableau par ordre alphabétique
   const [unitModalVisible, setUnitModalVisible] = useState(false);
   const [rayonModalVisible, setRayonModalVisible] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState('unité');
   const [selectedRayon, setSelectedRayon] = useState('Divers');
 
-  // Charger l'historique des listes de courses lors du premier rendu
+  const hasGeneratedShoppingList = useRef(false); // Utiliser useRef pour contrôler l'appel de la sauvegarde
+
+  // Charger l'historique des du mealPlan lors du premier rendu
   useEffect(() => {
-    loadShoppingHistory();
+    loadMealPlanHistory();
   }, []);
 
   useEffect(() => {
-    if (historyItem && historyItem.list) {
-      // Assigner la liste passée à l'état
-      setShoppingList(historyItem.list);
-    }
-  }, [historyItem]);
-
-  useEffect(() => {
-    if (mealPlan) {
-      // Réinitialiser shoppingList à chaque mise à jour de mealPlan
-      setShoppingList([]);
-
-      // Réinitialiser la liste de courses avant de la générer
+    // Charger l'historique au premier rendu
+    loadMealPlanHistory();
+    
+    // Générer et sauvegarder la liste de courses une seule fois à l'arrivée sur la page
+    if (mealPlan && !hasGeneratedShoppingList.current) {
+      console.log("Génération et sauvegarde de la shopping list...");
+      
       const ingredients = generateShoppingList(mealPlan);
       setShoppingList(ingredients);
+  
+      // Appeler handleSaveMealPlan une fois la liste générée
+      handleSaveMealPlan();
+      
+      hasGeneratedShoppingList.current = true; // Empêcher la régénération et sauvegarde multiple
     }
   }, [mealPlan]);
+  
+  
+  useEffect(() => {
+    const loadCheckedItems = async () => {
+      try {
+        const activeMealPlan = mealPlanHistory.find(
+          (entry) => JSON.stringify(entry.mealPlan) === JSON.stringify(mealPlan)
+        );
+
+        if (activeMealPlan) {
+          const savedCheckedItems = await AsyncStorage.getItem(`checkedItems_${activeMealPlan.date}`);
+          setCheckedItems(savedCheckedItems ? JSON.parse(savedCheckedItems) : {});
+        } else {
+          setCheckedItems({});
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'état des éléments cochés", error);
+      }
+    };
+
+    if (mealPlan) {
+      loadCheckedItems();
+    }
+  }, [mealPlan, mealPlanHistory]);
 
   const toggleHideMenu = () => {
     setShowHideMenu(!showHideMenu);
   };
-  
+
   const toggleHideCheckedItems = () => {
     setHideCheckedItems(!hideCheckedItems);
     setShowHideMenu(false); // Fermer le menu après sélection
@@ -58,24 +85,24 @@ export default function ShoppingListScreen({ navigation, route }) {
 
   const generateShoppingList = (mealPlan) => {
     const ingredientsList = {};
-  
+
     Object.entries(mealPlan).forEach(([date, meals]) => {
       Object.entries(meals).forEach(([mealType, mealContent]) => {
         if (mealContent.ingredients) {
           const recipe = mealContent;
           const servingsSelected = recipe.servingsSelected || recipe.servings;
           const servings = recipe.servings;
-  
+
           recipe.ingredients.forEach((ingredient) => {
             const { name, quantity, unit, rayon } = ingredient;
             const adjustedQuantity = parseFloat(adjustQuantity(quantity, servingsSelected, servings));
-  
+
             if (!ingredientsList[rayon]) {
               ingredientsList[rayon] = [];
             }
-  
+
             const existingIngredient = ingredientsList[rayon].find((item) => item.name === name);
-  
+
             if (existingIngredient) {
               const totalQuantity = addQuantities(existingIngredient.quantity, adjustedQuantity, unit);
               existingIngredient.quantity = totalQuantity.quantity;
@@ -94,17 +121,17 @@ export default function ShoppingListScreen({ navigation, route }) {
             if (recipeData.ingredients) {
               const servingsSelected = recipeData.servingsSelected || recipeData.servings;
               const servings = recipeData.servings;
-  
+
               recipeData.ingredients.forEach((ingredient) => {
                 const { name, quantity, unit, rayon } = ingredient;
                 const adjustedQuantity = parseFloat(adjustQuantity(quantity, servingsSelected, servings));
-  
+
                 if (!ingredientsList[rayon]) {
                   ingredientsList[rayon] = [];
                 }
-  
+
                 const existingIngredient = ingredientsList[rayon].find((item) => item.name === name);
-  
+
                 if (existingIngredient) {
                   const totalQuantity = addQuantities(existingIngredient.quantity, adjustedQuantity, unit);
                   existingIngredient.quantity = totalQuantity.quantity;
@@ -123,17 +150,17 @@ export default function ShoppingListScreen({ navigation, route }) {
         }
       });
     });
-  
+
     const sortedIngredientsList = Object.keys(ingredientsList)
       .sort((a, b) => a.localeCompare(b))
       .reduce((acc, rayon) => {
         acc[rayon] = ingredientsList[rayon].sort((a, b) => a.name.localeCompare(b.name));
         return acc;
       }, {});
-  
+
     return sortedIngredientsList;
   };
-  
+
   // Fonction pour formater les quantités en g/ml si elles sont inférieures à 1 kg ou 1 l
   const formatQuantity = (quantity, unit) => {
     if (unit === "kg" && quantity < 1) {
@@ -144,11 +171,11 @@ export default function ShoppingListScreen({ navigation, route }) {
       return { quantity: Number.isInteger(quantity) ? quantity : quantity.toFixed(2), unit };
     }
   };
-  
+
   const addQuantities = (existingQuantity, newQuantity, unit) => {
     let existing = parseFloat(existingQuantity);
     let added = parseFloat(newQuantity);
-  
+
     if (unit === "kg" || unit === "g") {
       if (existingQuantity.unit === "kg" && unit === "kg") {
         existing *= 1000;
@@ -169,7 +196,7 @@ export default function ShoppingListScreen({ navigation, route }) {
       } else if (existingQuantity.unit === "ml") {
         unit = "ml";
       }
-  
+
       const total = existing + added * (unit === "l" ? 1000 : 1);
       const roundedTotal = total >= 1000
         ? Math.round(total / 1000 * 100) / 100 // Arrondir à deux décimales pour les litres
@@ -189,7 +216,7 @@ export default function ShoppingListScreen({ navigation, route }) {
       };
     }
   };
-  
+
   // Convertir une fraction en nombre décimal
   const fractionToDecimal = (fraction) => {
     const [num, denom] = fraction.split('/').map(Number);
@@ -200,52 +227,58 @@ export default function ShoppingListScreen({ navigation, route }) {
     const adjustedQuantity = quantity * (servingsSelected / servings);
     return adjustedQuantity.toFixed(2);  // Garder en décimal avec deux décimales
   };
-  
 
-  const handleSaveShoppingList = async () => {
-    // Obtenir la plage de dates du mealPlan
+  const handleSaveMealPlan = async () => {
+    if (!mealPlan) {
+      Alert.alert('Erreur', 'Le mealPlan est vide ou non défini.');
+      return;
+    }
+    console.log(mealPlan)
+
     const dates = Object.keys(mealPlan);
     const startDate = moment(dates[0]).format('DD/MM');
     const endDate = moment(dates[dates.length - 1]).format('DD/MM');
     const now = moment().format(`DD/MM/YYYY à HH:mm`);
-    let title;
 
-    if (startDate === endDate) { title = `${now} - menus du ${startDate}`; } 
-    else { title = `${now} - menus du ${startDate} au ${endDate}`; }
-    
+    const title = startDate === endDate
+      ? `${now} - menus du ${startDate}`
+      : `${now} - menus du ${startDate} au ${endDate}`;
+
     const newEntry = {
-        date: `${now}`,
-        list: shoppingList,
-        title: title
+      date: now,
+      mealPlan: mealPlan,  // Enregistrez le mealPlan complet
+      title: title
     };
-    console.log('newEntry : ', newEntry);
-    const updatedHistory = [...shoppingHistory, newEntry];
-    // Trier par date décroissante
-    const sortedHistory = updatedHistory.sort((a, b) => moment(b.date, 'DD/MM/YYYY à HH:mm') - moment(a.date, 'DD/MM/YYYY à HH:mm')).slice(0, 9);
 
-    setShoppingHistory(sortedHistory);
+    const updatedHistory = [...mealPlanHistory, newEntry];
+    const sortedHistory = updatedHistory
+      .sort((a, b) => moment(b.date, 'DD/MM/YYYY à HH:mm') - moment(a.date, 'DD/MM/YYYY à HH:mm'))
+      .slice(0, 10);
+
+    setMealPlanHistory(sortedHistory);
 
     try {
-        await AsyncStorage.setItem('shoppingHistory', JSON.stringify(updatedHistory));
-      } catch (error) {
-        console.error('Erreur lors de l\'enregistrement de l\'historique', error);
+      // Vérification supplémentaire pour éviter un problème de sauvegarde
+      if (sortedHistory && sortedHistory.length > 0) {
+        await AsyncStorage.setItem('mealPlanHistory', JSON.stringify(sortedHistory));
+        console.log('Succès', 'MealPlan sauvegardé avec succès !');
+      } else {
+        console.warn("Aucun historique à sauvegarder.");
       }
-    Alert.alert('Cool !','Liste de courses sauvegardée avec succès !');
+    } catch (error) {
+      console.error('Erreur lors de l\'enregistrement de l\'historique', error);
+    }
 
-    // Recharge l'historique ici pour mettre à jour la page d'accueil
-    loadShoppingHistory(); 
-    // Naviguer vers une autre page ou réinitialiser le mealPlan
-    navigation.goBack(); // Utilisez goBack() ou naviguez vers un autre écran
+    loadMealPlanHistory();
+    // navigation.goBack();
   };
 
-
-  const loadShoppingHistory = async () => {
+  const loadMealPlanHistory = async () => {
     try {
-      const value = await AsyncStorage.getItem('shoppingHistory');
+      const value = await AsyncStorage.getItem('mealPlanHistory');
       if (value !== null) {
         const history = JSON.parse(value);
-        setShoppingHistory(history.slice(-10)); // Limiter à 10 entrées
-        console.log('Historique récupéré : ', history.slice(-10))
+        setMealPlanHistory(history);
       }
     } catch (error) {
       console.error('Erreur lors de la récupération de l\'historique', error);
@@ -258,7 +291,7 @@ export default function ShoppingListScreen({ navigation, route }) {
         Alert.alert('Erreur', 'Veuillez entrer un élément valide.');
         return;
       }
-    
+
       const newItem = {
         name: manualItem,
         quantity: parseFloat(Math.abs(newItemQuantity)), // Utiliser la valeur numérique choisie
@@ -269,7 +302,7 @@ export default function ShoppingListScreen({ navigation, route }) {
       // Vérifiez si l'élément existe déjà
       const existingRayonList = shoppingList[selectedRayon] || [];
       const existingItem = existingRayonList.find(item => item.name.toLowerCase() === newItem.name.toLowerCase());
-  
+
       if (existingItem) {
         // Si l'élément existe, incrémentez sa quantité
         incrementQuantity(selectedRayon, existingItem.name, newItem.quantity);
@@ -285,14 +318,14 @@ export default function ShoppingListScreen({ navigation, route }) {
     } else {
       // Gestion d'erreurs si nécessaire
       alert('Veuillez remplir tous les champs');
-    } 
+    }
   };
 
   const incrementQuantity = (rayon, name, increment) => {
     setShoppingList(prevList => {
       const updatedList = { ...prevList };
       const ingredient = updatedList[rayon].find(item => item.name === name);
-  
+
       if (ingredient) {
         // Si quantity est une chaîne (et potentiellement une fraction), on la convertit
         let currentQuantity;
@@ -303,10 +336,10 @@ export default function ShoppingListScreen({ navigation, route }) {
           // Sinon, c'est une valeur numérique (ou une chaîne de type nombre)
           currentQuantity = parseFloat(ingredient.quantity);
         }
-  
+
         // Ajouter l'incrément
         currentQuantity += increment;
-  
+
         if (ingredient.unit === 'g' || ingredient.unit === 'ml') {
           if (currentQuantity >= 1000) {
             // Convertir en kg si la quantité atteint ou dépasse 1000g
@@ -315,7 +348,7 @@ export default function ShoppingListScreen({ navigation, route }) {
           } else {
             ingredient.quantity = Math.round(currentQuantity); // On garde en grammes
           }
-        } 
+        }
         // Si l'unité est "kg", convertir en g avant d'ajouter l'incrément
         else if (ingredient.unit === 'kg' || ingredient.unit === 'L') {
           console.log('increment', increment)
@@ -332,7 +365,7 @@ export default function ShoppingListScreen({ navigation, route }) {
             ingredient.quantity = Math.round(currentQuantity); // Retour en grammes
             ingredient.unit = ingredient.unit === 'kg' ? 'g' : 'ml';
           }
-        } 
+        }
         // Si l'unité est "unité", garder la quantité en décimal
         else { // if (ingredient.unit === 'unité')
           ingredient.quantity = currentQuantity.toFixed(1);  // Garder la décimale
@@ -341,22 +374,22 @@ export default function ShoppingListScreen({ navigation, route }) {
       return updatedList;
     });
   };
-  
+
   const decrementQuantity = (rayon, name, decrement) => {
     setShoppingList(prevList => {
       const updatedList = { ...prevList };
       const ingredient = updatedList[rayon].find(item => item.name === name);
-  
+
       if (ingredient) {
         // S'assurer que quantity est un nombre (ou convertir une fraction en nombre)
         let currentQuantity = parseFloat(ingredient.quantity);
         if (isNaN(currentQuantity)) {
           currentQuantity = fractionToDecimal(ingredient.quantity);  // Conversion en nombre si c'est une fraction
         }
-  
+
         // Décrémenter la quantité
         currentQuantity -= decrement;
-  
+
         if (currentQuantity > 0) {
           // Si l'unité est "g", on garde en grammes et on ajuste si nécessaire
           if (ingredient.unit === 'g') {
@@ -366,7 +399,7 @@ export default function ShoppingListScreen({ navigation, route }) {
               ingredient.quantity = (currentQuantity / 1000).toFixed(1); // Convertir en kg
               ingredient.unit = 'kg';
             }
-          } 
+          }
           // Si l'unité est "kg", convertit d'abord en grammes et gère l'incrément
           else if (ingredient.unit === 'kg') {
             currentQuantity *= 1000; // Convertir en grammes avant la décrémentation
@@ -390,7 +423,7 @@ export default function ShoppingListScreen({ navigation, route }) {
       return updatedList;
     });
   };
-  
+
   const handleCopy = () => {
     const listText = Object.keys(shoppingList).map(rayon =>
       `${rayon}:\n` + shoppingList[rayon].map(item => `${item.name}: ${item.quantity} ${item.unit}`).join('\n')
@@ -412,39 +445,65 @@ export default function ShoppingListScreen({ navigation, route }) {
 
     // Si le rayon n'existe pas, on le crée
     if (!shoppingList[selectedRayon]) {
-        shoppingList[selectedRayon] = [];
+      shoppingList[selectedRayon] = [];
     }
 
     const existingItemIndex = shoppingList[selectedRayon].findIndex(item => item.name.toLowerCase() === name.toLowerCase());
 
     if (existingItemIndex !== -1) {
-        // L'élément existe déjà, on incrémente la quantité
-        const updatedQuantity = shoppingList[selectedRayon][existingItemIndex].quantity + quantity;
-        const updatedItem = {
-            ...shoppingList[selectedRayon][existingItemIndex],
-            quantity: updatedQuantity,
-            unit: unit || existingItem.unit,
-            category: category || existingItem.category 
-        };
-        const updatedShoppingList = {
-            ...shoppingList,
-            [selectedRayon]: shoppingList[selectedRayon].map((item, index) => index === existingItemIndex ? updatedItem : item)
-        };
-        setShoppingList(updatedShoppingList);
-        
+      // L'élément existe déjà, on incrémente la quantité
+      const updatedQuantity = shoppingList[selectedRayon][existingItemIndex].quantity + quantity;
+      const updatedItem = {
+        ...shoppingList[selectedRayon][existingItemIndex],
+        quantity: updatedQuantity,
+        unit: unit || existingItem.unit,
+        category: category || existingItem.category
+      };
+      const updatedShoppingList = {
+        ...shoppingList,
+        [selectedRayon]: shoppingList[selectedRayon].map((item, index) => index === existingItemIndex ? updatedItem : item)
+      };
+      setShoppingList(updatedShoppingList);
+
     } else {
-        // L'élément n'existe pas, on l'ajoute normalement
-        const newItemWithDetails = {
-            name,
-            quantity,
-            unit: unit || 'g', // Par défaut 'g' si l'utilisateur n'a pas sélectionné d'unité
-            category: category || 'Divers' // Pareil pour la catégorie
-          };
-        const updatedShoppingList = { ...shoppingList };
-        updatedShoppingList[rayon].push(newItemWithDetails);
-        setShoppingList(updatedShoppingList);
+      // L'élément n'existe pas, on l'ajoute normalement
+      const newItemWithDetails = {
+        name,
+        quantity,
+        unit: unit || 'g', // Par défaut 'g' si l'utilisateur n'a pas sélectionné d'unité
+        category: category || 'Divers' // Pareil pour la catégorie
+      };
+      const updatedShoppingList = { ...shoppingList };
+      updatedShoppingList[rayon].push(newItemWithDetails);
+      setShoppingList(updatedShoppingList);
     }
-};
+  };
+
+  const saveCheckedItems = async (updatedCheckedItems) => {
+    try {
+      const activeMealPlan = mealPlanHistory.find(
+        (entry) => JSON.stringify(entry.mealPlan) === JSON.stringify(mealPlan)
+      );
+
+      console.log('updatedCheckedItems :', updatedCheckedItems)
+      if (activeMealPlan) {
+        await AsyncStorage.setItem(`checkedItems_${activeMealPlan.date}`, JSON.stringify(updatedCheckedItems));
+      }
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde de l'état des éléments cochés", error);
+    }
+  };
+
+  const toggleCheckbox = (ingredientName) => {
+    const updatedCheckedItems = {
+      ...checkedItems,
+      [ingredientName]: !checkedItems[ingredientName], // Inverser l'état de la case
+    };
+    setCheckedItems(updatedCheckedItems);
+
+    saveCheckedItems(updatedCheckedItems); // Sauvegarde avec la clé unique du mealPlan
+  };
+
 
   return (
 
@@ -462,11 +521,11 @@ export default function ShoppingListScreen({ navigation, route }) {
         >
           <TouchableOpacity style={styles.modalOverlay} onPress={() => setShowHideMenu(false)}>
             {/* <View style={styles.menu}> */}
-              <TouchableOpacity onPress={toggleHideCheckedItems} style={styles.menuItem}>
-                <Text style={styles.menuItemText}>
-                  {hideCheckedItems ? 'Afficher les éléments cochés' : 'Masquer les éléments cochés'}
-                </Text>
-              </TouchableOpacity>
+            <TouchableOpacity onPress={toggleHideCheckedItems} style={styles.menuItem}>
+              <Text style={styles.menuItemText}>
+                {hideCheckedItems ? 'Afficher les éléments cochés' : 'Masquer les éléments cochés'}
+              </Text>
+            </TouchableOpacity>
             {/* </View> */}
           </TouchableOpacity>
         </Modal>
@@ -483,7 +542,7 @@ export default function ShoppingListScreen({ navigation, route }) {
         ) : (
           Object.keys(shoppingList).map((rayon) => {
             // Vérifier si tous les éléments sont masqués (tous les éléments sont cochés)
-            const allItemsHidden = shoppingList[rayon].every((ingredient) => 
+            const allItemsHidden = shoppingList[rayon].every((ingredient) =>
               hideCheckedItems && checkedItems[ingredient.name]
             );
 
@@ -498,10 +557,13 @@ export default function ShoppingListScreen({ navigation, route }) {
                     <View key={ingredient.name} style={styles.ingredientRow}>
                       <Checkbox
                         status={checkedItems[ingredient.name] ? 'checked' : 'unchecked'}
-                        onPress={() => setCheckedItems({
-                          ...checkedItems,
-                          [ingredient.name]: !checkedItems[ingredient.name]
-                        })}
+                        onPress={() => {
+                          toggleCheckbox(ingredient.name)
+                          setCheckedItems({
+                            ...checkedItems,
+                            [ingredient.name]: !checkedItems[ingredient.name]
+                          })
+                        }}
                       />
                       <Text style={styles.ingredientText}>
                         {ingredient.name} - {ingredient.quantity} {ingredient.unit}
@@ -523,95 +585,95 @@ export default function ShoppingListScreen({ navigation, route }) {
         )}
       </ScrollView>
 
-    
-        <View style={styles.somespace}></View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: -20, marginVertical: 5 }}>
-          <TextInput
-            placeholder="Ajouter un nouvel élément"
-            value={manualItem}
-            onChangeText={setManualItem}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Quantité"
-            value={newItemQuantity}
-            onChangeText={setnewItemQuantity}
-            keyboardType="numeric" // Affiche le clavier numérique
-            style={styles.numericInput} // Nouveau style pour le champ de quantité
-          />
-          <TouchableOpacity onPress={() => setUnitModalVisible(true)} style={styles.unitButton}>
-            <Text style={styles.buttonModalText}>{selectedUnit}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => setRayonModalVisible(true)} style={styles.rayonButton}>
-            <Text style={styles.buttonModalText}>{selectedRayon}</Text>
-          </TouchableOpacity>
-        </View>
-      
-      
-        <TouchableOpacity style={styles.AddButtonNotFlex} onPress={addManualItem}>
-          <Text style={styles.mainButtonText}>Ajouter à la liste</Text>
+      <View style={styles.somespace}></View>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: -20, marginVertical: 5 }}>
+        <TextInput
+          placeholder="Ajouter un nouvel élément"
+          value={manualItem}
+          onChangeText={setManualItem}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Quantité"
+          value={newItemQuantity}
+          onChangeText={setnewItemQuantity}
+          keyboardType="numeric" // Affiche le clavier numérique
+          style={styles.numericInput} // Nouveau style pour le champ de quantité
+        />
+        <TouchableOpacity onPress={() => setUnitModalVisible(true)} style={styles.unitButton}>
+          <Text style={styles.buttonModalText}>{selectedUnit}</Text>
         </TouchableOpacity>
 
-        <View style={styles.somespace}></View>
-
-        {/* Modal pour sélectionner l'unité */}
-        <Modal visible={unitModalVisible} animationType="slide" transparent={true}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Choisir une unité</Text>
-              {availableUnits.map((unit) => (
-                <TouchableOpacity key={unit} onPress={() => {
-                  setSelectedUnit(unit);
-                  setUnitModalVisible(false);
-                }}>
-                  <Text style={styles.modalOption}>{unit}</Text>
-                </TouchableOpacity>
-              ))}
-              <TouchableOpacity onPress={() => setUnitModalVisible(false)} style={styles.closeButton}>
-                <Text style={styles.closeButtonText}>Fermer</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-
-        {/* Modal pour sélectionner le rayon */}
-        <Modal visible={rayonModalVisible} animationType="slide" transparent={true}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Choisir une catégorie</Text>
-              {availableRayons.map((rayon) => (
-                <TouchableOpacity key={rayon} onPress={() => {
-                  setSelectedRayon(rayon);
-                  console.log('Fermeture du modal rayon');
-                  setRayonModalVisible(false);
-                }}>
-                  <Text style={styles.modalOption}>{rayon}</Text>
-                </TouchableOpacity>
-              ))}
-              <TouchableOpacity onPress={() => setRayonModalVisible(false)} style={styles.closeButton}>
-                <Text style={styles.closeButtonText}>Fermer</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-
-
-        {/* Boutons "Sauvegarder" et "Copier" sur la même ligne */}
-        <View style={{height: 5 }}></View>
-        <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.mainButton} onPress={handleSaveShoppingList}>
-            <Text style={styles.mainButtonText}>Sauvegarder la liste</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.mainButton} onPress={handleCopy}>
-            <Text style={styles.mainButtonText}>Copier</Text>
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity style={styles.mainButtonNotFlex} onPress={() => navigation.navigate('HomeScreen')}>
-          <Text style={styles.mainButtonText}>Retour au menu principal</Text>
+        <TouchableOpacity onPress={() => setRayonModalVisible(true)} style={styles.rayonButton}>
+          <Text style={styles.buttonModalText}>{selectedRayon}</Text>
         </TouchableOpacity>
       </View>
+
+
+      <TouchableOpacity style={styles.AddButtonNotFlex} onPress={addManualItem}>
+        <Text style={styles.mainButtonText}>Ajouter à la liste</Text>
+      </TouchableOpacity>
+
+      <View style={styles.somespace}></View>
+
+      {/* Modal pour sélectionner l'unité */}
+      <Modal visible={unitModalVisible} animationType="slide" transparent={true}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Choisir une unité</Text>
+            {availableUnits.map((unit) => (
+              <TouchableOpacity key={unit} onPress={() => {
+                setSelectedUnit(unit);
+                setUnitModalVisible(false);
+              }}>
+                <Text style={styles.modalOption}>{unit}</Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity onPress={() => setUnitModalVisible(false)} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Fermer</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal pour sélectionner le rayon */}
+      <Modal visible={rayonModalVisible} animationType="slide" transparent={true}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Choisir une catégorie</Text>
+            {availableRayons.map((rayon) => (
+              <TouchableOpacity key={rayon} onPress={() => {
+                setSelectedRayon(rayon);
+                console.log('Fermeture du modal rayon');
+                setRayonModalVisible(false);
+              }}>
+                <Text style={styles.modalOption}>{rayon}</Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity onPress={() => setRayonModalVisible(false)} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Fermer</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+
+      {/* Boutons "Sauvegarder" et "Copier" sur la même ligne */}
+      <View style={{ height: 5 }}></View>
+      <View style={styles.actionButtons}>
+        <TouchableOpacity
+          style={styles.mainButton}
+          onPress={() => {
+            navigation.navigate('HomeScreen'); // Navigue vers HomeScreen
+          }}
+        >
+          <Text style={styles.mainButtonText}>Retour au menu</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.mainButton} onPress={handleCopy}>
+          <Text style={styles.mainButtonText}>Copier la liste</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
 
   );
 }
@@ -686,13 +748,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 2.5, // Espacement entre les boutons
   },
   rayonButton: {
-      backgroundColor: '#9acbff',
-      padding: 15,
-      borderRadius: 10,
-      marginVertical: 2.5,
-      alignItems: 'center',
-      flex: 1, // Ajustez la largeur du bouton pour qu'il s'adapte
-      marginHorizontal: 2.5, // Espacement entre les boutons
+    backgroundColor: '#9acbff',
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 2.5,
+    alignItems: 'center',
+    flex: 1, // Ajustez la largeur du bouton pour qu'il s'adapte
+    marginHorizontal: 2.5, // Espacement entre les boutons
   },
   buttonModalText: {
     color: '#fff',
@@ -710,7 +772,7 @@ const styles = StyleSheet.create({
     // justifyContent: 'space-evenly',
     flexWrap: 'wrap',
     marginVertical: 2.5,
-  },  
+  },
   mainButtonNotFlex: {
     backgroundColor: '#007bff',
     padding: 15,
@@ -792,7 +854,7 @@ const styles = StyleSheet.create({
     color: '#fff', // Couleur du texte
     fontSize: 16, // Taille du texte
     textAlign: 'center', // Centre le texte
-  },  
+  },
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -801,7 +863,7 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
     // backgroundColor: 'red',
   },
-    modalOverlay: {
+  modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
     // justifyContent: 'center',
@@ -836,9 +898,9 @@ const styles = StyleSheet.create({
     // textAlign: 'right',
     top: 72.5,
     right: 80,
-    padding: 10, 
+    padding: 10,
     borderRadius: 10,
-    backgroundColor: '#ccc' 
+    backgroundColor: '#ccc'
   },
   menuItemText: {
     // position: 'relative',

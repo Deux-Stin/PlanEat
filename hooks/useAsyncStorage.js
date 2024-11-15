@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
 
-const RECIPES_PATH = `${FileSystem.documentDirectory}recipes.json`;
-const SHOPPING_HISTORY_PATH = `${FileSystem.documentDirectory}shoppingHistory.json`;
-const FAVORIS_PATH = `${FileSystem.documentDirectory}favoris.json`;
+const FILE_PATHS = {
+  recipes: `${FileSystem.documentDirectory}recipes.json`,
+  mealPlanHistory: `${FileSystem.documentDirectory}mealPlanHistory.json`,
+  favoris: `${FileSystem.documentDirectory}favoris.json`,
+};
 
 export const useAsyncStorage = (key, initialValue) => {
   const [storedValue, setStoredValue] = useState(initialValue);
@@ -16,22 +18,12 @@ export const useAsyncStorage = (key, initialValue) => {
         if (value !== null) {
           setStoredValue(JSON.parse(value));
         } else {
-          // Vérifier l'existence du fichier JSON correspondant
-          let filePath;
-          if (key === 'recipes') {
-            filePath = RECIPES_PATH;
-          } else if (key === 'shoppingHistory') {
-            filePath = SHOPPING_HISTORY_PATH;
-          } else if (key === 'favoris') {
-            filePath = FAVORIS_PATH;
-          }
-
+          const filePath = FILE_PATHS[key];
           const fileExists = await FileSystem.getInfoAsync(filePath);
 
           if (fileExists.exists) {
             await loadFromJson(filePath);
           } else {
-            // Si le fichier n'existe pas, initialiser avec la valeur par défaut
             await saveToJson(filePath, initialValue);
             setStoredValue(initialValue);
           }
@@ -46,22 +38,15 @@ export const useAsyncStorage = (key, initialValue) => {
   const setValue = async (value) => {
     try {
       const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
+      if (valueToStore !== null && valueToStore !== undefined) {
+        setStoredValue(valueToStore);
 
-      let filePath;
-      if (key === 'recipes') {
-        filePath = RECIPES_PATH;
-      } else if (key === 'shoppingHistory') {
-        filePath = SHOPPING_HISTORY_PATH;
-      } else if (key === 'favoris') {
-        filePath = FAVORIS_PATH;
+        const filePath = FILE_PATHS[key];
+        await AsyncStorage.setItem(key, JSON.stringify(valueToStore));
+        await saveToJson(filePath, valueToStore);
+      } else {
+        console.warn(`Tentative de sauvegarder une valeur nulle ou indéfinie pour ${key}`);
       }
-      console.log('key : ', key)
-
-      await AsyncStorage.setItem(key, JSON.stringify(valueToStore));
-      await saveToJson(filePath, valueToStore);
-      console.log('valueToStore :', valueToStore);
-
     } catch (error) {
       console.error(`Erreur lors de l'écriture de la clé ${key} :`, error);
     }
@@ -73,7 +58,6 @@ export const useAsyncStorage = (key, initialValue) => {
       const parsedData = JSON.parse(fileContent);
       setStoredValue(parsedData);
       console.log(`Données chargées depuis ${filePath}`);
-      console.log('parsedData :', parsedData)
     } catch (error) {
       console.error(`Erreur lors de la lecture du fichier ${filePath} :`, error);
     }
@@ -81,7 +65,6 @@ export const useAsyncStorage = (key, initialValue) => {
 
   const saveToJson = async (filePath, data) => {
     try {
-      console.log('data : ', data)
       if (data !== null && data !== undefined) {
         await FileSystem.writeAsStringAsync(filePath, JSON.stringify(data));
         console.log(`Données sauvegardées dans ${filePath}`);

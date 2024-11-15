@@ -5,22 +5,25 @@ import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Swipeable } from 'react-native-gesture-handler';
 import { globalStyles } from '../globalStyles';
+import moment from 'moment';
 
 export default function HomeScreen({ navigation }) {
-  const [shoppingHistory, setShoppingHistory] = useAsyncStorage('shoppingHistory', []);
+  const [mealPlanHistory, setmealPlanHistory] = useAsyncStorage('mealPlanHistory', []);
   const swipeableRefs = useRef([]); 
 
   useFocusEffect(
     React.useCallback(() => {
-      loadShoppingHistory();
+      loadmealPlanHistory();
     }, [])
   );
 
-  const loadShoppingHistory = async () => {
+  const loadmealPlanHistory = async () => {
     try {
-      const value = await AsyncStorage.getItem('shoppingHistory');
+      const value = await AsyncStorage.getItem('mealPlanHistory');
       if (value !== null) {
-        setShoppingHistory(JSON.parse(value));
+        const parsedHistory = JSON.parse(value);
+        console.log('Chargement de mealPlanHistory :', parsedHistory); // Vérifiez le contenu ici
+        setmealPlanHistory(parsedHistory);
       }
     } catch (error) {
       console.error('Erreur lors de la récupération de l\'historique', error);
@@ -28,9 +31,9 @@ export default function HomeScreen({ navigation }) {
   };
 
   const deleteHistoryItem = async (itemToDelete) => {
-    const updatedHistory = shoppingHistory.filter(item => item !== itemToDelete);
-    setShoppingHistory(updatedHistory);
-    await AsyncStorage.setItem('shoppingHistory', JSON.stringify(updatedHistory));
+    const updatedHistory = mealPlanHistory.filter(item => item !== itemToDelete);
+    setmealPlanHistory(updatedHistory);
+    await AsyncStorage.setItem('mealPlanHistory', JSON.stringify(updatedHistory));
   };
 
   const renderRightActions = (item, index) => (
@@ -69,12 +72,16 @@ export default function HomeScreen({ navigation }) {
     >
       <TouchableOpacity
         style={styles.historyButton}
-        onPress={() => navigation.navigate('ShoppingListScreen', { historyItem: item })}
+        onPress={() => {
+          console.log("Element cliqué:", item); // Debug
+          navigation.navigate('MealPlanSummaryScreen', { mealPlan: item.mealPlan, date: item.date });
+        }}
       >
         <Text style={styles.historyButtonText}>{item.title}</Text>
       </TouchableOpacity>
     </Swipeable>
   );
+  
 
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -85,7 +92,7 @@ export default function HomeScreen({ navigation }) {
       </TouchableOpacity>
 
       <FlatList
-        data={shoppingHistory}
+        data={mealPlanHistory}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         style={styles.historyList}
@@ -103,7 +110,23 @@ export default function HomeScreen({ navigation }) {
                 <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('MealPlanScreen', {fromHome: true})}>
                   <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Planifier vos repas</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('ShoppingListScreen', { mealPlan: {} })}>
+                <TouchableOpacity
+                  style={styles.mainButton}
+                  onPress={() => {
+                    if (mealPlanHistory && mealPlanHistory.length > 0) {
+                      const sortedHistory = [...mealPlanHistory].sort((a, b) => moment(b.date, 'DD/MM/YYYY à HH:mm') - moment(a.date, 'DD/MM/YYYY à HH:mm'));
+                      const lastMealPlan = sortedHistory[0].mealPlan;
+                      const dateLastMealPlan = sortedHistory[0].date;
+                    
+                      console.log('Dernier MealPlan: ', dateLastMealPlan, ' lastMealPlan ', lastMealPlan);
+                      navigation.navigate('ShoppingListScreen', { mealPlan: lastMealPlan, date: dateLastMealPlan });
+                    }
+                     else {
+                      // Afficher un message si l'historique est vide
+                      Alert.alert("Aucune liste de courses disponible", "Vous n'avez pas encore de plan de repas dans l'historique.");
+                    }
+                  }}
+                >
                   <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Voir ma dernière liste de courses</Text>
                 </TouchableOpacity>
 
@@ -179,6 +202,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   historyButton: {
+    height: 40,
     padding: 10,
     backgroundColor: '#f0f0f0',
     borderRadius: 5,
@@ -195,7 +219,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    height: '90%',
+    height: 40,
     width: 80,
     marginLeft: 10,
   },

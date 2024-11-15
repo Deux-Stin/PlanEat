@@ -1,34 +1,112 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useFocusEffect } from '@react-navigation/native'; 
-import { View, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, ScrollView, StyleSheet, TouchableOpacity, Alert, Modal } from 'react-native';
 import { Text, Button, Checkbox, BottomNavigation } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { Calendar } from 'react-native-calendars';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
+import { MealPlanContext, MealPlanProvider } from './MealPlanContext';
 import 'moment/locale/fr';
 import moment from 'moment';
 moment.locale('fr');
 
-export default function MealPlanScreen({ navigation, route}) {
+export default function MealPlanScreen({ navigation, route }) {
   const [selectedDates, setSelectedDates] = useState({});
+  const [selectedDate, setSelectedDate] = useState(null);
   const [mealsSelection, setMealsSelection] = useState({});
-  const [mealPlan, setMealPlan] = useState({});
+  const [showPortionModal, setShowPortionModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedMealType, setSelectedMealType] = useState(null);
+  const { mealPlan, setMealPlan } = useContext(MealPlanContext);
   const [recipes] = useAsyncStorage('recipes', []);
-  const [portions, setPortions] = useState(2); // Nombre de portions par défaut
 
   // Obtenir la date actuelle
   const today = moment().format('YYYY-MM-DD');
 
+  // Permet de récupérer des états passés par d'autres pages :
   useFocusEffect(
     React.useCallback(() => {
-      console.log('route.params?.fromHome', route.params?.fromHome)
       if (route.params?.fromHome) {
-        console.log('Passage par useFocusEffect pour faire un reset propre.')
-        resetSelections(); // Appelle la fonction resetSelections seulement si on vient de HomeScreen
+        resetSelections();
         route.params.fromHome = false;
       }
-    }, [route.params]) // Ajoute route.params comme dépendance
+    }, [route.params])
   );
+
+  useEffect(() => {
+    if (route.params?.mealPlan) {
+      setMealPlan(route.params.mealPlan);
+    }
+  }, [route.params?.mealPlan]);
+
+  useEffect(() => {
+    if (mealPlan) {
+      const updatedSelectedDates = Object.keys(mealPlan).reduce((acc, date) => {
+        acc[date] = { selected: true, selectedColor: 'blue' };
+        return acc;
+      }, {});
+      setSelectedDates(updatedSelectedDates);
+    }
+  }, [mealPlan]);
+
+  // Utilisez un effet pour initialiser mealsSelection uniquement lors du chargement de mealPlan
+  useEffect(() => {
+    const newMealsSelection = {};
+
+    Object.keys(mealPlan || {}).forEach((date) => {
+      const meals = mealPlan[date];
+      newMealsSelection[date] = {
+        breakfast: !!meals?.breakfast,
+        lunch: !!meals?.lunch,
+        dinner: !!meals?.dinner,
+      };
+    });
+
+    setMealsSelection(newMealsSelection);
+  }, [mealPlan]);
+
+  // Initialise les portions si elles ne sont pas définies, sans mettre mealPlan à jour à chaque rendu
+  useEffect(() => {
+    let needsUpdate = false;
+    const newMealPlan = { ...mealPlan };
+
+    Object.keys(mealPlan || {}).forEach((date) => {
+      const meals = mealPlan[date];
+
+      if (meals?.breakfast && !meals.breakfast.servingsSelected) {
+        newMealPlan[date] = {
+          ...newMealPlan[date],
+          breakfast: { ...meals.breakfast, servingsSelected: 2 },
+        };
+        needsUpdate = true;
+      }
+
+      if (meals?.lunch && !meals.lunch.servingsSelected) {
+        newMealPlan[date] = {
+          ...newMealPlan[date],
+          lunch: { ...meals.lunch, servingsSelected: 2 },
+        };
+        needsUpdate = true;
+      }
+
+      if (meals?.dinner && !meals.dinner.servingsSelected) {
+        newMealPlan[date] = {
+          ...newMealPlan[date],
+          dinner: { ...meals.dinner, servingsSelected: 2 },
+        };
+        needsUpdate = true;
+      }
+    });
+
+    // Mise à jour de mealPlan uniquement si des changements sont nécessaires
+    if (needsUpdate) {
+      setMealPlan(newMealPlan);
+    }
+  }, [mealPlan]);
+
+
+
+
 
   const mealTypeToCategory = {
     breakfast: 'Petit-déjeuner',
@@ -75,65 +153,87 @@ export default function MealPlanScreen({ navigation, route}) {
 
   const handleMealCheckboxChange = async (date, meal) => {
     const newMealsSelection = { ...mealsSelection };
+  
+    // Si le repas est déjà sélectionné, on le désélectionne
     newMealsSelection[date] = {
       ...newMealsSelection[date],
-      [meal]: !newMealsSelection[date]?.[meal],
+      [meal]: !newMealsSelection[date]?.[meal], // Inverse la sélection
     };
+  
+    // Mise à jour de l'état des repas sélectionnés
     setMealsSelection(newMealsSelection);
   
+    // Mise à jour de mealPlan pour ajouter ou supprimer le repas
     const updatedMealPlan = { ...mealPlan };
   
+    // Si le repas est désélectionné, on le retire de mealPlan
     if (!newMealsSelection[date][meal]) {
       if (updatedMealPlan[date]) {
-        delete updatedMealPlan[date][meal];
+        delete updatedMealPlan[date][meal]; // Supprime le repas de mealPlan
+        // Si aucun autre repas n'est présent pour cette date, on supprime la date
         if (!updatedMealPlan[date].breakfast && !updatedMealPlan[date].lunch && !updatedMealPlan[date].dinner) {
           delete updatedMealPlan[date];
         }
       }
     }
   
+    // Si le repas est sélectionné, on ajoute un objet vide pour ce repas si nécessaire
+    if (newMealsSelection[date][meal]) {
+      if (!updatedMealPlan[date]) {
+        updatedMealPlan[date] = {}; // Crée la date si elle n'existe pas
+      }
+      updatedMealPlan[date][meal] = {}; // On initialise un objet vide pour le repas sélectionné
+    }
+  
+    // Mise à jour du mealPlan
     setMealPlan(updatedMealPlan);
-    // Mettez à jour AsyncStorage avec le nouveau mealPlan
-    // await setMealPlan(updatedMealPlan);
-    // AsyncStorage.setItem('mealPlan', JSON.stringify(updatedMealPlan)); // Mettez à jour AsyncStorage
   };
   
   
-  const handleRecipeSelection = (date, mealType, recipeName, category, portions) => {
+  const handleRecipeSelection = (date, mealType, recipeName, category) => { // Supprimez `portions` du paramètre
+    if (!mealPlan[date]) {
+      mealPlan[date] = {}; // Assure-toi que la date existe dans mealPlan
+    }
     console.log('Sélectionner recette:', recipeName, 'pour', category);
     const selectedRecipe = recipes.find((recipe) => recipe.name === recipeName);
-
+  
     setMealPlan((prevMealPlan) => {
       const updatedMealPlan = { ...prevMealPlan };
-
-      // console.log('prevMealPlan',prevMealPlan);
   
-      // console.log('portions :',portions)
-      if (!updatedMealPlan[date]) updatedMealPlan[date] = {};
+      // Vérifie si la date existe, sinon crée un objet vide
+      if (!updatedMealPlan[date]) {
+        updatedMealPlan[date] = {};
+      }
+
+      // Vérifie si le type de repas existe, sinon crée un objet vide
+      if (!updatedMealPlan[date][mealType]) {
+        updatedMealPlan[date][mealType] = {};
+      }
   
       if (mealType === 'breakfast') {
         updatedMealPlan[date][mealType] = {
           ...selectedRecipe,
-          servingsSelected: portions
+          servingsSelected: 2 // Valeur par défaut
         }
       } else {
-        // console.log('selectedRecipe : ', selectedRecipe)
-        // console.log('updatedMealPlan[date][mealType]', updatedMealPlan[date][mealType])
+        // Pour le déjeuner et dîner, assure que la catégorie (entrée, plat, dessert) existe
+        if (!updatedMealPlan[date][mealType][category]) {
+          updatedMealPlan[date][mealType][category] = {};
+        }
+
         updatedMealPlan[date][mealType] = {
           ...updatedMealPlan[date][mealType],
           [category]: {
-            ...selectedRecipe, // Ajoute la recette à la catégorie spécifique
-            servingsSelected: portions
+            ...selectedRecipe,
+            servingsSelected: 2 // Valeur par défaut
           }
         };
       }
   
-      // console.log('updatedMealPlan',updatedMealPlan);
       return updatedMealPlan;
     });
   };
   
-
   const handleSaveMealPlan = () => {
     const hasMealsSelected = Object.keys(mealPlan).some(date => 
       mealPlan[date].breakfast || mealPlan[date].lunch || mealPlan[date].dinner
@@ -145,16 +245,11 @@ export default function MealPlanScreen({ navigation, route}) {
     }
   
     // Naviguer vers la liste de courses en passant le mealPlan
-    console.log('mealPlan envoyé à la ShoppingListScreen :', mealPlan)
-    navigation.navigate('ShoppingListScreen', { mealPlan });
+    console.log('mealPlan envoyé au MealPlanSummaryScreen :', mealPlan)
+    navigation.navigate('MealPlanSummaryScreen', { mealPlan });
   };    
 
   const filterRecipesByMealType = (mealType) => {
-    const categoryMap = {
-      breakfast: 'Petit-déjeuner',
-      lunch: 'Déjeuner',
-      dinner: 'Dîner',
-    };
   
     const category = mealTypeToCategory[mealType];
     if (!category) return []; // Si category n'existe pas, retourne un tableau vide
@@ -188,8 +283,6 @@ export default function MealPlanScreen({ navigation, route}) {
     });
   };
   
-
-
   // Reset selections
   const resetSelections = async () => {
     setSelectedDates({
@@ -197,11 +290,41 @@ export default function MealPlanScreen({ navigation, route}) {
     });
     setMealsSelection({});
     setMealPlan({}); // Réinitialise le mealPlan à un objet vide
-    setPortions(2);
+    // setPortions(2);
   };   
+ 
+  // Cette fonction sert pour gérer le changement de portions
+  const handleServingsChange = (date, mealType, category, newServings) => {
+    setMealPlan((prevMealPlan) => {
+      const updatedMealPlan = { ...prevMealPlan };
   
+      // Vérification de l'existence de la date dans le plan de repas avant d'y ajouter les portions
+      if (!updatedMealPlan[date]) {
+        updatedMealPlan[date] = {};
+      }
+      
+      // Vérification de l'existence du type de repas
+      if (!updatedMealPlan[date][mealType]) {
+        updatedMealPlan[date][mealType] = {}; // Crée le type de repas si nécessaire
+      }      
+  
+      if (mealType === 'breakfast') {
+        updatedMealPlan[date][mealType].servingsSelected = newServings;
+      } else {
+        // Pour le déjeuner ou dîner, on vérifie également la catégorie
+        if (!updatedMealPlan[date][mealType][category]) {
+          updatedMealPlan[date][mealType][category] = {}; // Crée la catégorie si elle n'existe pas
+        }
+        updatedMealPlan[date][mealType][category].servingsSelected = newServings;
+      }
+  
+      return updatedMealPlan;
+    });
+  };
 
   return (
+    <MealPlanProvider>
+
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
 
@@ -231,56 +354,44 @@ export default function MealPlanScreen({ navigation, route}) {
           />
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Nombre de portions</Text>
-            <View style={styles.portionSelectorContainer}>
-              <Picker
-                selectedValue={portions}
-                onValueChange={(itemValue) => setPortions(itemValue)}
-              >
-                {[1, 2, 3, 4, 5, 6].map((num) => (
-                  <Picker.Item key={num} label={`${num} portion(s)`} value={num} />
-                ))}
-              </Picker>
-            </View>
-          </View>
+          
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Sélection des repas</Text>
 
           {Object.keys(selectedDates).length > 0 ? (
             Object.keys(selectedDates).map((date) => (
               <View key={date} style={styles.mealSection}>
-                <View style={styles.dateTextContainer}>
-                  <Text style={styles.dateText}>{moment(date).format('DD/MM/YYYY')}</Text>
-                </View>
+                <View style={styles.mealHeader}>
+                  {/* Affichage de la date et des repas */}
+                  <View style={styles.dateTextContainer}>
+                    <Text style={styles.dateText}>{moment(date).format('DD/MM/YYYY')}</Text>
+                  </View>
 
-                <View style={styles.checkboxContainer}>
-                  <View style={styles.checkboxWrapper}>
-                    <Text>Petit-déjeuner</Text>
-                    <Checkbox
-                      status={mealsSelection[date]?.breakfast ? 'checked' : 'unchecked'}
-                      onPress={() => {
-                        handleMealCheckboxChange(date, 'breakfast');
-                      }}
-                    />
-                  </View>
-                  <View style={styles.checkboxWrapper}>
-                    <Text>Déjeuner</Text>
-                    <Checkbox
-                      status={mealsSelection[date]?.lunch ? 'checked' : 'unchecked'}
-                      onPress={() => {
-                        handleMealCheckboxChange(date, 'lunch');
-                      }}
-                    />
-                  </View>
-                  <View style={styles.checkboxWrapper}>
-                    <Text>Dîner</Text>
-                    <Checkbox
-                      status={mealsSelection[date]?.dinner ? 'checked' : 'unchecked'}
-                      onPress={() => {
-                        handleMealCheckboxChange(date, 'dinner');
-                      }}
-                    />
+                  {/* Affichage des repas */}
+                  <View style={styles.mealTypesContainer}>
+                    <View style={styles.mealTypeWrapper}>
+                      <Text>Petit-déjeuner</Text>
+                      <Checkbox
+                        status={mealsSelection[date]?.breakfast ? 'checked' : 'unchecked'}
+                        onPress={() => handleMealCheckboxChange(date, 'breakfast')}
+                      />
+                    </View>
+
+                    <View style={styles.mealTypeWrapper}>
+                      <Text>Déjeuner</Text>
+                      <Checkbox
+                        status={mealsSelection[date]?.lunch ? 'checked' : 'unchecked'}
+                        onPress={() => handleMealCheckboxChange(date, 'lunch')}
+                      />
+                    </View>
+
+                    <View style={styles.mealTypeWrapper}>
+                      <Text>Dîner</Text>
+                      <Checkbox
+                        status={mealsSelection[date]?.dinner ? 'checked' : 'unchecked'}
+                        onPress={() => handleMealCheckboxChange(date, 'dinner')}
+                      />
+                    </View>
                   </View>
                 </View>
 
@@ -295,35 +406,73 @@ export default function MealPlanScreen({ navigation, route}) {
 
                       {mealType === 'breakfast' ? (
                         <View style={styles.pickerContainer}>
+                            <View style={styles.categoryTextWrapper}>
+                              <Text style={styles.categoryText}>
+                                {'Petit-Dej'}
+                              </Text>
+                            </View>
                           <Picker
+                            style={styles.recipePicker}
                             selectedValue={mealPlan[date]?.[mealType]?.name || ''}
-                            onValueChange={(itemValue) => handleRecipeSelection(date, mealType, itemValue, 'breakfast', portions)}
+                            onValueChange={(itemValue) => handleRecipeSelection(date, mealType, itemValue, 'breakfast')}
                           >
-                            <Picker.Item label="Sélectionner une recette" value="" />
+                            <Picker.Item label="Sélectionner une recette" value="" style={styles.pickerItem}/>
                             {filterRecipesByMealType(mealType).map((recipe, index) => (
-                              <Picker.Item key={index} label={recipe.name} value={recipe.name} />
+                              <Picker.Item key={index} label={recipe.name} value={recipe.name} style={styles.pickerItem} />
                             ))}
                           </Picker>
+
+                          {/* Sélecteur de portions pour le petit-déjeuner */}
+                          {mealPlan[date]?.[mealType]?.name && (
+                            <TouchableOpacity style={styles.portionSelector} onPress={() => {
+                              setShowPortionModal(true);
+                              setSelectedCategory(null);
+                              setSelectedMealType(mealType);
+                              setSelectedDate(date);
+                            }}>
+                              <Text style={styles.portionText}>{mealPlan[date][mealType].servingsSelected || 2}p</Text>
+                            </TouchableOpacity>
+                          )}
                         </View>
+
                       ) : (
                         ['entrée', 'plat', 'dessert'].map((category) => (
                           <View key={category} style={styles.pickerContainer}>
-                            <Text>{category.charAt(0).toUpperCase() + category.slice(1)}</Text>
+                            <View style={styles.categoryTextWrapper}>
+                              <Text style={styles.categoryText}>
+                                {category.charAt(0).toUpperCase() + category.slice(1)}
+                              </Text>
+                            </View>
+
                             <Picker
+                              style={styles.recipePicker}
                               selectedValue={mealPlan[date]?.[mealType]?.[category]?.name || ''}
-                              onValueChange={(itemValue) => handleRecipeSelection(date, mealType, itemValue, category, portions)} 
+                              onValueChange={(itemValue) => handleRecipeSelection(date, mealType, itemValue, category)} 
                             >
                               <Picker.Item label={`Sélectionner un(e) ${category}`} value="" />
                               {filterRecipesByCategory(category).map((recipe, index) => (
                                 <Picker.Item key={index} label={recipe.name} value={recipe.name} />
                               ))}
                             </Picker>
+
+                            {/* Sélecteur de portions pour entrée/plat/dessert */}
+                            {mealPlan[date]?.[mealType]?.[category]?.name && (
+                              <TouchableOpacity style={styles.portionSelector} onPress={() => {
+                                setShowPortionModal(true);
+                                setSelectedCategory(category);
+                                setSelectedMealType(mealType);
+                                setSelectedDate(date);
+                              }}>
+                                <Text style={styles.portionText}>{mealPlan[date][mealType][category].servingsSelected || 2}p</Text>
+                              </TouchableOpacity>
+                            )}
                           </View>
                         ))
                       )}
                     </View>
                   )
                 ))}
+
               </View>
             ))
           ) : (
@@ -332,11 +481,33 @@ export default function MealPlanScreen({ navigation, route}) {
         </View>
       </ScrollView>
 
+      {/* Modal pour sélectionner les portions */}
+      <Modal visible={showPortionModal} transparent={true} animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            {[1, 2, 3, 4, 5, 6].map((num) => (
+              <TouchableOpacity
+                key={num}
+                onPress={() => {
+                  handleServingsChange(selectedDate, selectedMealType, selectedCategory, num);
+                  setShowPortionModal(false);
+                }}
+              >
+                <Text style={styles.modalText}>{num}p</Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity onPress={() => setShowPortionModal(false)}>
+              <Text style={styles.modalCancel}>Annuler</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {/* Boutons fixes en bas */}
       <View style={styles.section}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.mainButton} onPress={handleSaveMealPlan}>
-            <Text style={styles.mainButtonText}>Enregistrer et générer la liste de courses</Text>
+            <Text style={styles.mainButtonText}>Voir mon récapitulatif</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.mainButton} onPress={resetSelections}>
             <Text style={styles.mainButtonText}>Réinitialiser</Text>
@@ -345,6 +516,8 @@ export default function MealPlanScreen({ navigation, route}) {
       </View>
 
     </View>
+
+    </MealPlanProvider>
   );
 }
 
@@ -360,12 +533,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  // title: {
-  //   fontSize: 40,
-  //   marginTop: 20,
-  //   marginBottom: 60,
-  //   textAlign: 'center',
-  // },
   section: {
     width: '100%',
     marginBottom: 10,
@@ -388,12 +555,6 @@ const styles = StyleSheet.create({
     // padding: 5, // Pour un peu d'espace intérieur
   },
   
-  mealSelection: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-  },
   mealTitle: {
     fontWeight: 'bold',
   },
@@ -405,6 +566,35 @@ const styles = StyleSheet.create({
     backgroundColor: '#e6e6e6',
     elevation: 5,
   },
+
+  mealHeader: {
+    flexDirection: 'row', // Date et repas sur la même ligne
+    justifyContent: 'space-between', // Espacement entre les éléments
+    alignItems: 'center',
+    // marginBottom: 10,
+  },
+  dateTextContainer: {
+    backgroundColor: '#d6d6d6',
+    padding: 5,
+    borderRadius: 5,
+    elevation: 2,
+  },
+  dateText: {
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  mealTypesContainer: {
+    flexDirection: 'row', // Checkbox sous chaque repas
+    marginRight: 20,
+  },
+  mealTypeWrapper: {
+    flexDirection: 'column', // Intitulé et checkbox sur la même ligne
+    alignItems: 'center',
+    // marginBottom: 10,
+    marginHorizontal: 30,
+    justifyContent: 'space-evenly',
+  },
+
   mealAttribution: {
     // backgroundColor: 'red',
   },
@@ -414,7 +604,7 @@ const styles = StyleSheet.create({
     // marginBottom: 10,
     borderTopWidth: 1,
     borderTopColor: '#ccc',
-    padding: 5,
+    padding: 10,
     textAlign: 'center',
   },
   boldText: {
@@ -424,20 +614,73 @@ const styles = StyleSheet.create({
     // height:100,
   },
   pickerContainer:{
+    flexDirection: 'row', 
+    alignItems: 'center',
     backgroundColor: '#fff',
     padding: 0,
-    borderRadius: 5, // Pour arrondir les coins
-    elevation: 5, // Pour ajouter de l'ombre si nécessaire
-    // padding: 5, // Pour un peu d'espace inté
+    borderRadius: 5,
+    elevation: 5,
+    marginBottom: 5,
+  },
+  recipePicker: {
+    flex: 1, // Prend l'espace restant
+    height: 50,
   },
 
-  picker: {
-    height: 50, // Hauteur du Picker
-    width: '100%', // Largeur pleine
-    backgroundColor: '#ffffff', // Couleur de fond du Picker
+  portionSelector: {
+    width: 50,
+    height: 50,
+    backgroundColor: '#d6d6d6',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 2,  // Ajoute un peu d'espace entre le picker et le sélecteur de portions
   },
-
-
+  portionText: {
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: 150,
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+  },
+  modalText: {
+    fontSize: 18,
+    padding: 10,
+    textAlign: 'center',
+  },
+  modalCancel: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#ff3333',
+    textAlign: 'center',
+  },
+  
+  categoryTextWrapper: {
+    flexDirection: 'row',  // Assure-toi que le texte et le picker soient alignés horizontalement
+    alignItems: 'center',  // Centrer verticalement le texte
+    justifyContent: 'space-evenly',  // Centrer horizontalement si nécessaire
+    // marginLeft: 10,
+    width: 80,  // La largeur fixe du conteneur
+    height: 50, // La hauteur fixe du conteneur
+    marginLeft: 2,
+    borderRadius: 5,
+    backgroundColor: '#ebebeb',  // La couleur de fond
+  },
+  categoryText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    margin: 0,  // Supprimer toute marge du texte
+    padding: 0,  // Supprimer le padding autour du texte
+  },
 
   dateTextContainer: {
     borderRadius: 5,
@@ -484,10 +727,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   somespace: {
-    // padding: 10,
     height: 20,
-    // backgroundColor: '#fff',
-    // borderBottomWidth: 1,
-    // borderBottomColor: '#ddd',
   },
 });

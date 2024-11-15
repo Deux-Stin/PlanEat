@@ -20,6 +20,8 @@ import MealPlanScreen from './screens/MealPlanScreen';
 import ShoppingListScreen from './screens/ShoppingListScreen';
 import useInitializeRecipes from './hooks/useInitializeRecipes'; // Export par défaut
 import SeasonalCalendarScreen from './screens/SeasonalCalendarScreen';
+import MealPlanSummaryScreen from './screens/MealPlanSummaryScreen';
+import { MealPlanProvider } from './screens/MealPlanContext';
 
 const Stack = createStackNavigator();
 
@@ -106,11 +108,12 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        {/* Page d'accueil */}
-        <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/> 
+    <MealPlanProvider>
 
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="HomeScreen">
+        {/* Page d'accueil */}
+        <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }}/> 
 
         {/* Bibliothèque de recettes */}
         <Stack.Screen name="RecipeLibrary" component={RecipeLibrary} options={{ title: 'Bibliothèque de recettes' }} />
@@ -147,10 +150,15 @@ export default function App() {
         {/* Planifier les repas */}
         <Stack.Screen name="MealPlanScreen" component={MealPlanScreen} options={{ title: 'Planifier vos repas' }} />
 
+        {/* Page de résumé des menus attribués selon la date */}
+        <Stack.Screen name="MealPlanSummaryScreen" component={MealPlanSummaryScreen} />
+
         {/* Liste de courses */}
         <Stack.Screen name="ShoppingListScreen" component={ShoppingListScreen} options={{ title: 'Liste de courses', headerShown: true }} />
       </Stack.Navigator>
     </NavigationContainer>
+
+    </MealPlanProvider>
   );
 }
 
