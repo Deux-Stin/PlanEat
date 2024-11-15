@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal } from 'react-native';
 import { Checkbox } from 'react-native-paper';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 // import useStorageRecipes from '../hooks/useStorageRecipes.old';
 import uuid from 'react-native-uuid';
 
-export default function AddRecipe({ route, navigation }) {
+export default function ({ route, navigation }) {
   const { addRecipe } = route.params; // Récupérer la fonction addRecipe
   const [recipes, setRecipes] = useAsyncStorage('recipes', []);
   const [newRecipe, setNewRecipe] = useState({
     id: '',
     name: '',
-    category: [],
+    category: '',
+    duration: 'court',
+    season: ['printemps','été','automne','hiver'],
     servings: '',
     ingredients: [],
     recipe: [],
@@ -22,11 +24,27 @@ export default function AddRecipe({ route, navigation }) {
     }
   });
 
+  // Définir des couleurs pour chaque saison
+  const seasonColors = {
+    printemps: '#E6F3CE', // Exemple de couleur pour le printemps
+    été: '#FFDFBA', // Exemple de couleur pour l'été
+    automne: '#FFFFBA', // Exemple de couleur pour l'automne
+    hiver: '#BAE1FF', // Exemple de couleur pour l'hiver
+    default: '#ccc', // Couleur grise pour les saisons non sélectionnées
+  };
+
+  useEffect(() => {
+    if (route.params?.recipe) {
+      // Permet la récupération de toutes les étapes de la recette à modifier
+      setNewRecipe(route.params.recipe);
+    }
+  }, [route.params?.recipe]);
+
   const [ingredientInput, setIngredientInput] = useState({
     name: '',
     quantity: '',
     unit: 'unité', // Unité par défaut
-    rayon: 'Produits frais' // Rayon par défaut
+    rayon: 'Divers' // Rayon par défaut
   });
 
   const [stepInput, setStepInput] = useState('');
@@ -34,23 +52,36 @@ export default function AddRecipe({ route, navigation }) {
   const [unitModalVisible, setUnitModalVisible] = useState(false);
   const [rayonModalVisible, setRayonModalVisible] = useState(false);
 
-  const availableCategories = ['Petit-déjeuner', 'Déjeuner', 'Dîner'];
+  const availableCategories = ['Petit-déjeuner','Entrée','Plat','Dessert','Cocktail'];
+  const availableDuration = ['court', 'long'];
+  const availableSeasons = ['printemps', 'été', 'automne', 'hiver'];
   const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'petite cuillère', 'grande cuillère'];
-  const availableRayons = ['Produits frais', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Surgelés', 'Produits laitiers', 'Boissons', 'Hygiène', 'Entretien'];
+  const availableRayons = ['Divers','Produits frais', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Surgelés', 'Produits laitiers', 'Boissons', 'Hygiène', 'Entretien'].sort((a, b) => a.localeCompare(b)); // Trie le tableau par ordre alphabétique;
+
+  const toggleDuration = (duration) => {
+    setNewRecipe((prev) => ({
+      ...prev,
+      duration: prev.duration === duration ? '' : duration, // Si la durée est déjà sélectionnée, la désélectionner, sinon l'ajouter
+    }));
+  };
+  
+
+  const toggleSeason = (season) => {
+    setNewRecipe((prev) => {
+      const currentSeasons = prev.season.includes(season)
+        ? prev.season.filter((s) => s !== season) // Retire la saison s'il est déjà sélectionnée
+        : [...prev.season, season]; // Ajoute la saison s'il n'est pas sélectionnée
+      return { ...prev, season: currentSeasons };
+    });
+  };
 
   const toggleCategory = (category) => {
-    if (newRecipe.category.includes(category)) {
-      setNewRecipe({
-        ...newRecipe,
-        category: newRecipe.category.filter((c) => c !== category)
-      });
-    } else {
-      setNewRecipe({
-        ...newRecipe,
-        category: [...newRecipe.category, category]
-      });
-    }
+    setNewRecipe((prev) => ({
+      ...prev,
+      category: prev.category === category ? '' : category, // Si la catégorie est déjà sélectionnée, la désélectionner, sinon l'ajouter
+    }));
   };
+  
 
   const handleAddIngredient = () => {
     const { name, quantity, unit, rayon } = ingredientInput;
@@ -65,7 +96,7 @@ export default function AddRecipe({ route, navigation }) {
         ...newRecipe,
         ingredients: [...newRecipe.ingredients, { name, quantity: parsedQuantity, unit, rayon }]
       });
-      setIngredientInput({ name: '', quantity: '', unit: 'unité', rayon: 'Produits frais' }); // Réinitialisation des champs
+      setIngredientInput({ name: '', quantity: '', unit: 'unité', rayon: 'Divers' }); // Réinitialisation des champs
     } else {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs de l\'ingrédient.');
     }
@@ -93,8 +124,8 @@ export default function AddRecipe({ route, navigation }) {
     setNewRecipe({ ...newRecipe, recipe: updatedSteps });
   };
 
-  const handleSubmit = () => {
-    const { name, category, servings, ingredients, recipe, nutritionalValues } = newRecipe;
+  const handleSubmit = async () => {
+    const { name, category, duration, season, servings, ingredients, recipe, nutritionalValues } = newRecipe;
 
     if (!name || category.length === 0 || !servings || ingredients.length === 0 || recipe.length === 0) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires.');
@@ -114,9 +145,11 @@ export default function AddRecipe({ route, navigation }) {
     };
 
     const recipeData = {
-      id: uuid.v4(),
+      id: route.params?.recipe ? newRecipe.id : uuid.v4(), // Utiliser l'ID existant si on modifie
       name,
       category,
+      duration: duration,
+      season: season,
       servings: parsedServings,
       ingredients,
       recipe,
@@ -130,22 +163,43 @@ export default function AddRecipe({ route, navigation }) {
       return;
     }
 
-    updatedRecipes = [...recipes, recipeData];
-    setRecipes(updatedRecipes); // mettre à jour le useAsyncStorage
-    console.log("recipeData : ", recipeData)
-    // console.log("recipes : ", recipes)
-    Alert.alert('Succès', 'Recette ajoutée avec succès!');
+    // Vérifier si la recette est déjà dans la liste
+    const existingRecipeIndex = recipes.findIndex(r => r.id === recipeData.id);
 
-    // // Met à jour le fichier json stocké en local
-    // useStorageRecipes(updatedRecipes);
+    let updatedRecipes;
+    if (existingRecipeIndex !== -1) {
+      // Si elle existe, on met à jour
+      updatedRecipes = recipes.map(r => r.id === recipeData.id ? recipeData : r);
+    } else {
+      // Sinon, on ajoute la nouvelle recette
+      recipeData.id = uuid.v4();  // Si l'ID est vide, c'est une nouvelle recette
+      updatedRecipes = [...recipes, recipeData];
+    }
 
-    addRecipe(recipeData); // Appelle la fonction pour ajouter la recette
+    try {
+      // updatedRecipes = [...recipes, recipeData];
+      await setRecipes(updatedRecipes); // mettre à jour le useAsyncStorage
+      console.log("recipeData : ", recipeData)
+      // console.log("recipes : ", recipes)
+      Alert.alert('Succès', `Recette ${existingRecipeIndex !== -1 ? 'modifiée' : 'ajoutée'} avec succès!`);
+
+      if (typeof addRecipe !== 'function') {
+        console.error('addRecipe is not a function');
+        // return;
+      } else {
+        addRecipe(recipeData); // Appelle la fonction pour ajouter la recette
+      }
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour des recettes :', error);
+      Alert.alert('Erreur', 'Une erreur s\'est produite lors de la mise à jour des recettes.');
+    }
+    
     navigation.navigate('RecipeLibrary');
   };
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Ajouter une nouvelle recette</Text>
+      {/* <Text style={styles.header}>Ajouter une nouvelle recette</Text> */}
 
       <TextInput
         placeholder="Nom de la recette"
@@ -155,18 +209,54 @@ export default function AddRecipe({ route, navigation }) {
       />
 
       <View style={styles.categoryContainer}>
-        <Text style={styles.label}>Catégorie :</Text>
-        {availableCategories.map((category, index) => (
-          <View key={index} style={styles.checkboxContainer}>
-            <Checkbox
-              status={newRecipe.category.includes(category) ? 'checked' : 'unchecked'}
-              onPress={() => toggleCategory(category)}
-            />
-            <Text style={styles.checkboxLabel}>{category}</Text>
-          </View>
+        <Text style={styles.label}></Text>
+        <View style={styles.checkboxContainer}>
+          {availableCategories.map((category, index) => (
+            <View key={index} style={styles.checkboxItem}>
+              <Text style={styles.checkboxLabel}>{category}</Text>
+              <Checkbox
+                status={newRecipe.category.includes(category) ? 'checked' : 'unchecked'}
+                onPress={() => toggleCategory(category)}
+              />
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <Text style={styles.sectionTitle}>Durée de la recette</Text>
+      <View style={styles.flexContainer}>
+        {availableDuration.map((duration) => (
+          <TouchableOpacity
+            key={duration}
+            onPress={() => toggleDuration(duration)}
+            style={[
+              styles.durationButton, 
+              newRecipe.duration.includes(duration) ? styles.selectedDurationButton : styles.unselectedDurationButton]}
+          >
+            <Text style={styles.pickerButtonText}>{duration}</Text>
+          </TouchableOpacity>
         ))}
       </View>
 
+      <Text style={styles.sectionTitle}>Saison</Text>
+      <View style={styles.flexContainer}>
+        {availableSeasons.map((season) => (
+          <TouchableOpacity
+            key={season}
+            onPress={() => toggleSeason(season)}
+            style={[
+              styles.durationButton,
+              newRecipe.season.includes(season) ? styles.selectedDurationButton : styles.unselectedDurationButton, // Appliquer le style en fonction de la sélection
+              { backgroundColor: newRecipe.season.includes(season) ? seasonColors[season] : '#ccc' } // Couleur grise si non sélectionné
+            ]}
+          >
+            <Text style={styles.pickerButtonText}>{season}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <Text style={styles.sectionTitle}>Portions</Text>
+      <View style={styles.somespace} />
       <TextInput
         placeholder="Nombre de parts"
         value={newRecipe.servings}
@@ -176,6 +266,7 @@ export default function AddRecipe({ route, navigation }) {
       />
 
       <Text style={styles.sectionTitle}>Ingrédients</Text>
+      <View style={styles.somespace} />
       {newRecipe.ingredients.map((ingredient, index) => (
         <View key={index} style={styles.itemContainer}>
           <Text style={styles.itemText}>{ingredient.name} - {ingredient.quantity} {ingredient.unit} ({ingredient.rayon})</Text>
@@ -210,7 +301,10 @@ export default function AddRecipe({ route, navigation }) {
         <Text style={styles.pickerButtonText}>{ingredientInput.rayon}</Text>
       </TouchableOpacity>
 
-      <Button title="Ajouter ingrédient" onPress={handleAddIngredient} />
+      <TouchableOpacity style={styles.mainButtonStep} onPress={handleAddIngredient}>
+        <Text style={styles.mainButtonText}>Ajouter ingrédient</Text>
+      </TouchableOpacity>
+
 
       {/* Modal pour sélectionner l'unité */}
       <Modal visible={unitModalVisible} animationType="slide" transparent={true}>
@@ -225,7 +319,9 @@ export default function AddRecipe({ route, navigation }) {
                 <Text style={styles.modalOption}>{unit}</Text>
               </TouchableOpacity>
             ))}
-            <Button title="Fermer" onPress={() => setUnitModalVisible(false)} />
+            <TouchableOpacity style={styles.mainButtonStep} onPress={() => setUnitModalVisible(false)}>
+              <Text style={styles.mainButtonText}>Fermer</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -243,12 +339,17 @@ export default function AddRecipe({ route, navigation }) {
                 <Text style={styles.modalOption}>{rayon}</Text>
               </TouchableOpacity>
             ))}
-            <Button title="Fermer" onPress={() => setRayonModalVisible(false)} />
+            <TouchableOpacity style={styles.mainButtonStep} onPress={() => setRayonModalVisible(false)}>
+              <Text style={styles.mainButtonText}>Fermer</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
+
+      <View style={styles.somespace} />
       <Text style={styles.sectionTitle}>Étapes de la recette</Text>
+      <View style={styles.somespace} />
       {newRecipe.recipe.map((step, index) => (
         <View key={index} style={styles.itemContainer}>
           <Text style={styles.itemText}>Étape {index + 1}: {step}</Text>
@@ -264,9 +365,13 @@ export default function AddRecipe({ route, navigation }) {
         onChangeText={(text) => setStepInput(text)}
         style={styles.input}
       />
-      <Button title="Ajouter étape" onPress={handleAddStep} />
+      <TouchableOpacity style={styles.mainButtonStep} onPress={handleAddStep}>
+        <Text style={styles.mainButtonText}>Ajouter étape</Text>
+      </TouchableOpacity>
 
-      <Text style={styles.sectionTitle}>Valeurs nutritionnelles</Text>
+      <View style={styles.somespace} />
+      <Text style={styles.sectionTitle}>Valeurs nutritionnelles pour 100g (optionnel)</Text>
+      <View style={styles.somespace} />
       <TextInput
         placeholder="Glucides (ex: 20g)"
         value={newRecipe.nutritionalValues.glucides}
@@ -285,10 +390,20 @@ export default function AddRecipe({ route, navigation }) {
         onChangeText={(text) => setNewRecipe({ ...newRecipe, nutritionalValues: { ...newRecipe.nutritionalValues, graisses: text } })}
         style={styles.input}
       />
+      <TextInput
+        placeholder="kCal (ex: 400 kCal)"
+        value={newRecipe.nutritionalValues.graisses}
+        onChangeText={(text) => setNewRecipe({ ...newRecipe, nutritionalValues: { ...newRecipe.nutritionalValues, graisses: text } })}
+        style={styles.input}
+      />
 
       <View style={styles.buttonContainer}>
-        <Button title="Ajouter la recette" onPress={handleSubmit} />
-        <Button title="Retour à la bibliothèque" onPress={() => navigation.navigate('RecipeLibrary')} />
+        <TouchableOpacity style={styles.mainButton} onPress={handleSubmit}>
+          <Text style={styles.mainButtonText}>Ajouter la recette</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('RecipeLibrary')}>
+          <Text style={styles.mainButtonText}>Retour à la bibliothèque</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -299,6 +414,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
+  },
+  unselectedDurationButton: {
+    opacity: 0.5, // Optionnel : rendre le bouton légèrement transparent
   },
   header: {
     fontSize: 22,
@@ -312,6 +430,27 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
+  },
+  flexContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-evenly',
+    marginBottom: 10,
+  },
+  durationButton: {
+    backgroundColor: '#e0e0e0',
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 5,
+    flexBasis: '48%', // Pour avoir deux boutons par ligne
+    alignItems: 'center',
+  },
+  selectedDurationButton: {
+    backgroundColor: '#FCE7E8', // Couleur de fond pour les éléments sélectionnés
+  },
+  pickerButtonText: {
+    fontSize: 16,
+    color: '#000',
   },
   pickerButton: {
     backgroundColor: '#e0e0e0',
@@ -349,15 +488,39 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginVertical: 10,
+    marginVertical: 5,
+    marginTop: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+
+    marginTop: 20,
+    // marginBottom: 20,
+    // borderBottomWidth: 1,
+    // borderBottomColor: '#ddd',
+    paddingBottom: 5,
+    // textAlign: 'center', // A voir si l'aspect centré plait plus
+
   },
   categoryContainer: {
-    marginBottom: 20,
-  },
-  checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    // justifyContent: 'flex-start',
+    marginTop: 5,
+    marginBottom: 15,
+  },
+  checkboxContainer: {
+    backgroundColor: '#eeeeee',
+    flexDirection: 'row', // Alignement horizontal
+    borderRadius: 5,
+    flex: 1, // Prend tout l'espace disponible
+    justifyContent: 'space-evenly', // Espace entre chaque checkbox
+    marginLeft: 0, // Espace entre le label et les checkboxes
+    
+    elevation: 10,
+  },
+  checkboxItem: {
+    flexDirection: 'column', // Aligne chaque checkbox avec son texte
+    alignItems: 'center', // Centre les checkbox et le texte
   },
   checkboxLabel: {
     fontSize: 16,
@@ -367,9 +530,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
+    flexWrap: 'wrap', // Ajout de flexWrap
   },
   itemText: {
     fontSize: 16,
+    flex: 1, // Ajout de flex: 1 pour prendre tout l'espace
+    marginRight: 5, // Ajout d'une marge à droite pour séparer le texte du bouton
   },
   removeButton: {
     backgroundColor: '#ff3333',
@@ -380,7 +546,32 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   buttonContainer: {
-    marginTop: 20,
+    marginTop: 10,
     paddingBottom: 40,
+  },
+  mainButton: {
+    backgroundColor: '#007bff',
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 2.5,
+    alignItems: 'center',
+    width: '100%',
+  },
+  mainButtonStep: {
+    backgroundColor: '#5baaff',
+    padding: 10,
+    borderRadius: 20,
+    marginVertical: 2.5,
+    alignItems: 'center',
+    width: '100%',
+  },
+  mainButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  somespace: {
+    height: 5,
   },
 });

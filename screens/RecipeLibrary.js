@@ -1,35 +1,66 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import * as MediaLibrary from 'expo-media-library';
 import uuid from 'react-native-uuid';
 
 export default function RecipeLibrary({ navigation, route }) {
   const [recipes, setRecipes] = useAsyncStorage('recipes', []);
   const [expandedCategory, setExpandedCategory] = useState(null);
-  
-  // Fonction pour sauvegarder les recettes dans le fichier
-  const saveRecipes = async (newRecipes) => {
-    try {
-      setRecipes(newRecipes); // Mettre à jour les recettes dans AsyncStorage
-      console.log('Recettes sauvegardées.');
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde des recettes :', error);
-    }
+
+  const [selectedSeasons, setSelectedSeason] = useState([]); // État pour le filtre saison
+  const [selectedDuration, setSelectedDuration] = useState([]);
+
+  const seasonColors = {
+    printemps: '#E6F3CE',
+    été: '#FFDFBA',
+    automne: '#FFFFBA',
+    hiver: '#BAE1FF',
+    default: '#ccc',
   };
+
+  const toggleSeason = (season) => {
+    setSelectedSeason((prev) =>
+      prev.includes(season) ? prev.filter(s => s !== season) : [...prev, season]
+    );
+  };
+
+  const toggleDuration = (duration) => {
+    setSelectedDuration(selectedDuration === duration ? null : duration);
+  };
+  
+  // console.log('recipes :',recipes)
 
   const addRecipe = (newRecipe) => {
     console.log('addRecipe');
-    setRecipes((prevRecipes) => [...prevRecipes, newRecipe]);
-    saveRecipes([...recipes, newRecipe]); // Mettez à jour les recettes dans AsyncStorage
+    setRecipes((prevRecipes) => {
+      const updatedRecipes = [...prevRecipes, newRecipe];
+      saveRecipes(updatedRecipes); // Appelez saveRecipes avec les recettes mises à jour
+      return updatedRecipes; // Retournez le nouvel état
+    });
   };
   
-
   const deleteRecipe = (recipeToDelete) => {
     console.log('deleteRecipe');
-    const updatedRecipes = recipes.filter(recipe => recipe.name !== recipeToDelete.name);
+    const updatedRecipes = recipes ? recipes.filter(recipe => recipe.id !== recipeToDelete.id) : [];
     saveRecipes(updatedRecipes); // Mettez à jour les recettes
+  };
+
+  // Fonction pour sauvegarder les recettes dans le fichier
+  const saveRecipes = async (newRecipes) => {
+    if (newRecipes && Array.isArray(newRecipes)) {
+      try {
+        setRecipes(newRecipes);
+        console.log('Recettes sauvegardées.');
+      } catch (error) {
+        console.error('Erreur lors de la sauvegarde des recettes :', error);
+      }
+    } else {
+      console.error('Tentative de sauvegarde d\'un tableau invalide.', newRecipes);
+    }
   };
 
  // Vérifier si une mise à jour est nécessaire
@@ -48,33 +79,46 @@ export default function RecipeLibrary({ navigation, route }) {
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const { uri } = result.assets[0];
         const fileContent = await FileSystem.readAsStringAsync(uri);
-        const newRecipes = JSON.parse(fileContent);
+        console.log('Contenu du fichier :', fileContent); // Vérification du contenu
   
-        // Traitement des recettes
-        const updatedRecipes = [...recipes];  // Copie des recettes actuelles
+        let jsonData;
+        try {
+          jsonData = JSON.parse(fileContent);
+        } catch (error) {
+          console.error('Erreur lors de l\'analyse JSON :', error);
+          Alert.alert('Erreur', 'Le fichier JSON est mal formé.');
+          return;
+        }
   
-        var nbNewRecipes = 0;
+        // Vérifie si le tableau existe et est un tableau
+        if (!Array.isArray(jsonData.recipes)) {
+          console.error('Les recettes importées ne sont pas un tableau. Vérifiez le format du fichier JSON.');
+          Alert.alert('Erreur', 'Le fichier importé ne contient pas des recettes valides.');
+          return;
+        }
+  
+        const newRecipes = jsonData.recipes; // Accède au tableau de recettes
+        const updatedRecipes = [...recipes];
+        let nbNewRecipes = 0;
+  
         newRecipes.forEach(newRecipe => {
           const existingRecipe = updatedRecipes.find(r => r.id === newRecipe.id || r.name === newRecipe.name);
   
           if (!existingRecipe) {
-            // Cas où la recette est nouvelle et unique, ajout direct
             newRecipe.id = uuid.v4();
             updatedRecipes.push(newRecipe);
             nbNewRecipes++;
           } else if (existingRecipe.id !== newRecipe.id && existingRecipe.name === newRecipe.name) {
-            // Cas où le nom est identique mais les ids sont différents, on ignore
             console.log(`Recette "${newRecipe.name}" ignorée car le nom est déjà présent.`);
           } else if (existingRecipe.id === newRecipe.id && existingRecipe.name !== newRecipe.name) {
-            // Cas où l'id est identique mais le nom diffère, générer un nouvel id
             newRecipe.id = uuid.v4();
             updatedRecipes.push(newRecipe);
             nbNewRecipes++;
           }
         });
   
-        setRecipes(updatedRecipes);  // Sauvegarder les recettes mises à jour
-        console.log('Recettes mises à jour avec succès, ', nbNewRecipes,' nouvelles ont été ajoutées.');
+        setRecipes(updatedRecipes);
+        Alert.alert('Recettes mises à jour', `${nbNewRecipes} nouvelle(s) recette(s) ont été ajoutée(s).`);
       } else {
         console.log('Aucun fichier sélectionné ou processus annulé.');
       }
@@ -83,7 +127,124 @@ export default function RecipeLibrary({ navigation, route }) {
     }
   };
 
-  const categories = ['Petit-déjeuner', 'Déjeuner', 'Dîner'];
+  // console.log(recipes)
+
+  const exportRecipes = async () => {
+    try {
+
+      const sanitizedRecipes = recipes.map(recipe => ({
+        id: recipe.id,
+        name: recipe.name,
+        category: recipe.category,
+        duration: recipe.duration,
+        season: recipe.season,
+        servings: recipe.servings,
+        ingredients: recipe.ingredients,
+        recipe: recipe.recipe, // Assurez-vous d'inclure uniquement les propriétés nécessaires
+        nutritionalValues: recipe.nutritionalValues,
+        // Ne pas inclure d'autres propriétés qui peuvent causer des références circulaires
+      }));
+
+      // console.log('sanitizedRecipes : ',sanitizedRecipes)
+
+      // Convertir les recettes en JSON
+      const jsonRecipes = JSON.stringify(sanitizedRecipes, null, 2);
+  
+      // Demander la permission d'accès au stockage
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert("Permission refusée", "Veuillez autoriser l'accès au stockage.");
+        return;
+      }
+  
+      // Afficher un menu pour choisir entre partage ou sauvegarde
+      Alert.alert(
+        "Exporter les recettes",
+        "Que souhaitez-vous faire ?",
+        [
+          { text: "Partager", onPress: async () => await shareRecipes(jsonRecipes) },
+          { text: "Enregistrer dans un répertoire", onPress: async () => await saveRecipesToCustomDirectory(jsonRecipes) },
+          { text: "Annuler", style: "cancel" },
+        ]
+      );
+    } catch (error) {
+      console.error('Erreur lors de l\'exportation des recettes :', error);
+    }
+  };
+  
+  const shareRecipes = async (jsonRecipes) => {
+    try {
+      // Créer un fichier temporaire
+      const filePath = `${FileSystem.cacheDirectory}recipes.json`;
+      await FileSystem.writeAsStringAsync(filePath, jsonRecipes);
+  
+      // Partager le fichier
+      await Sharing.shareAsync(filePath);
+    } catch (error) {
+      console.error('Erreur lors du partage des recettes :', error);
+    }
+  };
+
+  const deleteAllRecipes = () => {
+    Alert.alert(
+      "Confirmation",
+      "Voulez-vous vraiment supprimer toutes les recettes ?",
+      [
+        { text: "Annuler", style: "cancel" },
+        { 
+          text: "Oui", 
+          onPress: () => {
+            setRecipes([]);
+            saveRecipes([]);
+          }
+        }
+      ]
+    );
+  };
+  
+  const saveRecipesToCustomDirectory = async (jsonRecipes) => {
+    try {
+      // Demander à l'utilisateur de choisir un répertoire
+      const directoryPath = await selectDirectory();
+
+      if (directoryPath) {
+        // Utiliser un champ de texte ou un modal pour le nom du fichier
+        const fileName = 'recipes'; // Remplacez par votre méthode d'obtention du nom de fichier
+
+        if (!fileName) {
+          Alert.alert('Nom de fichier requis', 'Veuillez entrer un nom de fichier valide.');
+          return;
+        }
+
+        const filePath = `${directoryPath}/${fileName}.json`;
+        await FileSystem.writeAsStringAsync(filePath, jsonRecipes);
+        Alert.alert('Fichier sauvegardé', `Recettes enregistrées dans : ${filePath}`);
+      } else {
+        Alert.alert('Sélection annulée', 'Aucun répertoire n\'a été sélectionné.');
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'enregistrement des recettes :', error);
+    }
+  };
+
+  const selectDirectory = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: '*/*',
+        copyToCacheDirectory: false,
+        multiple: false,
+      });
+
+      if (result.type === 'success') {
+        return result.uri.substring(0, result.uri.lastIndexOf('/'));
+      }
+    } catch (error) {
+      console.error('Erreur lors de la sélection du répertoire :', error);
+    }
+    return null;
+  };
+
+  const categories = ['Petit-déjeuner','Entrée','Plat','Dessert','Cocktail'];// ['Petit-déjeuner', 'Déjeuner', 'Dîner'];
 
   const toggleCategory = (category) => {
     setExpandedCategory((prevCategory) => (prevCategory === category ? null : category));
@@ -91,6 +252,7 @@ export default function RecipeLibrary({ navigation, route }) {
 
   const renderRecipe = (recipe) => (
     <TouchableOpacity
+      key={recipe.id}
       style={styles.recipeItem}
       onPress={() => navigation.navigate('RecipeDetail', { recipe, deleteRecipe })}
     >
@@ -98,8 +260,62 @@ export default function RecipeLibrary({ navigation, route }) {
     </TouchableOpacity>
   );
 
+  const filterRecipes = () => {
+    return recipes.filter(recipe => {
+      // console.log('recipe.category : ', recipe.category)
+      const recipeSeasons = recipe.season || [];
+      const matchesSeason = selectedSeasons.length === 0 || recipeSeasons.some(season => selectedSeasons.includes(season));
+      const matchesDuration = selectedDuration === null || (recipe.duration && recipe.duration.includes(selectedDuration));
+      // console.log('recipe.duration :', recipe.duration)
+      // console.log('matchesDuration', matchesDuration)
+      return matchesSeason && matchesDuration;
+    });
+  };
+
+  const renderFilters = () => (
+    <View style={styles.section}>
+      {/* <Text style={styles.filtersHeader}></Text> */}
+      <Text style={styles.sectionTitle}>Filtres</Text>
+      <View style={styles.filterRow}>
+        {Object.keys(seasonColors).slice(0, -1).map(season => (
+          <TouchableOpacity
+            key={season}
+            style={[
+              styles.filterButton,
+              {
+                backgroundColor: selectedSeasons.includes(season) ? seasonColors[season] : '#ccc' // Couleur par défaut
+              }
+            ]}
+            onPress={() => toggleSeason(season)}
+          >
+            <Text style={styles.filterText}>{season.charAt(0).toUpperCase() + season.slice(1)}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      <View style={styles.durationRow}>
+        <TouchableOpacity
+          style={[styles.durationButton, { backgroundColor: selectedDuration === 'court' ? '#FCE7E8' : '#e0e0e0' }]}
+          onPress={() => toggleDuration('court')}
+        >
+          <Text style={styles.filterText}>Court</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.durationButton, { backgroundColor: selectedDuration === 'long' ? '#FCE7E8' : '#e0e0e0' }]}
+          onPress={() => toggleDuration('long')}
+        >
+          <Text style={styles.filterText}>Long</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+  
+
   const renderCategory = (category) => {
-    const categoryRecipes = recipes.filter((recipe) => recipe.category.includes(category));
+    const categoryRecipes = filterRecipes()
+      .filter((recipe) => recipe.category === category)
+      .sort((a, b) => a.name.localeCompare(b.name)); // Trie les recettes par nom alphabétique
+
+    console.log("Recettes dans la catégorie:", category, categoryRecipes);
 
     return (
       <View key={category} style={styles.categoryContainer}>
@@ -122,14 +338,34 @@ export default function RecipeLibrary({ navigation, route }) {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Bibliothèque de recettes</Text>
+      {/* <Text style={styles.header}>Bibliothèque de recettes</Text> */}
 
-      {categories.map((category) => renderCategory(category))}
+      {renderFilters()}
 
-      <View style={styles.buttonContainer}>
-        <Button title="Ajouter une recette" onPress={() => navigation.navigate('AddRecipe', { addRecipe })} />
-        <Button title="Importer un fichier .json" onPress={importRecipesFromJson} />
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}></Text>
+        {categories.map((category) => renderCategory(category))}
       </View>
+
+      <View style={styles.section}>
+      
+        <View style={styles.buttonContainer}>
+        <Text style={styles.sectionTitle}></Text>
+          <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('AddRecipe', { addRecipe })}>
+            <Text style={styles.mainButtonText}>Ajouter une recette</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.mainButton} onPress={importRecipesFromJson}>
+            <Text style={styles.mainButtonText}>Importer un fichier .json</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.mainButton} onPress={exportRecipes}>
+            <Text style={styles.mainButtonText}>Partager mes recettes</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.mainButton} onPress={deleteAllRecipes}>
+            <Text style={styles.mainButtonText}>Supprimer mes recettes</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
     </ScrollView>
   );
 }
@@ -141,10 +377,58 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  filtersContainer: {
+    marginBottom: 20,
+  },
+  filtersHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly', // Espace uniforme entre les boutons
+    marginBottom: 10,
+  },
+  durationRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly', // Espace uniforme entre les boutons
+    marginTop: 0, // Ajoute un peu d'espace au-dessus
+  },
+  durationButton: {
+    flex: 1, // Chaque bouton prend l'espace disponible
+    marginHorizontal: 2.5, // Marge horizontale pour espacer les boutons
+    padding: 10, // Padding pour rendre le bouton plus grand
+    alignItems: 'center', // Centre le texte horizontalement
+    justifyContent: 'center', // Centre le texte verticalement
+    borderRadius: 5, // Coins arrondis
+  },
+  filterButton: {
+    padding: 10,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 5,
+    flex: 1, // Ajout pour égaliser la taille des boutons
+    marginHorizontal: 2.5, // Ajoute un léger espacement horizontal entre les boutons
+  },
+  selectedFilter: {
+    backgroundColor: '#b0e0e6',
+  },
+  filterText: {
+    fontSize: 16,
+    textAlign: 'center', // Centrer le texte dans les boutons
+  },
+  filtersContainer: {
+    marginBottom: 20,
+  },
+  filtersHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
   categoryContainer: {
     marginBottom: 10,
@@ -197,5 +481,38 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 20,
+  },
+  mainButton: {
+    backgroundColor: '#007bff',
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 2.5,
+    alignItems: 'center',
+    width: '100%',
+  },
+  mainButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  section: {
+    width: '100%',
+    marginBottom: 0,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#444',
+    marginTop: 20,
+    marginBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    paddingBottom: 5,
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    marginTop: 5,
+    paddingBottom: 40,
   },
 });

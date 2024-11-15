@@ -41,6 +41,8 @@ yarn-error.*
 *.zip
 *.old
 ./*.old
+*/*.psd
+*/*.backup
 
 test.js
 tmp.js

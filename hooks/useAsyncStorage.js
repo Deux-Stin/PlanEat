@@ -2,49 +2,77 @@ import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
 
+const FILE_PATHS = {
+  recipes: `${FileSystem.documentDirectory}recipes.json`,
+  mealPlanHistory: `${FileSystem.documentDirectory}mealPlanHistory.json`,
+  favoris: `${FileSystem.documentDirectory}favoris.json`,
+};
+
 export const useAsyncStorage = (key, initialValue) => {
   const [storedValue, setStoredValue] = useState(initialValue);
-  const NEW_RECIPES_PATH = `${FileSystem.documentDirectory}recipes.json`; // Chemin du fichier de débogage
 
   useEffect(() => {
-    const loadData = async () => {
+    const initializeData = async () => {
       try {
         const value = await AsyncStorage.getItem(key);
         if (value !== null) {
           setStoredValue(JSON.parse(value));
+        } else {
+          const filePath = FILE_PATHS[key];
+          const fileExists = await FileSystem.getInfoAsync(filePath);
+
+          if (fileExists.exists) {
+            await loadFromJson(filePath);
+          } else {
+            await saveToJson(filePath, initialValue);
+            setStoredValue(initialValue);
+          }
         }
-        console.log('Passage par le useEffect de AsyncStorage');
       } catch (error) {
         console.error(`Erreur lors de la lecture de la clé ${key} :`, error);
       }
     };
-    loadData();
+    initializeData();
   }, [key]);
 
   const setValue = async (value) => {
     try {
       const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      await AsyncStorage.setItem(key, JSON.stringify(valueToStore));
-      console.log('Passage par le setValue de AsyncStorage');
+      if (valueToStore !== null && valueToStore !== undefined) {
+        setStoredValue(valueToStore);
 
-      // Enregistrer dans le fichier JSON
-      if (Array.isArray(valueToStore)) {
-        await saveRecipesToJson(valueToStore);
-        console.log('Passage par le saveRecipesToJson de AsyncStorage');
+        const filePath = FILE_PATHS[key];
+        await AsyncStorage.setItem(key, JSON.stringify(valueToStore));
+        await saveToJson(filePath, valueToStore);
+      } else {
+        console.warn(`Tentative de sauvegarder une valeur nulle ou indéfinie pour ${key}`);
       }
     } catch (error) {
       console.error(`Erreur lors de l'écriture de la clé ${key} :`, error);
     }
   };
 
-  // Fonction pour sauvegarder les recettes dans un nouveau fichier JSON
-  const saveRecipesToJson = async (recipes) => {
+  const loadFromJson = async (filePath) => {
     try {
-      await FileSystem.writeAsStringAsync(NEW_RECIPES_PATH, JSON.stringify(recipes));
-      console.log('Recettes sauvegardées dans recipes.json ici :', NEW_RECIPES_PATH);
+      const fileContent = await FileSystem.readAsStringAsync(filePath);
+      const parsedData = JSON.parse(fileContent);
+      setStoredValue(parsedData);
+      console.log(`Données chargées depuis ${filePath}`);
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde des recettes :', error);
+      console.error(`Erreur lors de la lecture du fichier ${filePath} :`, error);
+    }
+  };
+
+  const saveToJson = async (filePath, data) => {
+    try {
+      if (data !== null && data !== undefined) {
+        await FileSystem.writeAsStringAsync(filePath, JSON.stringify(data));
+        console.log(`Données sauvegardées dans ${filePath}`);
+      } else {
+        console.error(`Les données à sauvegarder sont nulles ou indéfinies et ne peuvent pas être écrites dans ${filePath}`);
+      }
+    } catch (error) {
+      console.error(`Erreur lors de la sauvegarde dans le fichier ${filePath} :`, error);
     }
   };
 
