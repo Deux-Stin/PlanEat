@@ -13,7 +13,7 @@ export default function ({ route, navigation }) {
     name: '',
     category: '',
     duration: 'court',
-    season: ['printemps','été','automne','hiver'],
+    season: ['printemps', 'été', 'automne', 'hiver'],
     servings: '',
     ingredients: [],
     recipe: [],
@@ -35,10 +35,14 @@ export default function ({ route, navigation }) {
 
   useEffect(() => {
     if (route.params?.recipe) {
-      // Permet la récupération de toutes les étapes de la recette à modifier
-      setNewRecipe(route.params.recipe);
+      setNewRecipe((prev) => ({
+        ...prev,
+        ...route.params.recipe,
+        servings: route.params.recipe.servings || '', // Valeur par défaut si non définie
+      }));
     }
   }, [route.params?.recipe]);
+  
 
   const [ingredientInput, setIngredientInput] = useState({
     name: '',
@@ -52,11 +56,11 @@ export default function ({ route, navigation }) {
   const [unitModalVisible, setUnitModalVisible] = useState(false);
   const [rayonModalVisible, setRayonModalVisible] = useState(false);
 
-  const availableCategories = ['Petit-déjeuner','Entrée','Plat','Dessert','Cocktail'];
+  const availableCategories = ['Petit-déjeuner', 'Entrée', 'Plat', 'Dessert', 'Cocktail'];
   const availableDuration = ['court', 'long'];
   const availableSeasons = ['printemps', 'été', 'automne', 'hiver'];
   const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'petite cuillère', 'grande cuillère'];
-  const availableRayons = ['Divers','Produits frais', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Surgelés', 'Produits laitiers', 'Boissons', 'Hygiène', 'Entretien'].sort((a, b) => a.localeCompare(b)); // Trie le tableau par ordre alphabétique;
+  const availableRayons = ['Divers', 'Produits frais', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Surgelés', 'Produits laitiers', 'Boissons', 'Hygiène', 'Entretien'].sort((a, b) => a.localeCompare(b)); // Trie le tableau par ordre alphabétique;
 
   const toggleDuration = (duration) => {
     setNewRecipe((prev) => ({
@@ -64,7 +68,7 @@ export default function ({ route, navigation }) {
       duration: prev.duration === duration ? '' : duration, // Si la durée est déjà sélectionnée, la désélectionner, sinon l'ajouter
     }));
   };
-  
+
 
   const toggleSeason = (season) => {
     setNewRecipe((prev) => {
@@ -81,7 +85,7 @@ export default function ({ route, navigation }) {
       category: prev.category === category ? '' : category, // Si la catégorie est déjà sélectionnée, la désélectionner, sinon l'ajouter
     }));
   };
-  
+
 
   const handleAddIngredient = () => {
     const { name, quantity, unit, rayon } = ingredientInput;
@@ -193,7 +197,7 @@ export default function ({ route, navigation }) {
       console.error('Erreur lors de la mise à jour des recettes :', error);
       Alert.alert('Erreur', 'Une erreur s\'est produite lors de la mise à jour des recettes.');
     }
-    
+
     navigation.navigate('RecipeLibrary');
   };
 
@@ -230,7 +234,7 @@ export default function ({ route, navigation }) {
             key={duration}
             onPress={() => toggleDuration(duration)}
             style={[
-              styles.durationButton, 
+              styles.durationButton,
               newRecipe.duration.includes(duration) ? styles.selectedDurationButton : styles.unselectedDurationButton]}
           >
             <Text style={styles.pickerButtonText}>{duration}</Text>
@@ -259,11 +263,22 @@ export default function ({ route, navigation }) {
       <View style={styles.somespace} />
       <TextInput
         placeholder="Nombre de parts"
-        value={newRecipe.servings}
-        onChangeText={(text) => setNewRecipe({ ...newRecipe, servings: text })}
+        value={newRecipe.servings?.toString() || ''} // Convertir en chaîne ou afficher une chaîne vide
+        onChangeText={(text) => {
+          if (text === '') {
+            // Si l'utilisateur efface tout, mettre une valeur vide
+            setNewRecipe({ ...newRecipe, servings: '' });
+          } else {
+            const numericValue = parseInt(text, 10);
+            if (!isNaN(numericValue) && numericValue > 0) {
+              setNewRecipe({ ...newRecipe, servings: numericValue });
+            }
+          }
+        }}
         keyboardType="numeric"
         style={styles.input}
       />
+
 
       <Text style={styles.sectionTitle}>Ingrédients</Text>
       <View style={styles.somespace} />
@@ -282,7 +297,7 @@ export default function ({ route, navigation }) {
         onChangeText={(text) => setIngredientInput({ ...ingredientInput, name: text })}
         style={styles.input}
       />
-      
+
       <TextInput
         placeholder="Quantité"
         value={ingredientInput.quantity}
@@ -392,8 +407,8 @@ export default function ({ route, navigation }) {
       />
       <TextInput
         placeholder="kCal (ex: 400 kCal)"
-        value={newRecipe.nutritionalValues.graisses}
-        onChangeText={(text) => setNewRecipe({ ...newRecipe, nutritionalValues: { ...newRecipe.nutritionalValues, graisses: text } })}
+        value={newRecipe.nutritionalValues.kiloCalories}
+        onChangeText={(text) => setNewRecipe({ ...newRecipe, nutritionalValues: { ...newRecipe.nutritionalValues, kiloCalories: text } })}
         style={styles.input}
       />
 
@@ -515,7 +530,7 @@ const styles = StyleSheet.create({
     flex: 1, // Prend tout l'espace disponible
     justifyContent: 'space-evenly', // Espace entre chaque checkbox
     marginLeft: 0, // Espace entre le label et les checkboxes
-    
+
     elevation: 10,
   },
   checkboxItem: {
