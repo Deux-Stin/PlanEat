@@ -431,10 +431,10 @@ export default function ShoppingListScreen({ navigation, route }) {
 
     Clipboard.setStringAsync(listText)
       .then(() => {
-        Alert.alert('Liste copiée', 'La liste a été copiée dans le presse-papiers.');
+        Alert.alert('Bonne nouvelle !', '\nVotre liste de courses a été copiée dans le presse-papiers !');
       })
       .catch(err => {
-        Alert.alert('Erreur', 'Erreur lors de la copie dans le presse-papiers.');
+        Alert.alert('Erreur', '\nErreur lors de la copie dans le presse-papiers.');
       });
   };
 
