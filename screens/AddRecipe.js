@@ -56,7 +56,7 @@ export default function ({ route, navigation }) {
   const [unitModalVisible, setUnitModalVisible] = useState(false);
   const [rayonModalVisible, setRayonModalVisible] = useState(false);
 
-  const availableCategories = ['Petit-déjeuner', 'Entrée', 'Plat', 'Dessert', 'Cocktail'];
+  const availableCategories = ['Petit-déjeuner', 'Entrée', 'Plat', 'Dessert', 'Apéritif', 'Cocktail'];
   const availableDuration = ['court', 'long'];
   const availableSeasons = ['printemps', 'été', 'automne', 'hiver'];
   const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'petite cuillère', 'grande cuillère'];

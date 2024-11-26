@@ -8,6 +8,11 @@ node_modules/
 dist/
 web-build/
 
+# Android
+android/app/google-services.json
+android/.gradle/
+android/build/
+
 # Native
 *.orig.*
 *.jks

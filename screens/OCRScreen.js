@@ -1,76 +1,135 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, Platform, Image } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import TesseractOcr from 'react-native-tesseract-ocr';
+import { View, Text, Button, Image, StyleSheet, PermissionsAndroid, Platform } from 'react-native';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import DocumentPicker from 'react-native-document-picker'; // Pour choisir depuis les téléchargements
+import TextRecognition from '@react-native-ml-kit/text-recognition';
+import RNFS from 'react-native-fs'; // Pour lire des fichiers en base64 (si nécessaire)
 
-const OCRScreen = () => {
+export default function OCRScreen() {
   const [imageUri, setImageUri] = useState(null);
-  const [text, setText] = useState('');
+  const [recognizedText, setRecognizedText] = useState('');
 
-  // Fonction pour ouvrir la bibliothèque ou l'appareil photo
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images, // Correct usage of MediaTypeOptions.Images
-      allowsEditing: false,
-      quality: 1,
-    });
-
-    if (!result.cancelled) {
-      setImageUri(result.uri);
-      runOCR(result.uri);
-    }
-  };
-
-  // Fonction pour ouvrir l'appareil photo
-  const takePhoto = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      allowsEditing: false,
-      quality: 1,
-    });
-
-    if (!result.cancelled) {
-      setImageUri(result.uri);
-      runOCR(result.uri);
-    }
-  };
-
-  // Fonction de reconnaissance OCR
-  const runOCR = async (uri) => {
-    const tessOptions = {
-      whitelist: null,  // Liste blanche des caractères à reconnaître (si nécessaire)
-      blacklist: null,  // Liste noire des caractères à ignorer (si nécessaire)
-    };
-
-    try {
-      const ocrResult = await TesseractOcr.recognize(uri, 'fra', tessOptions); // Langue française
-      setText(ocrResult);
-    } catch (error) {
-      console.error('Erreur OCR:', error);
+  // Demander les permissions nécessaires (Android)
+  const requestStoragePermission = async () => {
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          title: 'Permission d\'accès au stockage',
+          message: 'Cette application a besoin d\'accéder aux fichiers.',
+          buttonNeutral: 'Plus tard',
+          buttonNegative: 'Annuler',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Permission refusée');
+      }
     }
   };
 
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      requestStoragePermission();
-    }
+    requestStoragePermission(); // Demander la permission au chargement du composant
   }, []);
 
-  // Demande de permission pour accéder à la galerie ou à l'appareil photo
-  const requestStoragePermission = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Permission d\'accès aux photos refusée');
+  // Fonction pour capturer une photo
+  const takePhoto = async () => {
+    const result = await launchCamera({
+      mediaType: 'photo',
+      quality: 1,
+    });
+
+    if (!result.didCancel) {
+      const uri = result.assets[0].uri;
+      setImageUri(uri);
+      processImage(uri); // Appel pour reconnaître le texte
     }
   };
 
+  // Fonction pour choisir une image depuis la galerie
+  const chooseFromGallery = async () => {
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      quality: 1,
+    });
+
+    if (!result.didCancel) {
+      const uri = result.assets[0].uri;
+      setImageUri(uri);
+      processImage(uri); // Appel pour reconnaître le texte
+    }
+  };
+
+  // Fonction pour choisir un fichier depuis le dossier de téléchargements
+  const chooseFromDownloads = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.images, DocumentPicker.types.pdf], // Vous pouvez ajuster les types selon vos besoins
+      });
+      const uri = res.uri;
+      setImageUri(uri);
+      processImage(uri); // Appel pour reconnaître le texte
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        console.log('Sélection annulée');
+      } else {
+        console.error('Erreur de sélection de fichier :', err);
+      }
+    }
+  };
+
+  // Fonction pour traiter l'image avec Google ML Kit (base64 si nécessaire)
+    const processImage = async (uri) => {
+      console.log('Image URI:', uri); // Ajoutez cette ligne pour voir l'URI dans la console
+      try {
+        const result = await TextRecognition.processImage(uri);
+        setRecognizedText(result.text || 'Aucun texte détecté.');
+
+        for (let block of result.blocks) {
+          console.log('Block text:', block.text);
+          console.log('Block frame:', block.frame);
+
+          for (let line of block.lines) {
+            console.log('Line text:', line.text);
+            console.log('Line frame:', line.frame);
+          }
+        }
+
+      } catch (error) {
+        console.error('Erreur OCR :', error);
+        setRecognizedText('Erreur lors de la reconnaissance.');
+      }
+    };
+
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Button title="Choisir une image depuis la galerie" onPress={pickImage} />
+    <View style={styles.container}>
       <Button title="Prendre une photo" onPress={takePhoto} />
-      {imageUri && <Image source={{ uri: imageUri }} style={{ width: 200, height: 200 }} />}
-      {text && <Text>Texte reconnu : {text}</Text>}
+      <Button title="Choisir depuis la galerie" onPress={chooseFromGallery} />
+      <Button title="Choisir depuis les téléchargements" onPress={chooseFromDownloads} />
+      {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
+      <Text style={styles.text}>
+        {recognizedText || 'Aucun texte détecté pour l’instant.'}
+      </Text>
     </View>
   );
-};
+}
 
-export default OCRScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  image: {
+    width: 200,
+    height: 200,
+    marginVertical: 16,
+  },
+  text: {
+    marginTop: 16,
+    textAlign: 'center',
+    color: '#333',
+  },
+});

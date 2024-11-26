@@ -45,32 +45,32 @@ export default function App() {
     // Initialiser les recettes au démarrage
     const loading = useInitializeRecipes(); 
 
-  // Gestion des autorisations android
-  const requestStoragePermission = async () => {
-    if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-        {
-          title: 'Permission d\'accès au stockage',
-          message: 'Cette application a besoin d\'accéder au stockage pour enregistrer des fichiers.',
-          buttonNeutral: 'Plus tard',
-          buttonNegative: 'Annuler',
-          buttonPositive: 'OK',
-        },
-      );
-
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('Vous avez accès au stockage');
-        // Appeler ici la fonction pour enregistrer le fichier si nécessaire
-      } else {
-        console.log('Permission refusée');
-      }
-    }
-  };
-
-  useEffect(() => {
-    requestStoragePermission();
-  }, []);
+//  // Gestion des autorisations android
+//  const requestStoragePermission = async () => {
+//    if (Platform.OS === 'android') {
+//      const granted = await PermissionsAndroid.request(
+//        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+//        {
+//          title: 'Permission d\'accès au stockage',
+//          message: 'Cette application a besoin d\'accéder au stockage pour enregistrer des fichiers.',
+//          buttonNeutral: 'Plus tard',
+//          buttonNegative: 'Annuler',
+//          buttonPositive: 'OK',
+//        },
+//      );
+//
+//      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+//        console.log('Vous avez accès au stockage');
+//        // Appeler ici la fonction pour enregistrer le fichier si nécessaire
+//      } else {
+//        console.log('Permission refusée');
+//      }
+//    }
+//  };
+//
+//  useEffect(() => {
+//    requestStoragePermission();
+//  }, []);
 
   // Déclenche la mise à jour de l'état quand les ressources sont prêtes
   useEffect(() => {
@@ -81,12 +81,13 @@ export default function App() {
 
   // Fonction appelée quand l'animation se termine
   const handleAnimationFinish = () => {
-    if (animationCount < 1) {
+    if (animationCount < 2) {
       setAnimationCount(animationCount + 1);
       animationRef.current?.play(); // Redémarre l'animation si elle n'est pas terminée
     } else if (resourcesReady) {
       setIsAnimationDone(true); // Passe à l'écran principal quand tout est prêt
     }
+    console.log('resourcesReady :', resourcesReady)
   };
 
 
