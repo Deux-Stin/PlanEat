@@ -18,8 +18,8 @@ export default function ShoppingListScreen({ navigation, route }) {
 
   const { mealPlan } = route.params; // Recevoir le mealPlan à partir de la navigation
 
-  const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'petite cuillère', 'grande cuillère'];
-  const availableRayons = ['Divers', 'Produits frais', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Surgelés', 'Produits laitiers', 'Boissons', 'Hygiène', 'Entretien'].sort((a, b) => a.localeCompare(b)); // Trie le tableau par ordre alphabétique
+  const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'c. à café', 'c. à soupe', 'boîte', 'verre', 'gousse(s)'];
+  const availableRayons = ['Divers', ,'Alcool', 'Condiments', 'Pâtes', 'Produits frais', 'Herbes aromatiques', 'Fromages', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Fruits secs et mélanges', 'Surgelés', 'Conserves', 'Produits laitiers, oeufs', 'Boissons', 'Hygiène', 'Entretien'].sort((a, b) => a.localeCompare(b)); // Trie le tableau par ordre alphabétique
   const [unitModalVisible, setUnitModalVisible] = useState(false);
   const [rayonModalVisible, setRayonModalVisible] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState('unité');

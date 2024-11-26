@@ -58,6 +58,10 @@ export default function RecipeDetail({ route, navigation }) {
           {recipe.duration || "Non spécifié"}
         </Text>
         <Text style={styles.detailItem}>
+          <Text style={styles.detailLabel}>Source: </Text>
+          {recipe.source || "Non spécifié"}
+        </Text>
+        <Text style={styles.detailItem}>
           <Text style={styles.detailLabel}>Saison: </Text>
           {Array.isArray(recipe.season) ? recipe.season.join(', ') : "Non spécifié"}
         </Text>

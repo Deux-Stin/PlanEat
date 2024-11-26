@@ -11,6 +11,7 @@ export default function ({ route, navigation }) {
   const [newRecipe, setNewRecipe] = useState({
     id: '',
     name: '',
+    source: '',
     category: '',
     duration: 'court',
     season: ['printemps', 'été', 'automne', 'hiver'],
@@ -59,9 +60,9 @@ export default function ({ route, navigation }) {
   const availableCategories = ['Petit-déjeuner', 'Entrée', 'Plat', 'Dessert', 'Cocktail'];
   const availableDuration = ['court', 'long'];
   const availableSeasons = ['printemps', 'été', 'automne', 'hiver'];
-  const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'petite cuillère', 'grande cuillère'];
-  const availableRayons = ['Divers', 'Produits frais', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Surgelés', 'Produits laitiers', 'Boissons', 'Hygiène', 'Entretien'].sort((a, b) => a.localeCompare(b)); // Trie le tableau par ordre alphabétique;
-
+  const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'c. à café', 'c. à soupe', 'boîte', 'verre', 'gousse(s)'];
+  const availableRayons = ['Divers', ,'Alcool', 'Condiments', 'Pâtes', 'Produits frais', 'Herbes aromatiques', 'Fromages', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Fruits secs et mélanges', 'Surgelés', 'Conserves', 'Produits laitiers, oeufs', 'Boissons', 'Hygiène', 'Entretien'].sort((a, b) => a.localeCompare(b)); // Trie le tableau par ordre alphabétique
+  
   const toggleDuration = (duration) => {
     setNewRecipe((prev) => ({
       ...prev,
@@ -129,7 +130,12 @@ export default function ({ route, navigation }) {
   };
 
   const handleSubmit = async () => {
-    const { name, category, duration, season, servings, ingredients, recipe, nutritionalValues } = newRecipe;
+
+    if (!newRecipe.source.trim()) {
+      // Définit "Internet" si l'utilisateur n'a rien entré
+      setNewRecipe({ ...newRecipe, source: 'Internet' });
+    }
+    const { name, source, category, duration, season, servings, ingredients, recipe, nutritionalValues } = newRecipe;
 
     if (!name || category.length === 0 || !servings || ingredients.length === 0 || recipe.length === 0) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires.');
@@ -151,6 +157,7 @@ export default function ({ route, navigation }) {
     const recipeData = {
       id: route.params?.recipe ? newRecipe.id : uuid.v4(), // Utiliser l'ID existant si on modifie
       name,
+      source,
       category,
       duration: duration,
       season: season,
@@ -241,6 +248,14 @@ export default function ({ route, navigation }) {
           </TouchableOpacity>
         ))}
       </View>
+
+      <Text style={[styles.sectionTitle, {marginTop: 5, marginBottom: 5}]}>Source</Text>
+      <TextInput
+        placeholder="Ex: Internet"
+        value={newRecipe.source}
+        onChangeText={(text) => setNewRecipe({ ...newRecipe, source: text })}
+        style={styles.input}
+      />
 
       <Text style={styles.sectionTitle}>Saison</Text>
       <View style={styles.flexContainer}>
@@ -504,7 +519,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginVertical: 5,
-    marginTop: 10,
+    // marginTop: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
 

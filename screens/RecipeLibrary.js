@@ -93,7 +93,7 @@ export default function RecipeLibrary({ navigation, route }) {
         // Vérifie si le tableau existe et est un tableau
         if (!Array.isArray(jsonData.recipes)) {
           console.error('Les recettes importées ne sont pas un tableau. Vérifiez le format du fichier JSON.');
-          Alert.alert('Erreur', 'Le fichier importé ne contient pas des recettes valides.');
+          Alert.alert('Erreur', 'Le fichier importé ne contient pas de recettes valides.');
           return;
         }
   
@@ -209,7 +209,7 @@ export default function RecipeLibrary({ navigation, route }) {
 
       if (directoryPath) {
         // Utiliser un champ de texte ou un modal pour le nom du fichier
-        const fileName = 'recipes'; // Remplacez par votre méthode d'obtention du nom de fichier
+        const fileName = 'recipes';
 
         if (!fileName) {
           Alert.alert('Nom de fichier requis', 'Veuillez entrer un nom de fichier valide.');
@@ -244,7 +244,7 @@ export default function RecipeLibrary({ navigation, route }) {
     return null;
   };
 
-  const categories = ['Petit-déjeuner','Entrée','Plat','Dessert','Cocktail'];// ['Petit-déjeuner', 'Déjeuner', 'Dîner'];
+  const categories = ['Apéritif','Petit-déjeuner','Entrée','Plat','Dessert','Cocktail'];
 
   const toggleCategory = (category) => {
     setExpandedCategory((prevCategory) => (prevCategory === category ? null : category));

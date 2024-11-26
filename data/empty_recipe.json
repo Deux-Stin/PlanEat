@@ -1,0 +1,25 @@
+    {
+      "id": "",
+      "name": "",
+      "category": "Petit-déjeuner",
+      "duration": "court",
+      "source": "",
+      "season": ["printemps", "été", "automne", "hiver"],
+      "servings": 2,
+      "ingredients": [
+        { "name": "", "quantity": 1, "unit": "g", "rayon": "" },
+        { "name": "", "quantity": 1, "unit": "g", "rayon": "" },
+        { "name": "", "quantity": 1, "unit": "g", "rayon": "" }
+      ],
+      "recipe": [
+        "",
+        "",
+        ""
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
