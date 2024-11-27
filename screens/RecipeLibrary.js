@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { Platform, View, Text, Button, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
@@ -135,6 +135,7 @@ export default function RecipeLibrary({ navigation, route }) {
       const sanitizedRecipes = recipes.map(recipe => ({
         id: recipe.id,
         name: recipe.name,
+        source: recipe.source,
         category: recipe.category,
         duration: recipe.duration,
         season: recipe.season,
@@ -148,7 +149,7 @@ export default function RecipeLibrary({ navigation, route }) {
       // console.log('sanitizedRecipes : ',sanitizedRecipes)
 
       // Convertir les recettes en JSON
-      const jsonRecipes = JSON.stringify(sanitizedRecipes, null, 2);
+      // const jsonRecipes = JSON.stringify({recipes: sanitizedRecipes}, null, 2);
   
       // Demander la permission d'accès au stockage
       const { status } = await MediaLibrary.requestPermissionsAsync();
@@ -162,8 +163,8 @@ export default function RecipeLibrary({ navigation, route }) {
         "Exporter les recettes",
         "Que souhaitez-vous faire ?",
         [
-          { text: "Partager", onPress: async () => await shareRecipes(jsonRecipes) },
-          { text: "Enregistrer dans un répertoire", onPress: async () => await saveRecipesToCustomDirectory(jsonRecipes) },
+          { text: "Partager", onPress: async () => await shareRecipes(sanitizedRecipes) },
+          { text: "Enregistrer dans un répertoire", onPress: async () => await saveRecipesToCustomDirectory(sanitizedRecipes) },
           { text: "Annuler", style: "cancel" },
         ]
       );
@@ -172,7 +173,8 @@ export default function RecipeLibrary({ navigation, route }) {
     }
   };
   
-  const shareRecipes = async (jsonRecipes) => {
+  const shareRecipes = async (sanitizedRecipes) => {
+    const jsonRecipes = JSON.stringify({recipes: sanitizedRecipes}, null, 2);
     try {
       // Créer un fichier temporaire
       const filePath = `${FileSystem.cacheDirectory}recipes.json`;
@@ -204,45 +206,53 @@ export default function RecipeLibrary({ navigation, route }) {
   
   const saveRecipesToCustomDirectory = async (jsonRecipes) => {
     try {
-      // Demander à l'utilisateur de choisir un répertoire
-      const directoryPath = await selectDirectory();
+      // Assurez-vous que jsonRecipes est dans le bon format
+      // console.log('jsonRecipes :',jsonRecipes)
+      let formattedRecipes = { recipes: jsonRecipes };
+      // console.log('formattedRecipes :', formattedRecipes)
 
-      if (directoryPath) {
-        // Utiliser un champ de texte ou un modal pour le nom du fichier
-        const fileName = 'recipes';
-
-        if (!fileName) {
-          Alert.alert('Nom de fichier requis', 'Veuillez entrer un nom de fichier valide.');
-          return;
+  
+      const fileName = 'recipes.json';
+      const mimeType = 'application/json'; // Type MIME pour JSON
+  
+      if (Platform.OS === 'android') {
+        // Demander les permissions pour accéder au répertoire
+        const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+  
+        if (permissions.granted) {
+          // Créer un fichier dans le répertoire sélectionné
+          await FileSystem.StorageAccessFramework.createFileAsync(permissions.directoryUri, fileName, mimeType)
+            .then(async (fileUri) => {
+              // Écrire les données JSON formatées dans le fichier
+              await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(formattedRecipes), { encoding: FileSystem.EncodingType.UTF8 });
+  
+              Alert.alert('Succès', `Les recettes ont été enregistrées dans :\n${fileUri}`);
+            })
+            .catch((error) => {
+              console.error('Erreur lors de la création du fichier :', error);
+              Alert.alert('Erreur', 'Impossible de créer le fichier.');
+            });
+        } else {
+          // L'utilisateur n'a pas accordé les permissions
+          Alert.alert('Permissions refusées', 'Impossible d\'accéder au répertoire sélectionné.');
         }
-
-        const filePath = `${directoryPath}/${fileName}.json`;
-        await FileSystem.writeAsStringAsync(filePath, jsonRecipes);
-        Alert.alert('Fichier sauvegardé', `Recettes enregistrées dans : ${filePath}`);
       } else {
-        Alert.alert('Sélection annulée', 'Aucun répertoire n\'a été sélectionné.');
+        // iOS : Partager le fichier avec d'autres applications
+        const fileUri = `${FileSystem.documentDirectory}${fileName}`;
+        await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(formattedRecipes), { encoding: FileSystem.EncodingType.UTF8 });
+  
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(fileUri, { mimeType });
+        } else {
+          Alert.alert('Partage indisponible', 'Le partage n\'est pas supporté sur cet appareil.');
+        }
       }
     } catch (error) {
       console.error('Erreur lors de l\'enregistrement des recettes :', error);
+      Alert.alert('Erreur', 'Impossible d\'enregistrer les recettes.');
     }
   };
-
-  const selectDirectory = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: '*/*',
-        copyToCacheDirectory: false,
-        multiple: false,
-      });
-
-      if (result.type === 'success') {
-        return result.uri.substring(0, result.uri.lastIndexOf('/'));
-      }
-    } catch (error) {
-      console.error('Erreur lors de la sélection du répertoire :', error);
-    }
-    return null;
-  };
+  
 
   const categories = ['Apéritif','Petit-déjeuner','Entrée','Plat','Dessert','Cocktail'];
 
@@ -262,7 +272,7 @@ export default function RecipeLibrary({ navigation, route }) {
 
   const filterRecipes = () => {
     return recipes.filter(recipe => {
-      // console.log('recipe.category : ', recipe.category)
+      // console.log('recipe.source : ', recipe.source)
       const recipeSeasons = recipe.season || [];
       const matchesSeason = selectedSeasons.length === 0 || recipeSeasons.some(season => selectedSeasons.includes(season));
       const matchesDuration = selectedDuration === null || (recipe.duration && recipe.duration.includes(selectedDuration));

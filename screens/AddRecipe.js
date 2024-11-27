@@ -195,7 +195,7 @@ export default function ({ route, navigation }) {
       Alert.alert('Succès', `Recette ${existingRecipeIndex !== -1 ? 'modifiée' : 'ajoutée'} avec succès!`);
 
       if (typeof addRecipe !== 'function') {
-        console.error('addRecipe is not a function');
+        // console.log('addRecipe is not a function');
         // return;
       } else {
         addRecipe(recipeData); // Appelle la fonction pour ajouter la recette
