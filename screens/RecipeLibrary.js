@@ -69,48 +69,60 @@ export default function RecipeLibrary({ navigation, route }) {
     }
   }, [route.params]);
 
-  const importRecipesFromJson = async () => {
+  const importRecipesFromJsonOrTxt = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/json',
+        type: ['application/json', 'text/plain'], // Permet de sélectionner JSON ou TXT
         copyToCacheDirectory: true,
       });
   
       if (!result.canceled && result.assets && result.assets.length > 0) {
-        const { uri } = result.assets[0];
+        const { uri, mimeType } = result.assets[0];
         const fileContent = await FileSystem.readAsStringAsync(uri);
-        console.log('Contenu du fichier :', fileContent); // Vérification du contenu
+        console.log('Contenu du fichier :', fileContent);
   
         let jsonData;
-        try {
-          jsonData = JSON.parse(fileContent);
-        } catch (error) {
-          console.error('Erreur lors de l\'analyse JSON :', error);
-          Alert.alert('Erreur', 'Le fichier JSON est mal formé.');
+        if (mimeType === 'application/json') {
+          // Si le fichier est un JSON
+          try {
+            jsonData = JSON.parse(fileContent);
+          } catch (error) {
+            console.error('Erreur lors de l\'analyse JSON :', error);
+            Alert.alert('Erreur', 'Le fichier JSON est mal formé.');
+            return;
+          }
+        } else if (mimeType === 'text/plain') {
+          // Si le fichier est un TXT, reconstruire un objet JSON
+          try {
+            jsonData = parseTxtToJson(fileContent); // Fonction personnalisée pour convertir TXT en JSON
+          } catch (error) {
+            console.error('Erreur lors du traitement TXT :', error);
+            Alert.alert('Erreur', 'Le fichier TXT est mal formaté.');
+            return;
+          }
+        } else {
+          Alert.alert('Erreur', 'Format de fichier non pris en charge.');
           return;
         }
   
-        // Vérifie si le tableau existe et est un tableau
+        // Vérifie si les recettes sont valides
         if (!Array.isArray(jsonData.recipes)) {
-          console.error('Les recettes importées ne sont pas un tableau. Vérifiez le format du fichier JSON.');
+          console.error('Les recettes importées ne sont pas un tableau. Vérifiez le format du fichier.');
           Alert.alert('Erreur', 'Le fichier importé ne contient pas de recettes valides.');
           return;
         }
   
-        const newRecipes = jsonData.recipes; // Accède au tableau de recettes
+        // Ajouter les nouvelles recettes comme avant
+        const newRecipes = jsonData.recipes;
         const updatedRecipes = [...recipes];
         let nbNewRecipes = 0;
   
         newRecipes.forEach(newRecipe => {
-          const existingRecipe = updatedRecipes.find(r => r.id === newRecipe.id || r.name === newRecipe.name);
+          const existingRecipe = updatedRecipes.find(
+            r => r.id === newRecipe.id || r.name === newRecipe.name
+          );
   
           if (!existingRecipe) {
-            newRecipe.id = uuid.v4();
-            updatedRecipes.push(newRecipe);
-            nbNewRecipes++;
-          } else if (existingRecipe.id !== newRecipe.id && existingRecipe.name === newRecipe.name) {
-            console.log(`Recette "${newRecipe.name}" ignorée car le nom est déjà présent.`);
-          } else if (existingRecipe.id === newRecipe.id && existingRecipe.name !== newRecipe.name) {
             newRecipe.id = uuid.v4();
             updatedRecipes.push(newRecipe);
             nbNewRecipes++;
@@ -118,7 +130,7 @@ export default function RecipeLibrary({ navigation, route }) {
         });
   
         setRecipes(updatedRecipes);
-        Alert.alert('Recettes mises à jour', `${nbNewRecipes} nouvelle(s) recette(s) ont été ajoutée(s).`);
+        Alert.alert('Recettes mises à jour', `${nbNewRecipes} nouvelle(s) recette(s) ajoutée(s).`);
       } else {
         console.log('Aucun fichier sélectionné ou processus annulé.');
       }
@@ -126,8 +138,39 @@ export default function RecipeLibrary({ navigation, route }) {
       console.error('Erreur lors de l\'importation du fichier :', err);
     }
   };
-
-  // console.log(recipes)
+  
+  // Fonction pour convertir un fichier TXT en JSON
+  const parseTxtToJson = (fileContent) => {
+    // Exemple simple : Attendez-vous à une structure lisible comme :
+    // - Nom: Recette 1
+    // - Durée: 30 minutes
+    // ...
+    const lines = fileContent.split('\n');
+    const recipes = [];
+    let currentRecipe = {};
+  
+    lines.forEach(line => {
+      if (line.trim() === '') {
+        // Nouvelle recette si une ligne est vide
+        if (Object.keys(currentRecipe).length > 0) {
+          recipes.push(currentRecipe);
+          currentRecipe = {};
+        }
+      } else {
+        const [key, value] = line.split(':');
+        if (key && value) {
+          currentRecipe[key.trim().toLowerCase()] = value.trim();
+        }
+      }
+    });
+  
+    if (Object.keys(currentRecipe).length > 0) {
+      recipes.push(currentRecipe); // Ajouter la dernière recette
+    }
+  
+    return { recipes };
+  };
+  
 
   const exportRecipes = async () => {
     try {
@@ -141,9 +184,8 @@ export default function RecipeLibrary({ navigation, route }) {
         season: recipe.season,
         servings: recipe.servings,
         ingredients: recipe.ingredients,
-        recipe: recipe.recipe, // Assurez-vous d'inclure uniquement les propriétés nécessaires
+        recipe: recipe.recipe,
         nutritionalValues: recipe.nutritionalValues,
-        // Ne pas inclure d'autres propriétés qui peuvent causer des références circulaires
       }));
 
       // console.log('sanitizedRecipes : ',sanitizedRecipes)
@@ -164,10 +206,27 @@ export default function RecipeLibrary({ navigation, route }) {
         "Que souhaitez-vous faire ?",
         [
           { text: "Partager", onPress: async () => await shareRecipes(sanitizedRecipes) },
-          { text: "Enregistrer dans un répertoire", onPress: async () => await saveRecipesToCustomDirectory(sanitizedRecipes) },
-          { text: "Annuler", style: "cancel" },
+          { 
+            text: "Exporter", 
+            onPress: () => {
+              // Si l'utilisateur choisit d'exporter, on lui propose de choisir entre TXT ou JSON
+              Alert.alert(
+                "Choisissez le format d'exportation",
+                "Sélectionnez un format :",
+                [
+                  { text: "Exporter en TXT", onPress: async () => await saveRecipesToCustomDirectory(sanitizedRecipes, 'txt') },
+                  { text: "Exporter en JSON", onPress: async () => await saveRecipesToCustomDirectory(sanitizedRecipes, 'json') },
+                  { text: "Annuler", style: "cancel" }
+                ]
+              );
+            }
+          },
+          { text: "Annuler", style: "cancel" }
         ]
       );
+      
+      
+      
     } catch (error) {
       console.error('Erreur lors de l\'exportation des recettes :', error);
     }
@@ -177,7 +236,7 @@ export default function RecipeLibrary({ navigation, route }) {
     const jsonRecipes = JSON.stringify({recipes: sanitizedRecipes}, null, 2);
     try {
       // Créer un fichier temporaire
-      const filePath = `${FileSystem.cacheDirectory}recipes.json`;
+      const filePath = `${FileSystem.cacheDirectory}recipes.txt`;
       await FileSystem.writeAsStringAsync(filePath, jsonRecipes);
   
       // Partager le fichier
@@ -204,16 +263,28 @@ export default function RecipeLibrary({ navigation, route }) {
     );
   };
   
-  const saveRecipesToCustomDirectory = async (jsonRecipes) => {
+  const saveRecipesToCustomDirectory = async (jsonRecipes, format) => {
     try {
-      // Assurez-vous que jsonRecipes est dans le bon format
-      // console.log('jsonRecipes :',jsonRecipes)
-      let formattedRecipes = { recipes: jsonRecipes };
-      // console.log('formattedRecipes :', formattedRecipes)
+      // Définir le nom et le type MIME du fichier
+      const fileName = `recipes.${format}`;
+      const mimeType = format === 'json' ? 'application/json' : 'text/plain';
 
-  
-      const fileName = 'recipes.json';
-      const mimeType = 'application/json'; // Type MIME pour JSON
+      // Générer le contenu du fichier
+      let fileContent;
+
+      if (format === 'json' || format === 'txt') {
+        // Générer un JSON formaté avec indentation pour .json et .txt
+        const formattedRecipes = { recipes: jsonRecipes };
+        fileContent = JSON.stringify(formattedRecipes, null, 2); // Beautifié avec indentations
+      } else {
+        throw new Error('Format non supporté');
+      }
+
+      if (!fileContent) {
+        throw new Error('Contenu du fichier vide ou invalide.');
+      }
+
+      console.log('Contenu généré pour le fichier :', fileContent);
   
       if (Platform.OS === 'android') {
         // Demander les permissions pour accéder au répertoire
@@ -223,10 +294,16 @@ export default function RecipeLibrary({ navigation, route }) {
           // Créer un fichier dans le répertoire sélectionné
           await FileSystem.StorageAccessFramework.createFileAsync(permissions.directoryUri, fileName, mimeType)
             .then(async (fileUri) => {
-              // Écrire les données JSON formatées dans le fichier
-              await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(formattedRecipes), { encoding: FileSystem.EncodingType.UTF8 });
-  
-              Alert.alert('Succès', `Les recettes ont été enregistrées dans :\n${fileUri}`);
+              // Écrire les données dans le fichier
+              await FileSystem.writeAsStringAsync(fileUri, fileContent, { encoding: FileSystem.EncodingType.UTF8 });
+
+              // const decodeUri = (encodedUri) => decodeURIComponent(encodedUri);
+              // const readablePath = decodeUri(fileUri);
+              // console.log('Chemin lisible :', readablePath);
+              const readablePath = getReadablePath(fileUri);
+              console.log('Chemin lisible :', readablePath);
+
+              Alert.alert('Succès', `Les recettes ont été enregistrées dans :\n${readablePath}`);
             })
             .catch((error) => {
               console.error('Erreur lors de la création du fichier :', error);
@@ -239,7 +316,7 @@ export default function RecipeLibrary({ navigation, route }) {
       } else {
         // iOS : Partager le fichier avec d'autres applications
         const fileUri = `${FileSystem.documentDirectory}${fileName}`;
-        await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(formattedRecipes), { encoding: FileSystem.EncodingType.UTF8 });
+        await FileSystem.writeAsStringAsync(fileUri, fileContent, { encoding: FileSystem.EncodingType.UTF8 });
   
         if (await Sharing.isAvailableAsync()) {
           await Sharing.shareAsync(fileUri, { mimeType });
@@ -253,6 +330,25 @@ export default function RecipeLibrary({ navigation, route }) {
     }
   };
   
+  const getReadablePath = (fileUri) => {
+    // Décoder l'URI
+    const decodedUri = decodeURIComponent(fileUri);
+  
+    // Supprimer le préfixe principal
+    const withoutPrefix = decodedUri.replace('content://com.android.externalstorage.documents/tree/primary:', '');
+  
+    // Trouver où commence la redondance après "document/primary:"
+    const parts = withoutPrefix.split('document/primary:');
+    if (parts.length > 1) {
+      // S'assurer que la seconde partie n'est pas redondante avec la première
+      if (parts[1].startsWith(parts[0])) {
+        return parts[1]; // Garder seulement la deuxième partie
+      }
+    }
+  
+    // Si pas de redondance détectée, garder le chemin original nettoyé
+    return withoutPrefix;
+  };
 
   const categories = ['Apéritif','Petit-déjeuner','Entrée','Plat','Dessert','Cocktail'];
 
@@ -260,15 +356,40 @@ export default function RecipeLibrary({ navigation, route }) {
     setExpandedCategory((prevCategory) => (prevCategory === category ? null : category));
   };
 
-  const renderRecipe = (recipe) => (
-    <TouchableOpacity
-      key={recipe.id}
-      style={styles.recipeItem}
-      onPress={() => navigation.navigate('RecipeDetail', { recipe, deleteRecipe })}
-    >
-      <Text style={styles.recipeName}>{recipe.name}</Text>
-    </TouchableOpacity>
-  );
+  const renderRecipe = (recipe) => {
+    
+    const getSourceIcon = (source) => {
+      switch (source) {
+        case 'Livre':
+          return '📖'; // Émoticône pour le site1
+        case 'Bouche à oreille':
+          return '🗣️'; // Émoticône pour le site2
+        case 'ChatGPT':
+          return '🤖'; // Émoticône pour le site3
+        case 'Marmiton':
+          return '🍲';
+        case 'Internet':
+          return '🌐';
+        default:
+          return '❔'; // Émoticône par défaut si la source est inconnue
+      }
+    };
+
+    return (
+      <TouchableOpacity
+        key={recipe.id}
+        style={styles.recipeItem}
+        onPress={() => navigation.navigate('RecipeDetail', { recipe, deleteRecipe })}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+          <Text style={[styles.recipeSource, {marginRight: 10}]}>
+            {getSourceIcon(recipe.source)}{/* Affiche l'émoticône et la source */}
+          </Text>
+          <Text style={styles.recipeName}>{recipe.name}</Text>
+        </View>
+      </TouchableOpacity>
+    )
+  };
 
   const filterRecipes = () => {
     return recipes.filter(recipe => {
@@ -364,8 +485,8 @@ export default function RecipeLibrary({ navigation, route }) {
           <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('AddRecipe', { addRecipe })}>
             <Text style={styles.mainButtonText}>Ajouter une recette</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.mainButton} onPress={importRecipesFromJson}>
-            <Text style={styles.mainButtonText}>Importer un fichier .json</Text>
+          <TouchableOpacity style={styles.mainButton} onPress={importRecipesFromJsonOrTxt}>
+            <Text style={styles.mainButtonText}>Importer un fichier</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.mainButton} onPress={exportRecipes}>
             <Text style={styles.mainButtonText}>Partager mes recettes</Text>
@@ -469,6 +590,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 10,
     paddingHorizontal: 15,
+    marginHorizontal: 10,
     marginTop: 5,
     elevation: 1,
     shadowColor: '#000',
@@ -478,6 +600,7 @@ const styles = StyleSheet.create({
   },
   recipeItem: {
     paddingVertical: 10,
+    paddingRight: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },
