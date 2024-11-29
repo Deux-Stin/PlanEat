@@ -9,6 +9,8 @@ import { MealPlanContext, MealPlanProvider } from './MealPlanContext';
 import 'moment/locale/fr';
 import moment from 'moment';
 moment.locale('fr');
+import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
+
 
 export default function MealPlanScreen({ navigation, route }) {
   const [selectedDates, setSelectedDates] = useState({});
@@ -264,10 +266,20 @@ export default function MealPlanScreen({ navigation, route }) {
       if (mealType === 'lunch' || mealType === 'dinner') {
         const formattedCategory = recipe.category.trim().toLowerCase();
         console.log('recipe.category:', recipe.category, formattedCategory === category.toLowerCase() || ['entrée', 'plat', 'dessert'].includes(formattedCategory));
-  
-        // Ici, on vérifie si recipe.category est dans les sous-catégories "entrée", "plat", ou "dessert"
-        return ['entrée', 'plat', 'dessert'].includes(formattedCategory);
+        
+        // Vérification si la catégorie est valide
+        const validCategories = ['entrée', 'plat', 'dessert'];
+        
+        // Si la catégorie n'est pas valide, on ne traite pas et on retourne false pour éviter un bug
+        if (!validCategories.includes(formattedCategory)) {
+          console.warn(`Catégorie invalide détectée : ${formattedCategory}`);
+          return false; // Retourne false pour éviter le traitement de catégories invalides
+        }
+        
+        // Si la catégorie est valide, on continue le traitement
+        return validCategories.includes(formattedCategory);
       }
+      
   
       return false; // Si aucune des conditions n'est remplie, retourne false
     });
@@ -275,6 +287,8 @@ export default function MealPlanScreen({ navigation, route }) {
 
   const filterRecipesByCategory = (category) => {
     return recipes.filter((recipe) => {
+      console.log('test2')
+      console.log('category :', category)
       const normalizedCategory = category.toLowerCase(); // Normaliser la casse de la catégorie entrée
       if (Array.isArray(recipe.category)) {
         return recipe.category.some((cat) => cat.toLowerCase() === normalizedCategory); // Vérifie chaque catégorie si c'est un tableau
@@ -323,6 +337,7 @@ export default function MealPlanScreen({ navigation, route }) {
   };
 
   return (
+    <ImageBackgroundWrapper imageOpacity={0.6}>
     <MealPlanProvider>
 
     <View style={styles.container}>
@@ -518,6 +533,7 @@ export default function MealPlanScreen({ navigation, route }) {
     </View>
 
     </MealPlanProvider>
+    </ImageBackgroundWrapper>
   );
 }
 
@@ -563,7 +579,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginVertical: 5,
-    backgroundColor: '#e6e6e6',
+    backgroundColor: '#fff',
     elevation: 5,
   },
 
@@ -713,7 +729,8 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   mainButton: {
-    backgroundColor: '#007bff', // Couleur identique
+    backgroundColor: '#fff',
+    opacity: 0.8,
     padding: 15,
     borderRadius: 10,
     marginVertical: 5, // Espace entre les boutons
@@ -721,7 +738,7 @@ const styles = StyleSheet.create({
     width: '95%', // Ajuster la largeur pour ne pas prendre toute la place
   },
   mainButtonText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',

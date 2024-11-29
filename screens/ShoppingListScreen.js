@@ -5,6 +5,7 @@ import * as Clipboard from 'expo-clipboard';
 // import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
+import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
 
 export default function ShoppingListScreen({ navigation, route }) {
   const [shoppingList, setShoppingList] = useState({});
@@ -507,174 +508,175 @@ export default function ShoppingListScreen({ navigation, route }) {
 
   return (
 
-    <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={toggleHideMenu} style={styles.menuButton}>
-          <Text style={styles.menuButtonText}>?</Text>
+    <ImageBackgroundWrapper imageOpacity={0.46}>
+      <View style={styles.container}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={toggleHideMenu} style={styles.menuButton}>
+            <Text style={styles.menuButtonText}>?</Text>
+          </TouchableOpacity>
+
+          <Modal
+            transparent={true}
+            visible={showHideMenu}
+            animationType="fade"
+            onRequestClose={() => setShowHideMenu(false)}
+          >
+            <TouchableOpacity style={styles.modalOverlay} onPress={() => setShowHideMenu(false)}>
+              {/* <View style={styles.menu}> */}
+              <TouchableOpacity onPress={toggleHideCheckedItems} style={styles.menuItem}>
+                <Text style={styles.menuItemText}>
+                  {hideCheckedItems ? 'Afficher les éléments cochés' : 'Masquer les éléments cochés'}
+                </Text>
+              </TouchableOpacity>
+              {/* </View> */}
+            </TouchableOpacity>
+          </Modal>
+
+
+          <View style={styles.headerContainer}>
+            {/* <Text style={styles.header}>Liste de courses</Text> */}
+          </View>
+        </View>
+
+        <ScrollView style={{ flex: 1 }}>
+          {Object.keys(shoppingList).length === 0 ? (
+            <Text>Aucune liste de courses générée.</Text>
+          ) : (
+            Object.keys(shoppingList).map((rayon) => {
+              // Vérifier si tous les éléments sont masqués (tous les éléments sont cochés)
+              const allItemsHidden = shoppingList[rayon].every((ingredient) =>
+                hideCheckedItems && checkedItems[ingredient.name]
+              );
+
+              return (
+                <View key={rayon} style={styles.rayonSection}>
+                  {/* Affichage conditionnel du nom du rayon */}
+                  {!allItemsHidden && <Text style={styles.rayonHeader}>{rayon}</Text>}
+
+                  {/* Parcours des ingrédients de chaque rayon */}
+                  {(shoppingList[rayon] || []).map((ingredient) => (
+                    (hideCheckedItems && checkedItems[ingredient.name]) ? null : (
+                      <View key={ingredient.name} style={styles.ingredientRow}>
+                        <Checkbox
+                          status={checkedItems[ingredient.name] ? 'checked' : 'unchecked'}
+                          onPress={() => {
+                            toggleCheckbox(ingredient.name)
+                            setCheckedItems({
+                              ...checkedItems,
+                              [ingredient.name]: !checkedItems[ingredient.name]
+                            })
+                          }}
+                        />
+                        <Text style={styles.ingredientText}>
+                          {ingredient.name} - {ingredient.quantity} {ingredient.unit}
+                        </Text>
+                        <View style={styles.buttonGroup}>
+                          <Button onPress={() => decrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' || ingredient.unit === 'ml' ? (ingredient.quantity < 1000 ? 10 : 100) : 1)}>
+                            -
+                          </Button>
+                          <Button onPress={() => incrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' || ingredient.unit === 'ml' ? (ingredient.quantity < 1000 ? 10 : 100) : 1)}>
+                            +
+                          </Button>
+                        </View>
+                      </View>
+                    )
+                  ))}
+                </View>
+              );
+            })
+          )}
+        </ScrollView>
+
+        <View style={styles.somespace}></View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: -20, marginVertical: 5 }}>
+          <TextInput
+            placeholder="Ajouter un nouvel élément"
+            value={manualItem}
+            onChangeText={setManualItem}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Quantité"
+            value={newItemQuantity}
+            onChangeText={setnewItemQuantity}
+            keyboardType="numeric" // Affiche le clavier numérique
+            style={styles.numericInput} // Nouveau style pour le champ de quantité
+          />
+          <TouchableOpacity onPress={() => setUnitModalVisible(true)} style={styles.unitButton}>
+            <Text style={styles.buttonModalText}>{selectedUnit}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => setRayonModalVisible(true)} style={styles.rayonButton}>
+            <Text style={styles.buttonModalText}>{selectedRayon}</Text>
+          </TouchableOpacity>
+        </View>
+
+
+        <TouchableOpacity style={styles.AddButtonNotFlex} onPress={addManualItem}>
+          <Text style={styles.mainButtonText}>Ajouter à la liste</Text>
         </TouchableOpacity>
 
-        <Modal
-          transparent={true}
-          visible={showHideMenu}
-          animationType="fade"
-          onRequestClose={() => setShowHideMenu(false)}
-        >
-          <TouchableOpacity style={styles.modalOverlay} onPress={() => setShowHideMenu(false)}>
-            {/* <View style={styles.menu}> */}
-            <TouchableOpacity onPress={toggleHideCheckedItems} style={styles.menuItem}>
-              <Text style={styles.menuItemText}>
-                {hideCheckedItems ? 'Afficher les éléments cochés' : 'Masquer les éléments cochés'}
-              </Text>
-            </TouchableOpacity>
-            {/* </View> */}
-          </TouchableOpacity>
+        <View style={styles.somespace}></View>
+
+        {/* Modal pour sélectionner l'unité */}
+        <Modal visible={unitModalVisible} animationType="slide" transparent={true}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Choisir une unité</Text>
+              {availableUnits.map((unit) => (
+                <TouchableOpacity key={unit} onPress={() => {
+                  setSelectedUnit(unit);
+                  setUnitModalVisible(false);
+                }}>
+                  <Text style={styles.modalOption}>{unit}</Text>
+                </TouchableOpacity>
+              ))}
+              <TouchableOpacity onPress={() => setUnitModalVisible(false)} style={styles.closeButton}>
+                <Text style={styles.closeButtonText}>Fermer</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Modal pour sélectionner le rayon */}
+        <Modal visible={rayonModalVisible} animationType="slide" transparent={true}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Choisir une catégorie</Text>
+              {availableRayons.map((rayon) => (
+                <TouchableOpacity key={rayon} onPress={() => {
+                  setSelectedRayon(rayon);
+                  console.log('Fermeture du modal rayon');
+                  setRayonModalVisible(false);
+                }}>
+                  <Text style={styles.modalOption}>{rayon}</Text>
+                </TouchableOpacity>
+              ))}
+              <TouchableOpacity onPress={() => setRayonModalVisible(false)} style={styles.closeButton}>
+                <Text style={styles.closeButtonText}>Fermer</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </Modal>
 
 
-        <View style={styles.headerContainer}>
-          {/* <Text style={styles.header}>Liste de courses</Text> */}
+        {/* Boutons "Sauvegarder" et "Copier" sur la même ligne */}
+        <View style={{ height: 5 }}></View>
+        <View style={styles.actionButtons}>
+          <TouchableOpacity
+            style={styles.mainButton}
+            onPress={() => {
+              navigation.navigate('HomeScreen'); // Navigue vers HomeScreen
+            }}
+          >
+            <Text style={styles.mainButtonText}>Retour au menu</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.mainButton} onPress={handleCopy}>
+            <Text style={styles.mainButtonText}>Copier la liste</Text>
+          </TouchableOpacity>
         </View>
       </View>
-
-      <ScrollView style={{ flex: 1 }}>
-        {Object.keys(shoppingList).length === 0 ? (
-          <Text>Aucune liste de courses générée.</Text>
-        ) : (
-          Object.keys(shoppingList).map((rayon) => {
-            // Vérifier si tous les éléments sont masqués (tous les éléments sont cochés)
-            const allItemsHidden = shoppingList[rayon].every((ingredient) =>
-              hideCheckedItems && checkedItems[ingredient.name]
-            );
-
-            return (
-              <View key={rayon} style={styles.rayonSection}>
-                {/* Affichage conditionnel du nom du rayon */}
-                {!allItemsHidden && <Text style={styles.rayonHeader}>{rayon}</Text>}
-
-                {/* Parcours des ingrédients de chaque rayon */}
-                {(shoppingList[rayon] || []).map((ingredient) => (
-                  (hideCheckedItems && checkedItems[ingredient.name]) ? null : (
-                    <View key={ingredient.name} style={styles.ingredientRow}>
-                      <Checkbox
-                        status={checkedItems[ingredient.name] ? 'checked' : 'unchecked'}
-                        onPress={() => {
-                          toggleCheckbox(ingredient.name)
-                          setCheckedItems({
-                            ...checkedItems,
-                            [ingredient.name]: !checkedItems[ingredient.name]
-                          })
-                        }}
-                      />
-                      <Text style={styles.ingredientText}>
-                        {ingredient.name} - {ingredient.quantity} {ingredient.unit}
-                      </Text>
-                      <View style={styles.buttonGroup}>
-                        <Button onPress={() => decrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' || ingredient.unit === 'ml' ? (ingredient.quantity < 1000 ? 10 : 100) : 1)}>
-                          -
-                        </Button>
-                        <Button onPress={() => incrementQuantity(rayon, ingredient.name, ingredient.unit === 'g' || ingredient.unit === 'ml' ? (ingredient.quantity < 1000 ? 10 : 100) : 1)}>
-                          +
-                        </Button>
-                      </View>
-                    </View>
-                  )
-                ))}
-              </View>
-            );
-          })
-        )}
-      </ScrollView>
-
-      <View style={styles.somespace}></View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: -20, marginVertical: 5 }}>
-        <TextInput
-          placeholder="Ajouter un nouvel élément"
-          value={manualItem}
-          onChangeText={setManualItem}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Quantité"
-          value={newItemQuantity}
-          onChangeText={setnewItemQuantity}
-          keyboardType="numeric" // Affiche le clavier numérique
-          style={styles.numericInput} // Nouveau style pour le champ de quantité
-        />
-        <TouchableOpacity onPress={() => setUnitModalVisible(true)} style={styles.unitButton}>
-          <Text style={styles.buttonModalText}>{selectedUnit}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => setRayonModalVisible(true)} style={styles.rayonButton}>
-          <Text style={styles.buttonModalText}>{selectedRayon}</Text>
-        </TouchableOpacity>
-      </View>
-
-
-      <TouchableOpacity style={styles.AddButtonNotFlex} onPress={addManualItem}>
-        <Text style={styles.mainButtonText}>Ajouter à la liste</Text>
-      </TouchableOpacity>
-
-      <View style={styles.somespace}></View>
-
-      {/* Modal pour sélectionner l'unité */}
-      <Modal visible={unitModalVisible} animationType="slide" transparent={true}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Choisir une unité</Text>
-            {availableUnits.map((unit) => (
-              <TouchableOpacity key={unit} onPress={() => {
-                setSelectedUnit(unit);
-                setUnitModalVisible(false);
-              }}>
-                <Text style={styles.modalOption}>{unit}</Text>
-              </TouchableOpacity>
-            ))}
-            <TouchableOpacity onPress={() => setUnitModalVisible(false)} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Fermer</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Modal pour sélectionner le rayon */}
-      <Modal visible={rayonModalVisible} animationType="slide" transparent={true}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Choisir une catégorie</Text>
-            {availableRayons.map((rayon) => (
-              <TouchableOpacity key={rayon} onPress={() => {
-                setSelectedRayon(rayon);
-                console.log('Fermeture du modal rayon');
-                setRayonModalVisible(false);
-              }}>
-                <Text style={styles.modalOption}>{rayon}</Text>
-              </TouchableOpacity>
-            ))}
-            <TouchableOpacity onPress={() => setRayonModalVisible(false)} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Fermer</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-
-      {/* Boutons "Sauvegarder" et "Copier" sur la même ligne */}
-      <View style={{ height: 5 }}></View>
-      <View style={styles.actionButtons}>
-        <TouchableOpacity
-          style={styles.mainButton}
-          onPress={() => {
-            navigation.navigate('HomeScreen'); // Navigue vers HomeScreen
-          }}
-        >
-          <Text style={styles.mainButtonText}>Retour au menu</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.mainButton} onPress={handleCopy}>
-          <Text style={styles.mainButtonText}>Copier la liste</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-
+    </ImageBackgroundWrapper>
   );
 }
 
@@ -682,7 +684,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
   },
   title: {
     fontWeight: 'bold',
@@ -739,7 +741,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 2.5,
   },
   unitButton: {
-    backgroundColor: '#9acbff',
+    backgroundColor: '#f0f0f0',
     padding: 15,
     borderRadius: 10,
     marginVertical: 2.5,
@@ -748,7 +750,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 2.5, // Espacement entre les boutons
   },
   rayonButton: {
-    backgroundColor: '#9acbff',
+    backgroundColor: '#f0f0f0',
     padding: 15,
     borderRadius: 10,
     marginVertical: 2.5,
@@ -757,7 +759,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 2.5, // Espacement entre les boutons
   },
   buttonModalText: {
-    color: '#fff',
+    color: '#000',
   },
   addButton: {
     marginTop: 10,
@@ -773,16 +775,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     marginVertical: 2.5,
   },
-  mainButtonNotFlex: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 10,
-    marginVertical: 2.5,
-    alignItems: 'center',
-    width: '100%',
-  },
   AddButtonNotFlex: {
-    backgroundColor: '#9acbff',
+    backgroundColor: '#f0f0f0',
     padding: 15,
     borderRadius: 10,
     marginVertical: 2.5,
@@ -790,7 +784,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   mainButton: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#fff',
+    opacity: 0.8,
     padding: 15,
     borderRadius: 10,
     marginVertical: 2.5,
@@ -799,7 +794,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   mainButtonText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',

@@ -151,7 +151,7 @@ export default function App() {
         <Stack.Screen name="MealPlanScreen" component={MealPlanScreen} options={{ title: 'Planifier vos repas' }} />
 
         {/* Page de résumé des menus attribués selon la date */}
-        <Stack.Screen name="MealPlanSummaryScreen" component={MealPlanSummaryScreen} />
+        <Stack.Screen name="MealPlanSummaryScreen" component={MealPlanSummaryScreen}  options={{ title: 'Résumé de vos choix' }} />
 
         {/* Liste de courses */}
         <Stack.Screen name="ShoppingListScreen" component={ShoppingListScreen} options={{ title: 'Liste de courses', headerShown: true }} />

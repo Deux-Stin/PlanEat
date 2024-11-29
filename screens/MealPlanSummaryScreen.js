@@ -4,7 +4,7 @@ import moment from 'moment';
 import * as Clipboard from 'expo-clipboard';
 import { MealPlanContext } from './MealPlanContext';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
-// import RecipeDetail from './RecipeDetail';
+import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
 
 export default function MealPlanSummaryScreen({ route, navigation }) {
     const { mealPlan, setMealPlan } = useContext(MealPlanContext);
@@ -149,45 +149,47 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <Text style={styles.sectionTitle}>Résumé de vos repas</Text>
-            {generateMealPlanSummary()}
+        <ImageBackgroundWrapper imageOpacity={0.6}>
+            <ScrollView style={styles.container}>
+                <Text style={styles.sectionTitle}>Résumé de vos repas</Text>
+                {generateMealPlanSummary()}
 
-            <Modal visible={showPortionModal} transparent={true} animationType="slide">
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        {[1, 2, 3, 4, 5, 6].map((num) => (
-                            <TouchableOpacity
-                                key={num}
-                                onPress={() => {
-                                    handleServingsChange(selectedDate, selectedMealType, selectedCategory, num);
-                                    setShowPortionModal(false);
-                                }}
-                            >
-                                <Text style={styles.modalText}>{num}p</Text>
+                <Modal visible={showPortionModal} transparent={true} animationType="slide">
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            {[1, 2, 3, 4, 5, 6].map((num) => (
+                                <TouchableOpacity
+                                    key={num}
+                                    onPress={() => {
+                                        handleServingsChange(selectedDate, selectedMealType, selectedCategory, num);
+                                        setShowPortionModal(false);
+                                    }}
+                                >
+                                    <Text style={styles.modalText}>{num}p</Text>
+                                </TouchableOpacity>
+                            ))}
+                            <TouchableOpacity onPress={() => setShowPortionModal(false)}>
+                                <Text style={styles.modalCancel}>Annuler</Text>
                             </TouchableOpacity>
-                        ))}
-                        <TouchableOpacity onPress={() => setShowPortionModal(false)}>
-                            <Text style={styles.modalCancel}>Annuler</Text>
+                        </View>
+                    </View>
+                </Modal>
+
+                <View style={styles.section}>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('MealPlanScreen', { mealPlan: mealPlan })}>
+                            <Text style={styles.mainButtonText}>Modifier le plan de repas</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.mainButton} onPress={copyToClipboard}>
+                            <Text style={styles.mainButtonText}>Copier le résumé</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('ShoppingListScreen', { mealPlan })}>
+                            <Text style={styles.mainButtonText}>Voir ma liste de courses</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
-            </Modal>
-
-            <View style={styles.section}>
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('MealPlanScreen', { mealPlan: mealPlan })}>
-                        <Text style={styles.mainButtonText}>Modifier le plan de repas</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.mainButton} onPress={copyToClipboard}>
-                        <Text style={styles.mainButtonText}>Copier le résumé</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('ShoppingListScreen', { mealPlan })}>
-                        <Text style={styles.mainButtonText}>Voir ma liste de courses</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </ImageBackgroundWrapper>
     );
 }
 
@@ -208,13 +210,13 @@ const styles = StyleSheet.create({
     dateSection: {
         marginVertical: 5,
         padding: 8,
-        backgroundColor: '#eae1e4',
+        backgroundColor: '#fff',
         borderRadius: 8,
     },
     dateText: {
         fontWeight: 'bold',
         fontSize: 18,
-        backgroundColor: '#d6d6d6',
+        backgroundColor: '#f5f5f5',
         width: 125,
         padding: 5,
         borderRadius: 10,
@@ -291,7 +293,8 @@ const styles = StyleSheet.create({
         paddingBottom: 5,
     },
     mainButton: {
-        backgroundColor: '#007bff',
+        backgroundColor: '#fff',
+        opacity: 0.8,
         padding: 15,
         borderRadius: 10,
         marginVertical: 5,
@@ -299,7 +302,7 @@ const styles = StyleSheet.create({
         width: '95%',
     },
     mainButtonText: {
-        color: '#fff',
+        color: '#000',
         fontSize: 16,
         fontWeight: 'bold',
         textAlign: 'center',

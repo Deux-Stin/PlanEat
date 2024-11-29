@@ -4,6 +4,7 @@ import { InteractionManager } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import { globalStyles } from '../globalStyles';
+import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
 
 const calendrier = {
     janvier: {
@@ -366,19 +367,21 @@ export default function SeasonalCalendarScreen({ navigation }) {
     }, [currentMonthIndex]);
 
     return (
-        <View style={styles.container}>
-            <CustomFlatList // Utilisation du composant FlatList personnalisé
-                ref={flatListRef} // Ajout de la référence
-                data={months}
-                renderItem={renderMonth}
-                keyExtractor={(item) => item}
-                horizontal
-                showsHorizontalScrollIndicator={true}
-                getItemLayout={getItemLayout}
-                contentContainerStyle={styles.flatList}
-                style={styles.flatListStyle} // Ajout du style ici
-            />
-        </View>
+        <ImageBackgroundWrapper imageOpacity={0.6}>
+            <View style={styles.container}>
+                <CustomFlatList // Utilisation du composant FlatList personnalisé
+                    ref={flatListRef} // Ajout de la référence
+                    data={months}
+                    renderItem={renderMonth}
+                    keyExtractor={(item) => item}
+                    horizontal
+                    showsHorizontalScrollIndicator={true}
+                    getItemLayout={getItemLayout}
+                    contentContainerStyle={styles.flatList}
+                    style={styles.flatListStyle} // Ajout du style ici
+                />
+            </View>
+        </ImageBackgroundWrapper>
     );
     }
 
@@ -405,7 +408,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        // backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
         paddingTop: 0,

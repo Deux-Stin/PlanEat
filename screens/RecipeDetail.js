@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, Text, Button, Alert, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
+import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
 
 export default function RecipeDetail({ route, navigation }) {
   const { recipe, addRecipe, deleteRecipe } = route.params;
@@ -40,113 +41,115 @@ export default function RecipeDetail({ route, navigation }) {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* En-tête avec le titre */}
-      <View style={styles.header}>
-        <Text style={styles.title}>{recipe.name}</Text>
-      </View>
-
-      {/* Section Détails de la recette */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Détails de la recette</Text>
-        <Text style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Catégorie: </Text>
-          {recipe.category || "Non spécifié"}
-        </Text>
-        <Text style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Durée: </Text>
-          {recipe.duration || "Non spécifié"}
-        </Text>
-        <Text style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Source: </Text>
-          {recipe.source || "Non spécifié"}
-        </Text>
-        <Text style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Saison: </Text>
-          {Array.isArray(recipe.season) ? recipe.season.join(', ') : "Non spécifié"}
-        </Text>
-        <Text style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Nombre de parts: </Text>
-          {recipe.servings || "Non spécifié"}
-        </Text>
-      </View>
-
-      {/* Section Ingrédients */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Ingrédients</Text>
-        {recipe.ingredients.length > 0 ? (
-          recipe.ingredients.map((ingredient, index) => (
-            <Text key={index} style={styles.itemText}>
-              - {ingredient.name}: {ingredient.quantity} {ingredient.unit} ({ingredient.rayon})
-            </Text>
-          ))
-        ) : (
-          <Text style={styles.itemText}>Aucun ingrédient spécifié</Text>
-        )}
-      </View>
-
-      {/* Section Recette */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Étapes de la Recette</Text>
-        {recipe.recipe.length > 0 ? (
-          recipe.recipe.map((step, index) => (
-            <Text key={index} style={styles.itemText}>
-              {index + 1}. {step}
-            </Text>
-          ))
-        ) : (
-          <Text style={styles.itemText}>Aucune étape spécifiée</Text>
-        )}
-      </View>
-
-      {/* Section Valeurs nutritionnelles */}
-      {(recipe.nutritionalValues?.glucides && recipe.nutritionalValues?.glucides !== '0' ||
-        recipe.nutritionalValues?.proteines && recipe.nutritionalValues?.proteines !== '0' ||
-        recipe.nutritionalValues?.graisses && recipe.nutritionalValues?.graisses !== '0' ||
-        recipe.nutritionalValues?.kiloCalories && recipe.nutritionalValues?.kiloCalories !== '0') && (
-        <View style={styles.nutritionalSection}>
-          <Text style={styles.sectionTitle}>Valeurs nutritionnelles</Text>
-          
-          {/* Ligne pour Glucides et Protéines */}
-          <View style={styles.nutritionalRow}>
-            <View style={styles.nutritionalItem}>
-              <Text style={styles.itemLabel}>Glucides:</Text>
-              <Text style={styles.itemValue}>{recipe.nutritionalValues?.glucides || "Non spécifié"}</Text>
-            </View>
-            <View style={styles.nutritionalItem}>
-              <Text style={styles.itemLabel}>Protéines:</Text>
-              <Text style={styles.itemValue}>{recipe.nutritionalValues?.proteines || "Non spécifié"}</Text>
-            </View>
-          </View>
-          
-          {/* Ligne pour Graisses et kCalories */}
-          <View style={styles.nutritionalRow}>
-            <View style={styles.nutritionalItem}>
-              <Text style={styles.itemLabel}>Graisses:</Text>
-              <Text style={styles.itemValue}>{recipe.nutritionalValues?.graisses || "Non spécifié"}</Text>
-            </View>
-            <View style={styles.nutritionalItem}>
-              <Text style={styles.itemLabel}>kCal:</Text>
-              <Text style={styles.itemValue}>{recipe.nutritionalValues?.kiloCalories || "Non spécifié"}</Text>
-            </View>
-          </View>
+    <ImageBackgroundWrapper imageOpacity={0.5}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* En-tête avec le titre */}
+        <View style={styles.header}>
+          <Text style={styles.title}>{recipe.name}</Text>
         </View>
-      )}
+
+        {/* Section Détails de la recette */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Détails de la recette</Text>
+          <Text style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Catégorie: </Text>
+            {recipe.category || "Non spécifié"}
+          </Text>
+          <Text style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Durée: </Text>
+            {recipe.duration || "Non spécifié"}
+          </Text>
+          <Text style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Source: </Text>
+            {recipe.source || "Non spécifié"}
+          </Text>
+          <Text style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Saison: </Text>
+            {Array.isArray(recipe.season) ? recipe.season.join(', ') : "Non spécifié"}
+          </Text>
+          <Text style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Nombre de parts: </Text>
+            {recipe.servings || "Non spécifié"}
+          </Text>
+        </View>
+
+        {/* Section Ingrédients */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Ingrédients</Text>
+          {recipe.ingredients.length > 0 ? (
+            recipe.ingredients.map((ingredient, index) => (
+              <Text key={index} style={styles.itemText}>
+                - {ingredient.name}: {ingredient.quantity} {ingredient.unit} ({ingredient.rayon})
+              </Text>
+            ))
+          ) : (
+            <Text style={styles.itemText}>Aucun ingrédient spécifié</Text>
+          )}
+        </View>
+
+        {/* Section Recette */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Étapes de la Recette</Text>
+          {recipe.recipe.length > 0 ? (
+            recipe.recipe.map((step, index) => (
+              <Text key={index} style={styles.itemText}>
+                {index + 1}. {step}
+              </Text>
+            ))
+          ) : (
+            <Text style={styles.itemText}>Aucune étape spécifiée</Text>
+          )}
+        </View>
+
+        {/* Section Valeurs nutritionnelles */}
+        {(recipe.nutritionalValues?.glucides && recipe.nutritionalValues?.glucides !== '0' ||
+          recipe.nutritionalValues?.proteines && recipe.nutritionalValues?.proteines !== '0' ||
+          recipe.nutritionalValues?.graisses && recipe.nutritionalValues?.graisses !== '0' ||
+          recipe.nutritionalValues?.kiloCalories && recipe.nutritionalValues?.kiloCalories !== '0') && (
+          <View style={styles.nutritionalSection}>
+            <Text style={styles.sectionTitle}>Valeurs nutritionnelles</Text>
+            
+            {/* Ligne pour Glucides et Protéines */}
+            <View style={styles.nutritionalRow}>
+              <View style={styles.nutritionalItem}>
+                <Text style={styles.itemLabel}>Glucides:</Text>
+                <Text style={styles.itemValue}>{recipe.nutritionalValues?.glucides || "Non spécifié"}</Text>
+              </View>
+              <View style={styles.nutritionalItem}>
+                <Text style={styles.itemLabel}>Protéines:</Text>
+                <Text style={styles.itemValue}>{recipe.nutritionalValues?.proteines || "Non spécifié"}</Text>
+              </View>
+            </View>
+            
+            {/* Ligne pour Graisses et kCalories */}
+            <View style={styles.nutritionalRow}>
+              <View style={styles.nutritionalItem}>
+                <Text style={styles.itemLabel}>Graisses:</Text>
+                <Text style={styles.itemValue}>{recipe.nutritionalValues?.graisses || "Non spécifié"}</Text>
+              </View>
+              <View style={styles.nutritionalItem}>
+                <Text style={styles.itemLabel}>kCal:</Text>
+                <Text style={styles.itemValue}>{recipe.nutritionalValues?.kiloCalories || "Non spécifié"}</Text>
+              </View>
+            </View>
+          </View>
+        )}
 
 
 
 
-      {/* Boutons Modifier et Supprimer */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.buttonWrapper} onPress={handleEdit}>
-          <Text style={styles.buttonText}>Modifier</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonWrapper} onPress={handleDelete}>
-          <Text style={styles.buttonText}>Supprimer</Text>
-        </TouchableOpacity>
-      </View>
+        {/* Boutons Modifier et Supprimer */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.buttonWrapper} onPress={handleEdit}>
+            <Text style={styles.buttonText}>Modifier</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonWrapper} onPress={handleDelete}>
+            <Text style={styles.buttonText}>Supprimer</Text>
+          </TouchableOpacity>
+        </View>
 
-    </ScrollView>
+      </ScrollView>
+    </ImageBackgroundWrapper>
   );
 }
 
@@ -154,7 +157,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
     alignItems: 'center', // Centrer horizontalement
   },
   header: {
@@ -228,7 +231,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   buttonWrapper: {
-    backgroundColor: '#007bff', // Couleur de fond du bouton
+    backgroundColor: '#fff',
+    opacity: 0.8,
     padding: 15,
     marginVertical: 5,
     marginRight: 8,
@@ -237,7 +241,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#fff', // Couleur du texte
+    color: '#000', // Couleur du texte
     fontSize: 16,
   },
 });
