@@ -5,7 +5,6 @@ import { useAsyncStorage } from './useAsyncStorage';
 // import recipesData from '../data/recipes.json'; 
 import * as FileSystem from 'expo-file-system';
 
-// const FILE_PATH = `${FileSystem.documentDirectory}recipes.json`; // Chemin du fichier de recettes        
 
 export default function useInitializeRecipes() {
   const [storedRecipes, setStoredRecipes] = useAsyncStorage('recipes', []);
@@ -16,13 +15,12 @@ export default function useInitializeRecipes() {
     const initializeRecipes = async () => {
       if (initialized || storedRecipes.length > 0) {
         // Si les recettes sont déjà présentes ou si elles ont été initialisées, on ne fait rien
-        console.log('Recettes déjà présentes ou initialisées.');
+        // console.log('Recettes déjà présentes ou initialisées.');
         setLoading(false);
         return;
       }
       try {
         const fileUri = `${FileSystem.documentDirectory}recipes.json`; 
-        // const fileUri = '../data/recipes.json'
         const fileExists = await FileSystem.getInfoAsync(fileUri);
 
         if (fileExists.exists) {

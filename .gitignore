@@ -50,3 +50,6 @@ yarn-error.*
 
 test.js
 tmp.js
+
+# API keys
+.env

@@ -63,6 +63,16 @@ export const useAsyncStorage = (key, initialValue) => {
     }
   };
 
+  const getStoredValue = async () => {
+    try {
+      const value = await AsyncStorage.getItem(key);
+      return value ? JSON.parse(value) : initialValue;
+    } catch (error) {
+      console.error(`Erreur lors de la récupération de la valeur pour ${key} :`, error);
+      return initialValue;
+    }
+  };
+
   const saveToJson = async (filePath, data) => {
     try {
       if (data !== null && data !== undefined) {
@@ -76,5 +86,5 @@ export const useAsyncStorage = (key, initialValue) => {
     }
   };
 
-  return [storedValue, setValue];
+  return [storedValue, setValue, getStoredValue];
 };

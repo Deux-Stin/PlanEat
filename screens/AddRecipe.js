@@ -26,6 +26,14 @@ export default function ({ route, navigation }) {
     }
   });
 
+  // Edition des ingrédients et des étapes des recettes
+  const [editingIngredientIndex, setEditingIngredientIndex] = useState(null);
+  const [editedIngredient, setEditedIngredient] = useState(null);
+  const [editingStepIndex, setEditingStepIndex] = useState(null);
+  const [editedStep, setEditedStep] = useState('');
+
+
+
   // Définir des couleurs pour chaque saison
   const seasonColors = {
     printemps: '#E6F3CE', // Exemple de couleur pour le printemps
@@ -58,7 +66,7 @@ export default function ({ route, navigation }) {
   const [unitModalVisible, setUnitModalVisible] = useState(false);
   const [rayonModalVisible, setRayonModalVisible] = useState(false);
 
-  const availableCategories = ['Petit-déjeuner', 'Entrée', 'Plat', 'Dessert', 'Cocktail'];
+  const availableCategories = ['Apéritif','Petit-déjeuner', 'Entrée', 'Plat', 'Dessert', 'Cocktail'];
   const availableDuration = ['court', 'long'];
   const availableSeasons = ['printemps', 'été', 'automne', 'hiver'];
   const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'c. à café', 'c. à soupe', 'boîte', 'verre', 'gousse(s)'];
@@ -299,14 +307,50 @@ export default function ({ route, navigation }) {
 
         <Text style={styles.sectionTitle}>Ingrédients</Text>
         <View style={styles.somespace} />
-        {newRecipe.ingredients.map((ingredient, index) => (
-          <View key={index} style={styles.itemContainer}>
-            <Text style={styles.itemText}>{ingredient.name} - {ingredient.quantity} {ingredient.unit} ({ingredient.rayon})</Text>
-            <TouchableOpacity onPress={() => handleRemoveIngredient(index)} style={styles.removeButton}>
-              <Text style={styles.removeButtonText}>Supprimer</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
+          {newRecipe.ingredients.map((ingredient, index) => (
+            <View key={index} style={styles.itemContainer}>
+              {editingIngredientIndex === index ? (
+                <>
+                  <TextInput
+                    style={styles.input}
+                    value={editedIngredient?.name || ''}
+                    onChangeText={(text) => setEditedIngredient({ ...editedIngredient, name: text })}
+                    placeholder="Nom de l'ingrédient"
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={editedIngredient?.quantity.toString() || ''}
+                    onChangeText={(text) => setEditedIngredient({ ...editedIngredient, quantity: parseFloat(text) || '' })}
+                    keyboardType="numeric"
+                    placeholder="Quantité"
+                  />
+                  <TouchableOpacity
+                    onPress={() => {
+                      const updatedIngredients = [...newRecipe.ingredients];
+                      updatedIngredients[index] = editedIngredient;
+                      setNewRecipe({ ...newRecipe, ingredients: updatedIngredients });
+                      setEditingIngredientIndex(null);
+                    }}
+                    style={styles.saveButton}
+                  >
+                    <Text style={styles.saveButtonText}>Sauvegarder</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.itemText} onPress={() => {
+                    setEditingIngredientIndex(index);
+                    setEditedIngredient(ingredient);
+                  }}>
+                    {ingredient.name} - {ingredient.quantity} {ingredient.unit} ({ingredient.rayon})
+                  </Text>
+                  <TouchableOpacity onPress={() => handleRemoveIngredient(index)} style={styles.removeButton}>
+                    <Text style={styles.removeButtonText}>Supprimer</Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+          ))}
 
         <TextInput
           placeholder="Nom de l'ingrédient"
@@ -314,7 +358,7 @@ export default function ({ route, navigation }) {
           onChangeText={(text) => setIngredientInput({ ...ingredientInput, name: text })}
           style={styles.input}
         />
-
+        
         <TextInput
           placeholder="Quantité"
           value={ingredientInput.quantity}
@@ -380,16 +424,60 @@ export default function ({ route, navigation }) {
 
 
         <View style={styles.somespace} />
+        <View style={styles.somespace} />
         <Text style={styles.sectionTitle}>Étapes de la recette</Text>
         <View style={styles.somespace} />
+
         {newRecipe.recipe.map((step, index) => (
           <View key={index} style={styles.itemContainer}>
-            <Text style={styles.itemText}>Étape {index + 1}: {step}</Text>
+            {editingStepIndex === index ? (
+              <>
+                <TextInput
+                  style={styles.input}
+                  value={editedStep}
+                  onChangeText={setEditedStep}
+                  placeholder="Modifier l'étape"
+                />
+                <TouchableOpacity
+                  onPress={() => {
+                    const updatedSteps = [...newRecipe.recipe];
+                    updatedSteps[index] = editedStep;
+                    setNewRecipe({ ...newRecipe, recipe: updatedSteps });
+                    setEditingStepIndex(null);
+                  }}
+                  style={styles.saveButton}
+                >
+                  <Text style={styles.saveButtonText}>Sauvegarder</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <Text
+                style={styles.itemText}
+                onPress={() => {
+                  setEditingStepIndex(index);
+                  setEditedStep(step);
+                }}
+              >
+                {index + 1}: {step}
+              </Text>
+            )}
             <TouchableOpacity onPress={() => handleRemoveStep(index)} style={styles.removeButton}>
               <Text style={styles.removeButtonText}>Supprimer</Text>
             </TouchableOpacity>
           </View>
         ))}
+
+
+
+
+        {/* {newRecipe.recipe.map((step, index) => (
+          <View key={index} style={styles.itemContainer}>
+            <Text style={styles.itemText}>{index + 1}: {step}</Text>
+            <TouchableOpacity onPress={() => handleRemoveStep(index)} style={styles.removeButton}>
+              <Text style={styles.removeButtonText}>Supprimer</Text>
+            </TouchableOpacity>
+          </View>
+        ))} */}
 
         <TextInput
           placeholder="Ajouter une étape"
@@ -569,6 +657,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1, // Ajout de flex: 1 pour prendre tout l'espace
     marginRight: 5, // Ajout d'une marge à droite pour séparer le texte du bouton
+    padding:5,
   },
   removeButton: {
     backgroundColor: '#ff3333',
@@ -576,6 +665,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   removeButtonText: {
+    color: 'white',
+  },
+  saveButton: {
+    backgroundColor: '#29ff6a',
+    padding: 5,
+    borderRadius: 5,
+  },
+  saveButtonText: {
     color: 'white',
   },
   buttonContainer: {

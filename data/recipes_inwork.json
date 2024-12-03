@@ -1,21 +1,61 @@
 {
   "recipes": [
     {
-      "id": "750a381a-76ea-4e73-bedb-534c14235cfc",
+      "id": "61fb2b5c-da85-4ee7-ad52-a96e631ae538",
       "name": "Verrine betterave et fromage de chèvre au miel et noix",
+      "source": "Livre",
       "category": "Apéritif",
       "duration": "court",
-      "source": "Livre",
-      "season": ["printemps", "été", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "été",
+        "automne",
+        "hiver"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "betterave rouge cuite", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "cerneaux de noix", "quantity": 6, "unit": "unité", "rayon": "Fruits secs et mélanges" },
-        { "name": "vinaigre balsamique", "quantity": 1, "unit": "c. à café", "rayon": "Epicerie" },
-        { "name": "Aneth", "quantity": 1.5, "unit": "unité", "rayon": "Herbes aromatiques" },
-        { "name": "Chavrou", "quantity": 0.5, "unit": "unité", "rayon": "Fromagerie" },
-        { "name": "Crème épaisse", "quantity": 20, "unit": "g", "rayon": "Produits laitiers, oeufs" },
-        { "name": "Miel", "quantity": 1, "unit": "c. à café", "rayon": "Epicerie" }
+        {
+          "name": "betterave rouge cuite",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "cerneaux de noix",
+          "quantity": 6,
+          "unit": "unité",
+          "rayon": "Fruits secs et mélanges"
+        },
+        {
+          "name": "vinaigre balsamique",
+          "quantity": 1,
+          "unit": "c. à café",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "Aneth",
+          "quantity": 1.5,
+          "unit": "unité",
+          "rayon": "Herbes aromatiques"
+        },
+        {
+          "name": "Chavrou",
+          "quantity": 0.5,
+          "unit": "unité",
+          "rayon": "Fromagerie"
+        },
+        {
+          "name": "Crème épaisse",
+          "quantity": 20,
+          "unit": "g",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "Miel",
+          "quantity": 1,
+          "unit": "c. à café",
+          "rayon": "Epicerie"
+        }
       ],
       "recipe": [
         "Écrasez le chèvre à la fourchette et mélangez-le avec la crème et le miel. Répartissez-le dans les verrines.",
@@ -31,17 +71,37 @@
       }
     },
     {
-      "id": "33820f0e-a17e-4093-a065-a23e8bfab3fa",
+      "id": "c11c0d59-4b0c-4551-81df-99a57ee5ad6a",
       "name": "Nutella maison",
+      "source": "Bouche à oreille",
       "category": "Petit-déjeuner",
       "duration": "court",
-      "source": "Bouche à oreille",
-      "season": ["printemps", "été", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "été",
+        "automne",
+        "hiver"
+      ],
       "servings": 2,
       "ingredients": [
-        { "name": "chocolat noir >70%", "quantity": 200, "unit": "g", "rayon": "Epicerie" },
-        { "name": "lait concentré sucré", "quantity": 450, "unit": "g", "rayon": "Produits laitiers, oeufs" },
-        { "name": "poudre de noisette", "quantity": 50, "unit": "g", "rayon": "Fruits secs et mélanges" }
+        {
+          "name": "chocolat noir >70%",
+          "quantity": 200,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "lait concentré sucré",
+          "quantity": 450,
+          "unit": "g",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "poudre de noisette",
+          "quantity": 50,
+          "unit": "g",
+          "rayon": "Fruits secs et mélanges"
+        }
       ],
       "recipe": [
         "Faire fondre le chocolat et y ajouter 100ml d'eau pour 200g de chocolat.",
@@ -56,22 +116,67 @@
       }
     },
     {
-      "id": "e34ae4db-498d-466d-bc97-5c1dd1a1fdea",
+      "id": "3d1ce6ff-554b-4b37-98c3-44bf71881623",
       "name": "Far aux pruneaux façon Mamie Paulette",
+      "source": "Bouche à oreille",
       "category": "Dessert",
       "duration": "long",
-      "source": "Bouche à oreille",
-      "season": ["printemps", "été", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "été",
+        "automne",
+        "hiver"
+      ],
       "servings": 8,
       "ingredients": [
-        { "name": "lait tiède", "quantity": 2, "unit": "verre", "rayon": "Produits laitiers, oeufs" },
-        { "name": "farine", "quantity": 1, "unit": "verre", "rayon": "Epicerie" },
-        { "name": "sucre", "quantity": 1, "unit": "verre", "rayon": "Epicerie" },
-        { "name": "oeufs", "quantity": 4, "unit": "unité", "rayon": "Produits laitiers, oeufs" },
-        { "name": "rhum", "quantity": 4, "unit": "c. à soupe", "rayon": "Produits laitiers, oeufs" },
-        { "name": "sucre vanillé", "quantity": 1, "unit": "unité", "rayon": "Epicerie" },
-        { "name": "levure", "quantity": 1, "unit": "unité", "rayon": "Epicerie" },
-        { "name": "pruneaux dénoyautés", "quantity": 25, "unit": "unité", "rayon": "Fruits secs et mélanges" }
+        {
+          "name": "lait tiède",
+          "quantity": 2,
+          "unit": "verre",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "farine",
+          "quantity": 1,
+          "unit": "verre",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "sucre",
+          "quantity": 1,
+          "unit": "verre",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "oeufs",
+          "quantity": 4,
+          "unit": "unité",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "rhum",
+          "quantity": 4,
+          "unit": "c. à soupe",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "sucre vanillé",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "levure",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "pruneaux dénoyautés",
+          "quantity": 25,
+          "unit": "unité",
+          "rayon": "Fruits secs et mélanges"
+        }
       ],
       "recipe": [
         "Faire tremper les pruneaux dans du rhum au préalable",
@@ -91,21 +196,61 @@
       }
     },
     {
-      "id": "6a13374f-a72a-4971-a821-87c01662b603",
+      "id": "bf60ecbd-b531-48a3-8584-80739ec5011c",
       "name": "Fondant au chocolat au micro ondes",
+      "source": "Internet",
       "category": "Dessert",
       "duration": "court",
-      "source": "Internet",
-      "season": ["printemps", "été", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "été",
+        "automne",
+        "hiver"
+      ],
       "servings": 2,
       "ingredients": [
-        { "name": "Chocolat noir >50%", "quantity": 150, "unit": "g", "rayon": "Epicerie" },
-        { "name": "oeufs", "quantity": 3, "unit": "unité", "rayon": "Produits laitiers, oeufs" },
-        { "name": "farine", "quantity": 60, "unit": "g", "rayon": "Epicerie" },
-        { "name": "levure", "quantity": 1, "unit": "c. à café", "rayon": "Epicerie" },
-        { "name": "beurre", "quantity": 80, "unit": "g", "rayon": "Epicerie" },
-        { "name": "sucre", "quantity": 80, "unit": "g", "rayon": "Epicerie" },
-        { "name": "lait", "quantity": 100, "unit": "ml", "rayon": "Produits laitiers, oeufs" }
+        {
+          "name": "Chocolat noir >50%",
+          "quantity": 150,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "oeufs",
+          "quantity": 3,
+          "unit": "unité",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "farine",
+          "quantity": 60,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "levure",
+          "quantity": 1,
+          "unit": "c. à café",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "beurre",
+          "quantity": 80,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "sucre",
+          "quantity": 80,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "lait",
+          "quantity": 100,
+          "unit": "ml",
+          "rayon": "Produits laitiers, oeufs"
+        }
       ],
       "recipe": [
         "Faire fondre le chocolat avec le beurre puis réserver.",
@@ -122,22 +267,67 @@
       }
     },
     {
-      "id": "c352ea37-13b4-42fa-9457-aae41c92f344",
+      "id": "15582a9b-b094-4822-87b6-ceefd5726b0c",
       "name": "Cookies de Sylvie",
+      "source": "Bouche à oreille",
       "category": "Dessert",
       "duration": "court",
-      "source": "Bouche à oreille",
-      "season": ["printemps", "été", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "été",
+        "automne",
+        "hiver"
+      ],
       "servings": 8,
       "ingredients": [
-        { "name": "sucre roux", "quantity": 60, "unit": "g", "rayon": "Epicerie" },
-        { "name": "sucre blanc", "quantity": 80, "unit": "g", "rayon": "Epicerie" },
-        { "name": "beurre 1/2 sel", "quantity": 110, "unit": "g", "rayon": "Epicerie" },
-        { "name": "farine type 65", "quantity": 220, "unit": "g", "rayon": "Epicerie" },
-        { "name": "chocolat noir >70%", "quantity": 30, "unit": "g", "rayon": "Epicerie" },
-        { "name": "oeuf", "quantity": 1, "unit": "unité", "rayon": "Produits laitiers, oeufs" },
-        { "name": "levure", "quantity": 0.5, "unit": "unité", "rayon": "Epicerie" },
-        { "name": "vanille liquide", "quantity": 0.5, "unit": "c. à café", "rayon": "Epicerie" }
+        {
+          "name": "sucre roux",
+          "quantity": 60,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "sucre blanc",
+          "quantity": 80,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "beurre 1/2 sel",
+          "quantity": 110,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "farine type 65",
+          "quantity": 220,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "chocolat noir >70%",
+          "quantity": 30,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "oeuf",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "levure",
+          "quantity": 0.5,
+          "unit": "unité",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "vanille liquide",
+          "quantity": 0.5,
+          "unit": "c. à café",
+          "rayon": "Epicerie"
+        }
       ],
       "recipe": [
         "Préchauffer le four à 170°C.",
@@ -157,32 +347,121 @@
       }
     },
     {
-      "id": "7219cb23-f063-4c2a-97a0-134dd39d30d7",
+      "id": "8b29a9fc-9a58-4088-a851-51eeae1209c4",
       "name": "Poulet Coco Curry",
+      "source": "Internet",
       "category": "Plat",
       "duration": "long",
-      "source": "Internet",
-      "season": ["printemps", "été", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "été",
+        "automne",
+        "hiver"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "poulet", "quantity": 400, "unit": "g", "rayon": "Boucherie" },
-        { "name": "ail", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "gingembre", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "pousse de soja", "quantity": 1, "unit": "unité", "rayon": "Conserves" },
-        { "name": "pâte de curry", "quantity": 2, "unit": "c. à soupe", "rayon": "Epicerie" },
-        { "name": "champignons", "quantity": 300, "unit": "g", "rayon": "Fruits et légumes" },
-        { "name": "épinards", "quantity": 500, "unit": "g", "rayon": "Fruits et légumes" },
-        { "name": "brocolis", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "carottes", "quantity": 2, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "sauce soja salée", "quantity": 2, "unit": "c. à soupe", "rayon": "Epicerie" },
-        { "name": "cacahuètes", "quantity": 50, "unit": "g", "rayon": "Fruits secs et mélanges" },
-        { "name": "lait de coco", "quantity": 500, "unit": "ml", "rayon": "Epicerie" },
-        { "name": "miel", "quantity": 2, "unit": "c. à café", "rayon": "Epicerie" },
-        { "name": "basilic thaï", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" },
-        { "name": "menthe fraîche", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" },
-        { "name": "thym", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" },
-        { "name": "bouillon de légumes", "quantity": 1, "unit": "unité", "rayon": "Epicerie" }
-
+        {
+          "name": "poulet",
+          "quantity": 400,
+          "unit": "g",
+          "rayon": "Boucherie"
+        },
+        {
+          "name": "ail",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "gingembre",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "pousse de soja",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Conserves"
+        },
+        {
+          "name": "pâte de curry",
+          "quantity": 2,
+          "unit": "c. à soupe",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "champignons",
+          "quantity": 300,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "épinards",
+          "quantity": 500,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "brocolis",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "carottes",
+          "quantity": 2,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "sauce soja salée",
+          "quantity": 2,
+          "unit": "c. à soupe",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "cacahuètes",
+          "quantity": 50,
+          "unit": "g",
+          "rayon": "Fruits secs et mélanges"
+        },
+        {
+          "name": "lait de coco",
+          "quantity": 500,
+          "unit": "ml",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "miel",
+          "quantity": 2,
+          "unit": "c. à café",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "basilic thaï",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Herbes aromatiques"
+        },
+        {
+          "name": "menthe fraîche",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Herbes aromatiques"
+        },
+        {
+          "name": "thym",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Herbes aromatiques"
+        },
+        {
+          "name": "bouillon de légumes",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Epicerie"
+        }
       ],
       "recipe": [
         "Faire revenir les morceaux de poulet dans de l'huile sésame et huile de colza.",
@@ -202,23 +481,73 @@
       }
     },
     {
-      "id": "be376c4d-0d49-4dc0-a5f0-8a12e6067ba3",
+      "id": "840bcb26-30b4-41b3-80d8-65ceb608a50d",
       "name": "Riz sauté aux asperges poulet et amandes",
+      "source": "Livre",
       "category": "Plat",
       "duration": "long",
-      "source": "Livre",
-      "season": ["printemps", "été", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "été",
+        "automne",
+        "hiver"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "poulet", "quantity": 300, "unit": "g", "rayon": "Boucherie" },
-        { "name": "riz long grain", "quantity": 200, "unit": "g", "rayon": "" },
-        { "name": "asperges vertes en bocaux", "quantity": 1, "unit": "unité", "rayon": "Conserves" },
-        { "name": "oignon rouge", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "farine", "quantity": 50, "unit": "g", "rayon": "Epicerie" },
-        { "name": "bouillon de légumes", "quantity": 1, "unit": "unité", "rayon": "Epicerie" },
-        { "name": "persil", "quantity": 1, "unit": "c. à soupe", "rayon": "Herbes aromatiques" },
-        { "name": "cannelle", "quantity": 0.5, "unit": "c. à café", "rayon": "Epicerie" },
-        { "name": "amandes effilées", "quantity": 30, "unit": "g", "rayon": "Epicerie" }
+        {
+          "name": "poulet",
+          "quantity": 300,
+          "unit": "g",
+          "rayon": "Boucherie"
+        },
+        {
+          "name": "riz long grain",
+          "quantity": 200,
+          "unit": "g",
+          "rayon": ""
+        },
+        {
+          "name": "asperges vertes en bocaux",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Conserves"
+        },
+        {
+          "name": "oignon rouge",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "farine",
+          "quantity": 50,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "bouillon de légumes",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "persil",
+          "quantity": 1,
+          "unit": "c. à soupe",
+          "rayon": "Herbes aromatiques"
+        },
+        {
+          "name": "cannelle",
+          "quantity": 0.5,
+          "unit": "c. à café",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "amandes effilées",
+          "quantity": 30,
+          "unit": "g",
+          "rayon": "Epicerie"
+        }
       ],
       "recipe": [
         "Egoutter les asperges. Emincer le poulet en lanières puis le saler et le saupoudrer de farine.",
@@ -238,22 +567,67 @@
       }
     },
     {
-      "id": "3e94871b-afd0-4ad8-bc88-2338d5ac58f3",
+      "id": "94acd322-bf3a-43d8-b504-b87cd9fc7f79",
       "name": "Roulé de brocolis",
+      "source": "Livre",
       "category": "Entrée",
       "duration": "long",
-      "source": "Livre",
-      "season": ["printemps", "été", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "été",
+        "automne",
+        "hiver"
+      ],
       "servings": 6,
       "ingredients": [
-        { "name": "brocolis", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "oeufs", "quantity": 4, "unit": "unité", "rayon": "Produits laitiers, oeufs" },
-        { "name": "yaourt nature", "quantity": 2, "unit": "c. à soupe", "rayon": "Produits laitiers, oeufs" },
-        { "name": "bouillon de volaille", "quantity": 0.5, "unit": "unité", "rayon": "Epicerie" },
-        { "name": "lait 1/2 écrémé", "quantity": 200, "unit": "ml", "rayon": "Produits laitiers, oeufs" },
-        { "name": "emmental rapé", "quantity": 40, "unit": "g", "rayon": "Fromagerie" },
-        { "name": "maïzena", "quantity": 15, "unit": "g", "rayon": "Epicerie" },
-        { "name": "noix de muscade", "quantity": 0.5, "unit": "c. à café", "rayon": "Condiments" }
+        {
+          "name": "brocolis",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "oeufs",
+          "quantity": 4,
+          "unit": "unité",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "yaourt nature",
+          "quantity": 2,
+          "unit": "c. à soupe",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "bouillon de volaille",
+          "quantity": 0.5,
+          "unit": "unité",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "lait 1/2 écrémé",
+          "quantity": 200,
+          "unit": "ml",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "emmental rapé",
+          "quantity": 40,
+          "unit": "g",
+          "rayon": "Fromagerie"
+        },
+        {
+          "name": "maïzena",
+          "quantity": 15,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "noix de muscade",
+          "quantity": 0.5,
+          "unit": "c. à café",
+          "rayon": "Condiments"
+        }
       ],
       "recipe": [
         "Préchauffer le four à 180°C. Huiler une plaque à roulés, puis la tapisser d'une feuille de papier sulfurisé",
@@ -274,21 +648,59 @@
       }
     },
     {
-      "id": "9430485c-4b78-4228-9783-4ee4844ee2cf",
+      "id": "f4e8a029-c068-4ddf-b356-4659d08a428a",
       "name": "Bricks Champignons Poireaux Cabécou",
+      "source": "Livre",
       "category": "Entrée",
       "duration": "court",
-      "source": "Livre",
-      "season": ["automne", "hiver"],
+      "season": [
+        "automne",
+        "hiver"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "champignons de Paris", "quantity": 300, "unit": "g", "rayon": "Fruits et légumes" },
-        { "name": "blancs de poireaux", "quantity": 3, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "citron", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "cabécou", "quantity": 4, "unit": "unité", "rayon": "Fromagerie" },
-        { "name": "paquet de feuilles de bricks", "quantity": 1, "unit": "unité", "rayon": "Epicerie" },
-        { "name": "persil", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" },
-        { "name": "thym séché", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" }
+        {
+          "name": "champignons de Paris",
+          "quantity": 300,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "blancs de poireaux",
+          "quantity": 3,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "citron",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "cabécou",
+          "quantity": 4,
+          "unit": "unité",
+          "rayon": "Fromagerie"
+        },
+        {
+          "name": "paquet de feuilles de bricks",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "persil",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Herbes aromatiques"
+        },
+        {
+          "name": "thym séché",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Herbes aromatiques"
+        }
       ],
       "recipe": [
         "Préchauffer le four à 180°C. Emincer finelement les poireaux puis les laver. Nettoyer et émincer les champignons. Les arroser de jus de citron pour éviter qu'ils noircissent.",
@@ -304,20 +716,55 @@
       }
     },
     {
-      "id": "d05465ad-9157-448c-a242-7e0097269a6a",
+      "id": "e4f52a6e-6142-4043-ad30-72f5f7caeb1d",
       "name": "Lasagnes Ricotta Epinards",
+      "source": "Livre",
       "category": "Plat",
       "duration": "long",
-      "source": "Livre",
-      "season": ["printemps", "été", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "été",
+        "automne",
+        "hiver"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "épinards", "quantity": 300, "unit": "g", "rayon": "Fruits et légumes" },
-        { "name": "champignons de Paris", "quantity": 1, "unit": "boîte(s)", "rayon": "Conserves" },
-        { "name": "ricotta", "quantity": 250, "unit": "g", "rayon": "Fromagerie" },
-        { "name": "parmesan", "quantity": 40, "unit": "g", "rayon": "Fromagerie" },
-        { "name": "pulpe de tomate", "quantity": 400, "unit": "g", "rayon": "Conserves" },
-        { "name": "feuilles de lasagne", "quantity": 9, "unit": "unité", "rayon": "Pâtes" }
+        {
+          "name": "épinards",
+          "quantity": 300,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "champignons de Paris",
+          "quantity": 1,
+          "unit": "boîte(s)",
+          "rayon": "Conserves"
+        },
+        {
+          "name": "ricotta",
+          "quantity": 250,
+          "unit": "g",
+          "rayon": "Fromagerie"
+        },
+        {
+          "name": "parmesan",
+          "quantity": 40,
+          "unit": "g",
+          "rayon": "Fromagerie"
+        },
+        {
+          "name": "pulpe de tomate",
+          "quantity": 400,
+          "unit": "g",
+          "rayon": "Conserves"
+        },
+        {
+          "name": "feuilles de lasagne",
+          "quantity": 9,
+          "unit": "unité",
+          "rayon": "Pâtes"
+        }
       ],
       "recipe": [
         "Préchauffer le four à 180°C.",
@@ -334,19 +781,49 @@
       }
     },
     {
-      "id": "8b39ce5f-523d-49e3-8d45-b3438b65c686",
+      "id": "3ffac3ad-9c1b-4e59-990d-beffe74b2492",
       "name": "Tartines Houmous & Radis",
+      "source": "Livre",
       "category": "Apéritif",
       "duration": "court",
-      "source": "Livre",
-      "season": ["printemps", "été", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "été",
+        "automne",
+        "hiver"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "baguette", "quantity": 1, "unit": "unité", "rayon": "Boulangerie" },
-        { "name": "houmous", "quantity": 400, "unit": "g", "rayon": "Produits frais" },
-        { "name": "brins de ciboulette", "quantity": 5, "unit": "unité", "rayon": "Herbes aromatiques" },
-        { "name": "radis", "quantity": 5, "unit": "unité", "rayon": "Herbes aromatiques" },
-        { "name": "huile d'olive", "quantity": 1, "unit": "unité", "rayon": "Condiments" }
+        {
+          "name": "baguette",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Boulangerie"
+        },
+        {
+          "name": "houmous",
+          "quantity": 400,
+          "unit": "g",
+          "rayon": "Produits frais"
+        },
+        {
+          "name": "brins de ciboulette",
+          "quantity": 5,
+          "unit": "unité",
+          "rayon": "Herbes aromatiques"
+        },
+        {
+          "name": "radis",
+          "quantity": 5,
+          "unit": "unité",
+          "rayon": "Herbes aromatiques"
+        },
+        {
+          "name": "huile d'olive",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Condiments"
+        }
       ],
       "recipe": [
         "Couper la baguette en quatre puis en deux dans le sens de la largeur. Trancher les radis en très fines lamelles et ciseler finement la ciboulette.",
@@ -361,17 +838,35 @@
       }
     },
     {
-      "id": "c8a203b1-c249-42e7-86d2-bb58002ff373",
+      "id": "4fcdac10-2d18-46a9-979f-033994c24485",
       "name": "Pan Con Tomate",
+      "source": "Livre",
       "category": "Apéritif",
       "duration": "court",
-      "source": "Livre",
-      "season": ["printemps", "été"],
+      "season": [
+        "printemps",
+        "été"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "ciabatta", "quantity": 1, "unit": "unité", "rayon": "Boulangerie" },
-        { "name": "tomates concassées", "quantity": 450, "unit": "g", "rayon": "Fruits et légumes" },
-        { "name": "ail", "quantity": 2, "unit": "gousse(s)", "rayon": "Fruits et légumes" }
+        {
+          "name": "ciabatta",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Boulangerie"
+        },
+        {
+          "name": "tomates concassées",
+          "quantity": 450,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "ail",
+          "quantity": 2,
+          "unit": "gousse(s)",
+          "rayon": "Fruits et légumes"
+        }
       ],
       "recipe": [
         "Couper le pain en deux dans le sens de la longueur puis chaque tranche en 4. Couper les gousses d'ail en deux.",
@@ -386,21 +881,60 @@
       }
     },
     {
-      "id": "fac4797f-784c-418e-ae2c-3d8cefb2de4e",
+      "id": "af785daf-766f-4b55-bf02-cb44a9df1b5a",
       "name": "Salade Betteraves & Pistaches",
+      "source": "Livre",
       "category": "Entrée",
       "duration": "court",
-      "source": "Livre",
-      "season": ["printemps", "été", "automne"],
+      "season": [
+        "printemps",
+        "été",
+        "automne"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "betteraves cuites", "quantity": 4, "unit": "g", "rayon": "Fruits et légumes" },
-        { "name": "semoule de couscous", "quantity": 175, "unit": "g", "rayon": "Epicerie" },
-        { "name": "eau", "quantity": 375, "unit": "ml", "rayon": "Divers" },
-        { "name": "vinaigre de vin rouge", "quantity": 1, "unit": "unité", "rayon": "Epicerie" },
-        { "name": "pistaches décortiquées", "quantity": 30, "unit": "g", "rayon": "Fruits secs et mélanges" },
-        { "name": "feta", "quantity": 100, "unit": "g", "rayon": "Fromagerie" },
-        { "name": "huile d'olive", "quantity": 4, "unit": "c. à soupe", "rayon": "Condiments" }
+        {
+          "name": "betteraves cuites",
+          "quantity": 4,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "semoule de couscous",
+          "quantity": 175,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "eau",
+          "quantity": 375,
+          "unit": "ml",
+          "rayon": "Divers"
+        },
+        {
+          "name": "vinaigre de vin rouge",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "pistaches décortiquées",
+          "quantity": 30,
+          "unit": "g",
+          "rayon": "Fruits secs et mélanges"
+        },
+        {
+          "name": "feta",
+          "quantity": 100,
+          "unit": "g",
+          "rayon": "Fromagerie"
+        },
+        {
+          "name": "huile d'olive",
+          "quantity": 4,
+          "unit": "c. à soupe",
+          "rayon": "Condiments"
+        }
       ],
       "recipe": [
         "Couper les betteraves en morceaux. Emietter la feta et hacher les pistaches.",
@@ -415,20 +949,53 @@
       }
     },
     {
-      "id": "54bfaa6e-6dae-4776-a59b-27634c5fd35b",
+      "id": "04acc2a1-a09f-4b37-b2e9-ecdad8fc390e",
       "name": "Comme un Bo Bun",
+      "source": "Livre",
       "category": "Plat",
       "duration": "court",
-      "source": "Livre",
-      "season": ["printemps", "été"],
+      "season": [
+        "printemps",
+        "été"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "concombre", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "carottes", "quantity": 2, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "cacahuètes", "quantity": 30, "unit": "g", "rayon": "Fruits secs et mélanges" },
-        { "name": "citron vert", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "menthe", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" },
-        { "name": "sauche chili", "quantity": 4, "unit": "c. à soupe", "rayon": "Condiments" }
+        {
+          "name": "concombre",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "carottes",
+          "quantity": 2,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "cacahuètes",
+          "quantity": 30,
+          "unit": "g",
+          "rayon": "Fruits secs et mélanges"
+        },
+        {
+          "name": "citron vert",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "menthe",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Herbes aromatiques"
+        },
+        {
+          "name": "sauche chili",
+          "quantity": 4,
+          "unit": "c. à soupe",
+          "rayon": "Condiments"
+        }
       ],
       "recipe": [
         "Mélanger la sauce chili au jus de citron vert. Hacher les cacahuètes.",
@@ -443,20 +1010,53 @@
       }
     },
     {
-      "id": "e2fe3067-8054-4f37-8377-e2b473a6a1f7",
+      "id": "161499a6-989a-499d-9e2d-418c747e469a",
       "name": "Potimarron",
+      "source": "Livre",
       "category": "Plat",
       "duration": "court",
-      "source": "Livre",
-      "season": ["automne", "hiver"],
+      "season": [
+        "automne",
+        "hiver"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "potimarron", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "épinards", "quantity": 200, "unit": "g", "rayon": "Fruits et légumes" },
-        { "name": "lentilles corail", "quantity": 150, "unit": "g", "rayon": "Epicerie" },
-        { "name": "oignon", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "lait de coco", "quantity": 500, "unit": "ml", "rayon": "Epicerie" },
-        { "name": "curry en poudre", "quantity": 2, "unit": "c. à soupe", "rayon": "Condiments" }
+        {
+          "name": "potimarron",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "épinards",
+          "quantity": 200,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "lentilles corail",
+          "quantity": 150,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "oignon",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "lait de coco",
+          "quantity": 500,
+          "unit": "ml",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "curry en poudre",
+          "quantity": 2,
+          "unit": "c. à soupe",
+          "rayon": "Condiments"
+        }
       ],
       "recipe": [
         "Couper le potimarron en fin quartiers, émincer l'oignon.",
@@ -471,20 +1071,53 @@
       }
     },
     {
-      "id": "16f829b8-9b9b-4e00-9b0f-161c0a082038",
+      "id": "b4821574-c37c-4ec4-aa1b-f0b4beff6917",
       "name": "Champignons Stroganoff",
+      "source": "Livre",
       "category": "Entrée",
       "duration": "court",
-      "source": "Livre",
-      "season": ["printemps", "été"],
+      "season": [
+        "printemps",
+        "été"
+      ],
       "servings": 2,
       "ingredients": [
-        { "name": "assortiments de champignons", "quantity": 600, "unit": "g", "rayon": "Fruits et légumes" },
-        { "name": "vin blanc", "quantity": 100, "unit": "ml", "rayon": "Alcool" },
-        { "name": "persil", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" },
-        { "name": "ail", "quantity": 2, "unit": "gousse(s)", "rayon": "Alcool" },
-        { "name": "crème fraîche", "quantity": 50, "unit": "ml", "rayon": "Produits laitiers, oeufs" },
-        { "name": "huile d'olive", "quantity": 2, "unit": "c. à soupe", "rayon": "Condiments" }
+        {
+          "name": "assortiments de champignons",
+          "quantity": 600,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "vin blanc",
+          "quantity": 100,
+          "unit": "ml",
+          "rayon": "Alcool"
+        },
+        {
+          "name": "persil",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Herbes aromatiques"
+        },
+        {
+          "name": "ail",
+          "quantity": 2,
+          "unit": "gousse(s)",
+          "rayon": "Alcool"
+        },
+        {
+          "name": "crème fraîche",
+          "quantity": 50,
+          "unit": "ml",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "huile d'olive",
+          "quantity": 2,
+          "unit": "c. à soupe",
+          "rayon": "Condiments"
+        }
       ],
       "recipe": [
         "Emincer les champignons. Hacher grossièrement le persil et finement l'ail.",
@@ -499,25 +1132,83 @@
       }
     },
     {
-      "id": "9a7f0833-3c53-431e-99f4-2703a0f2d6f4",
-      "name": "Chakchouka",
+      "id": "cfadddcd-3a0d-4b4b-84e5-0175bb34cf41",
+      "name": "Chakchouka ",
+      "source": "Internet",
       "category": "Plat",
       "duration": "court",
-      "source": "Internet",
-      "season": ["printemps", "été"],
+      "season": [
+        "printemps",
+        "été"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "tomates pelées hachées", "quantity": 2, "unit": "boîte(s)", "rayon": "Conserves" },
-        { "name": "poivron jaune", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "poivron rouge", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "oignon", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "ail", "quantity": 2, "unit": "gousse(s)", "rayon": "Fruits et légumes" },
-        { "name": "oeufs", "quantity": 4, "unit": "unité", "rayon": "Produits laitiers, oeufs" },
-        { "name": "oignon", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "paprika", "quantity": 1, "unit": "c. à café", "rayon": "Condiments" },
-        { "name": "cumin", "quantity": 1, "unit": "unité", "rayon": "Condiments" },
-        { "name": "cannelle", "quantity": 1, "unit": "unité", "rayon": "Condiments" },
-        { "name": "feta", "quantity": 100, "unit": "g", "rayon": "Fromagerie" }
+        {
+          "name": "tomates pelées hachées",
+          "quantity": 2,
+          "unit": "boîte(s)",
+          "rayon": "Conserves"
+        },
+        {
+          "name": "poivron jaune",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "poivron rouge",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "oignon",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "ail",
+          "quantity": 2,
+          "unit": "gousse(s)",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "oeufs",
+          "quantity": 4,
+          "unit": "unité",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "oignon",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "paprika",
+          "quantity": 1,
+          "unit": "c. à café",
+          "rayon": "Condiments"
+        },
+        {
+          "name": "cumin",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Condiments"
+        },
+        {
+          "name": "cannelle",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Condiments"
+        },
+        {
+          "name": "feta",
+          "quantity": 100,
+          "unit": "g",
+          "rayon": "Fromagerie"
+        }
       ],
       "recipe": [
         "Emincer l'oignon et écraser l'ail au presse ail. Laver et préparer les poivron en fines lamelles. Faire revenir le tout environ 5min à feu moyen.",
@@ -526,27 +1217,60 @@
         "Décorer la chakchouka de coriandre, de persil ou d'autres fines herbes."
       ],
       "nutritionalValues": {
-        "glucides": "",
-        "proteines": "",
-        "graisses": "",
-        "kiloCalories": ""
+        "glucides": "0",
+        "proteines": "0",
+        "graisses": "0"
       }
-    },       
+    },
     {
-      "id": "303f0b37-6103-4002-86b7-195b9cb4dea4",
+      "id": "912261c1-edbd-4f9b-8be8-e92260a4a150",
       "name": "Petit Salé aux Lentilles",
+      "source": "Livre",
       "category": "Plat",
       "duration": "long",
-      "source": "Livre",
-      "season": ["printemps", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "automne",
+        "hiver"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "oignon", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "carottes", "quantity": 3, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "lentilles", "quantity": 350, "unit": "g", "rayon": "Epicerie" },
-        { "name": "bouquet garni", "quantity": 1, "unit": "unité", "rayon": "Condiments" },
-        { "name": "ail", "quantity": 1, "unit": "gousse(s)", "rayon": "Fruits et légumes" },
-        { "name": "saucisses", "quantity": 4, "unit": "unité", "rayon": "Charcuterie" }
+        {
+          "name": "oignon",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "carottes",
+          "quantity": 3,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "lentilles",
+          "quantity": 350,
+          "unit": "g",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "bouquet garni",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Condiments"
+        },
+        {
+          "name": "ail",
+          "quantity": 1,
+          "unit": "gousse(s)",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "saucisses",
+          "quantity": 4,
+          "unit": "unité",
+          "rayon": "Charcuterie"
+        }
       ],
       "recipe": [
         "Verser un filet d'huile d'olive et faire revenir l'oignon finement haché. Laisser colorer et ajouter les carottes coupées en cubes ou rondelles, l'ail haché et les lentilles.",
@@ -555,28 +1279,66 @@
         "Couper les saucisses et les mélanger au petit salé. Existe également en version végé avec du tofu."
       ],
       "nutritionalValues": {
-        "glucides": "", 
+        "glucides": "",
         "proteines": "",
         "graisses": "",
         "kiloCalories": ""
       }
-    },                    
+    },
     {
-      "id": "1f10bdbf-d362-466a-9504-2e9dbfce7751",
+      "id": "7c813063-d546-4888-a744-8b613047013d",
       "name": "Crème de Champignons",
+      "source": "Livre",
       "category": "Entrée",
       "duration": "long",
-      "source": "Livre",
-      "season": ["automne", "hiver"],
+      "season": [
+        "automne",
+        "hiver"
+      ],
       "servings": 2,
       "ingredients": [
-        { "name": "champignons", "quantity": 500, "unit": "g", "rayon": "Fruits et légumes" },
-        { "name": "beurre", "quantity": 25, "unit": "g", "rayon": "Produits frais" },
-        { "name": "oignon", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "ail", "quantity": 2, "unit": "gousse(s)", "rayon": "Fruits et légumes" },
-        { "name": "persil", "quantity": 2, "unit": "c. à soupe", "rayon": "Herbes aromatiques" },
-        { "name": "maïzena", "quantity": 1, "unit": "c. à soupe", "rayon": "Epicerie" },
-        { "name": "crème fraîche liquide", "quantity": 500, "unit": "ml", "rayon": "Produits frais" }
+        {
+          "name": "champignons",
+          "quantity": 500,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "beurre",
+          "quantity": 25,
+          "unit": "g",
+          "rayon": "Produits frais"
+        },
+        {
+          "name": "oignon",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "ail",
+          "quantity": 2,
+          "unit": "gousse(s)",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "persil",
+          "quantity": 2,
+          "unit": "c. à soupe",
+          "rayon": "Herbes aromatiques"
+        },
+        {
+          "name": "maïzena",
+          "quantity": 1,
+          "unit": "c. à soupe",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "crème fraîche liquide",
+          "quantity": 500,
+          "unit": "ml",
+          "rayon": "Produits frais"
+        }
       ],
       "recipe": [
         "Nettoyer, préparer les champignons et les couper en tranches.",
@@ -592,21 +1354,49 @@
         "graisses": "",
         "kiloCalories": ""
       }
-    },       
+    },
     {
-      "id": "8bf52e88-f427-42aa-99aa-c703a3a37e7c",
+      "id": "3c221ffa-a9ac-4a2c-a083-5cdd112f514a",
       "name": "Velouté de Potimarron au lait de coco, curry, coriandre et noix de cajou grillées",
+      "source": "Livre",
       "category": "Entrée",
       "duration": "court",
-      "source": "Livre",
-      "season": ["automne", "hiver"],
+      "season": [
+        "automne",
+        "hiver"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "noix de cajou", "quantity": 70, "unit": "g", "rayon": "Fruits secs et mélanges" },
-        { "name": "oignons", "quantity": 2, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "potimarron", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "lait de coco", "quantity": 500, "unit": "ml", "rayon": "Epicerie" },
-        { "name": "pâte de curry", "quantity": 1, "unit": "c. à soupe", "rayon": "Epicerie" }
+        {
+          "name": "noix de cajou",
+          "quantity": 70,
+          "unit": "g",
+          "rayon": "Fruits secs et mélanges"
+        },
+        {
+          "name": "oignons",
+          "quantity": 2,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "potimarron",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "lait de coco",
+          "quantity": 500,
+          "unit": "ml",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "pâte de curry",
+          "quantity": 1,
+          "unit": "c. à soupe",
+          "rayon": "Epicerie"
+        }
       ],
       "recipe": [
         "Placer les noix de cajou dans un petit plat et enfourner au four pour 5min afin de les faire griller. Laisser refroidir et les réserver.",
@@ -621,25 +1411,75 @@
         "graisses": "",
         "kiloCalories": ""
       }
-    },           
+    },
     {
-      "id": "1dk12e88-f427-42aa-99aa-c709z7a37e2w",
+      "id": "e8b7b0e8-7860-421b-8d29-e4dab846a90a",
       "name": "Lablabi revisité",
+      "source": "",
       "category": "Plat",
       "duration": "long",
-      "source": "",
-      "season": ["printemps", "été", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "été",
+        "automne",
+        "hiver"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "pois chiches", "quantity": 1, "unit": "boîte(s)", "rayon": "Conserves" },
-        { "name": "carottes", "quantity": 2, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "oignons", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "cumin", "quantity": 1, "unit": "c. à café", "rayon": "Condiments" },
-        { "name": "tomates concassées", "quantity": 2, "unit": "boîte(s)", "rayon": "Conserves" },
-        { "name": "sirop d'érable", "quantity": 1, "unit": "c. à soupe", "rayon": "Condiments" },
-        { "name": "paprika", "quantity": 1, "unit": "c. à café", "rayon": "Condiments" },
-        { "name": "persil", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" },
-        { "name": "oeufs", "quantity": 4, "unit": "unité", "rayon": "Produits laitiers, oeufs" }
+        {
+          "name": "pois chiches",
+          "quantity": 1,
+          "unit": "boîte(s)",
+          "rayon": "Conserves"
+        },
+        {
+          "name": "carottes",
+          "quantity": 2,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "oignons",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "cumin",
+          "quantity": 1,
+          "unit": "c. à café",
+          "rayon": "Condiments"
+        },
+        {
+          "name": "tomates concassées",
+          "quantity": 2,
+          "unit": "boîte(s)",
+          "rayon": "Conserves"
+        },
+        {
+          "name": "sirop d'érable",
+          "quantity": 1,
+          "unit": "c. à soupe",
+          "rayon": "Condiments"
+        },
+        {
+          "name": "paprika",
+          "quantity": 1,
+          "unit": "c. à café",
+          "rayon": "Condiments"
+        },
+        {
+          "name": "persil",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Herbes aromatiques"
+        },
+        {
+          "name": "oeufs",
+          "quantity": 4,
+          "unit": "unité",
+          "rayon": "Produits laitiers, oeufs"
+        }
       ],
       "recipe": [
         "Dans une grande poêle ou wok, faire revenir avec un fond d'huile d'olive l'oignon avec les carottes finement coupées, y ajouter le cumin et remuer.",
@@ -654,35 +1494,45 @@
         "graisses": "",
         "kiloCalories": ""
       }
-    },                                                                                                                                       
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    },
     {
-      "id": "c12c2f9d-8a10-4d5e-988f-16a573a30a6d",
+      "id": "d2973fa8-159b-47ac-a8bd-2bd4c1b6efef",
       "name": "Omelette aux champignons",
+      "source": "ChatGPT",
       "category": "Petit-déjeuner",
       "duration": "court",
-      "source": "ChatGPT",
-      "season": ["printemps", "été", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "été",
+        "automne",
+        "hiver"
+      ],
       "servings": 2,
       "ingredients": [
-        { "name": "oeufs", "quantity": 3, "unit": "unité", "rayon": "Produits frais" },
-        { "name": "champignons", "quantity": 100, "unit": "g", "rayon": "Fruits et légumes" },
-        { "name": "beurre", "quantity": 10, "unit": "g", "rayon": "Produits laitiers, oeufs" },
-        { "name": "fromage râpé", "quantity": 30, "unit": "g", "rayon": "Fromagerie" }
+        {
+          "name": "oeufs",
+          "quantity": 3,
+          "unit": "unité",
+          "rayon": "Produits frais"
+        },
+        {
+          "name": "champignons",
+          "quantity": 100,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "beurre",
+          "quantity": 10,
+          "unit": "g",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "fromage râpé",
+          "quantity": 30,
+          "unit": "g",
+          "rayon": "Fromagerie"
+        }
       ],
       "recipe": [
         "Couper les champignons en tranches.",
@@ -698,18 +1548,43 @@
       }
     },
     {
-      "id": "f674b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
+      "id": "f2636683-5c79-429f-98d4-c047599c6bc8",
       "name": "Porridge à l'avoine",
+      "source": "ChatGPT",
       "category": "Petit-déjeuner",
       "duration": "court",
-      "source": "ChatGPT",
-      "season": ["printemps", "été", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "été",
+        "automne",
+        "hiver"
+      ],
       "servings": 2,
       "ingredients": [
-        { "name": "flocons d'avoine", "quantity": 100, "unit": "g", "rayon": "Épicerie" },
-        { "name": "lait", "quantity": 250, "unit": "ml", "rayon": "Produits laitiers, oeufs" },
-        { "name": "banane", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "miel", "quantity": 20, "unit": "g", "rayon": "Épicerie" }
+        {
+          "name": "flocons d'avoine",
+          "quantity": 100,
+          "unit": "g",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "lait",
+          "quantity": 250,
+          "unit": "ml",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "banane",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "miel",
+          "quantity": 20,
+          "unit": "g",
+          "rayon": "Épicerie"
+        }
       ],
       "recipe": [
         "Chauffer le lait dans une casserole.",
@@ -724,19 +1599,47 @@
       }
     },
     {
-      "id": "b174b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
+      "id": "466d8c91-d9a8-4f03-bd4e-544796d13260",
       "name": "Salade César",
+      "source": "ChatGPT",
       "category": "Plat",
       "duration": "court",
-      "source": "ChatGPT",
-      "season": ["printemps", "été"],
+      "season": [
+        "printemps",
+        "été"
+      ],
       "servings": 2,
       "ingredients": [
-        { "name": "laitue romaine", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "poulet", "quantity": 150, "unit": "g", "rayon": "Boucherie" },
-        { "name": "parmesan", "quantity": 30, "unit": "g", "rayon": "Fromagerie" },
-        { "name": "croûtons", "quantity": 50, "unit": "g", "rayon": "Épicerie" },
-        { "name": "sauce César", "quantity": 30, "unit": "ml", "rayon": "Épicerie" }
+        {
+          "name": "laitue romaine",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "poulet",
+          "quantity": 150,
+          "unit": "g",
+          "rayon": "Boucherie"
+        },
+        {
+          "name": "parmesan",
+          "quantity": 30,
+          "unit": "g",
+          "rayon": "Fromagerie"
+        },
+        {
+          "name": "croûtons",
+          "quantity": 50,
+          "unit": "g",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "sauce César",
+          "quantity": 30,
+          "unit": "ml",
+          "rayon": "Épicerie"
+        }
       ],
       "recipe": [
         "Griller le poulet.",
@@ -752,18 +1655,43 @@
       }
     },
     {
-      "id": "f674b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
+      "id": "bcb73b4f-755b-451f-aa46-4203b87a6de5",
       "name": "Pâtes Carbonara",
+      "source": "ChatGPT",
       "category": "Plat",
       "duration": "court",
-      "source": "ChatGPT",
-      "season": ["printemps", "été", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "été",
+        "automne",
+        "hiver"
+      ],
       "servings": 2,
       "ingredients": [
-        { "name": "pâtes", "quantity": 100, "unit": "g", "rayon": "Épicerie" },
-        { "name": "pancetta", "quantity": 50, "unit": "g", "rayon": "Charcuterie" },
-        { "name": "oeuf", "quantity": 1, "unit": "unité", "rayon": "Produits frais" },
-        { "name": "parmesan", "quantity": 25, "unit": "g", "rayon": "Fromagerie" }
+        {
+          "name": "pâtes",
+          "quantity": 100,
+          "unit": "g",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "pancetta",
+          "quantity": 50,
+          "unit": "g",
+          "rayon": "Charcuterie"
+        },
+        {
+          "name": "oeuf",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Produits frais"
+        },
+        {
+          "name": "parmesan",
+          "quantity": 25,
+          "unit": "g",
+          "rayon": "Fromagerie"
+        }
       ],
       "recipe": [
         "Cuire les pâtes.",
@@ -779,18 +1707,42 @@
       }
     },
     {
-      "id": "kp34b34c-3fb9-4f9c-8fc8-78f69ffcc8cd",
+      "id": "c32573f6-1a48-437c-a233-81baec278408",
       "name": "Poulet Curry",
+      "source": "ChatGPT",
       "category": "Plat",
       "duration": "long",
-      "source": "ChatGPT",
-      "season": ["printemps", "automne", "hiver"],
+      "season": [
+        "printemps",
+        "automne",
+        "hiver"
+      ],
       "servings": 2,
       "ingredients": [
-        { "name": "poulet", "quantity": 300, "unit": "g", "rayon": "Boucherie" },
-        { "name": "lait de coco", "quantity": 200, "unit": "ml", "rayon": "Épicerie" },
-        { "name": "pâte de curry", "quantity": 2, "unit": "cuillères à soupe", "rayon": "Épicerie" },
-        { "name": "riz", "quantity": 100, "unit": "g", "rayon": "Épicerie" }
+        {
+          "name": "poulet",
+          "quantity": 300,
+          "unit": "g",
+          "rayon": "Boucherie"
+        },
+        {
+          "name": "lait de coco",
+          "quantity": 200,
+          "unit": "ml",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "pâte de curry",
+          "quantity": 2,
+          "unit": "cuillères à soupe",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "riz",
+          "quantity": 100,
+          "unit": "g",
+          "rayon": "Épicerie"
+        }
       ],
       "recipe": [
         "Faire cuire le riz.",
@@ -806,18 +1758,41 @@
       }
     },
     {
-      "id": "6a6f8825-8bb4-4d4b-88f5-3fc4d5b84a78",
+      "id": "437a2e77-7352-4fd4-a611-d3c09f4a46a0",
       "name": "Bruschetta aux tomates",
+      "source": "ChatGPT",
       "category": "Entrée",
       "duration": "court",
-      "source": "ChatGPT",
-      "season": ["printemps", "été"],
+      "season": [
+        "printemps",
+        "été"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "pain ciabatta", "quantity": 1, "unit": "unité", "rayon": "Épicerie" },
-        { "name": "tomates", "quantity": 200, "unit": "g", "rayon": "Fruits et légumes" },
-        { "name": "basilic", "quantity": 10, "unit": "g", "rayon": "Fruits et légumes" },
-        { "name": "huile d'olive", "quantity": 30, "unit": "ml", "rayon": "Condiments" }
+        {
+          "name": "pain ciabatta",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "tomates",
+          "quantity": 200,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "basilic",
+          "quantity": 10,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "huile d'olive",
+          "quantity": 30,
+          "unit": "ml",
+          "rayon": "Condiments"
+        }
       ],
       "recipe": [
         "Couper le pain en tranches et les faire griller.",
@@ -832,19 +1807,47 @@
       }
     },
     {
-      "id": "3eb50a26-9373-4de0-a64b-d64577eecf5a",
+      "id": "eb77eadc-0105-400e-a69c-da3c92fa4eaa",
       "name": "Mojito",
+      "source": "ChatGPT",
       "category": "Cocktail",
       "duration": "court",
-      "source": "ChatGPT",
-      "season": ["printemps", "été"],
+      "season": [
+        "printemps",
+        "été"
+      ],
       "servings": 1,
       "ingredients": [
-        { "name": "rhum blanc", "quantity": 50, "unit": "ml", "rayon": "Alcool" },
-        { "name": "menthe", "quantity": 10, "unit": "feuilles", "rayon": "Fruits et légumes" },
-        { "name": "sucre", "quantity": 1, "unit": "cuillère à soupe", "rayon": "Épicerie" },
-        { "name": "citron vert", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
-        { "name": "eau gazeuse", "quantity": 100, "unit": "ml", "rayon": "Épicerie" }
+        {
+          "name": "rhum blanc",
+          "quantity": 50,
+          "unit": "ml",
+          "rayon": "Alcool"
+        },
+        {
+          "name": "menthe",
+          "quantity": 10,
+          "unit": "feuilles",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "sucre",
+          "quantity": 1,
+          "unit": "cuillère à soupe",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "citron vert",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "eau gazeuse",
+          "quantity": 100,
+          "unit": "ml",
+          "rayon": "Épicerie"
+        }
       ],
       "recipe": [
         "Écraser la menthe et le sucre dans un verre.",
@@ -859,18 +1862,41 @@
       }
     },
     {
-      "id": "a0282b34-61b6-4642-9d95-e5c85a0a04c8",
+      "id": "480c62ad-3e1e-4d82-af52-df0cedfe993c",
       "name": "Crème brûlée",
+      "source": "ChatGPT",
       "category": "Dessert",
       "duration": "long",
-      "source": "ChatGPT",
-      "season": ["hiver", "été"],
+      "season": [
+        "hiver",
+        "été"
+      ],
       "servings": 4,
       "ingredients": [
-        { "name": "crème fraîche", "quantity": 500, "unit": "ml", "rayon": "Produits laitiers, oeufs" },
-        { "name": "sucre", "quantity": 100, "unit": "g", "rayon": "Épicerie" },
-        { "name": "jaunes d'œufs", "quantity": 4, "unit": "unité", "rayon": "Produits frais" },
-        { "name": "vanille", "quantity": 1, "unit": "gousse(s)", "rayon": "Épicerie" }
+        {
+          "name": "crème fraîche",
+          "quantity": 500,
+          "unit": "ml",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "sucre",
+          "quantity": 100,
+          "unit": "g",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "jaunes d'œufs",
+          "quantity": 4,
+          "unit": "unité",
+          "rayon": "Produits frais"
+        },
+        {
+          "name": "vanille",
+          "quantity": 1,
+          "unit": "gousse(s)",
+          "rayon": "Épicerie"
+        }
       ],
       "recipe": [
         "Préchauffer le four à 150°C.",
@@ -887,18 +1913,41 @@
       }
     },
     {
-      "id": "ecb63241-3cb4-4fb8-9274-76f8f9cd13bc",
+      "id": "c6668581-350d-43c2-bdd3-a7fa787cd52f",
       "name": "Tarte Tatin",
+      "source": "ChatGPT",
       "category": "Dessert",
       "duration": "long",
-      "source": "ChatGPT",
-      "season": ["automne", "hiver"],
+      "season": [
+        "automne",
+        "hiver"
+      ],
       "servings": 6,
       "ingredients": [
-        { "name": "pommes", "quantity": 1, "unit": "kg", "rayon": "Fruits" },
-        { "name": "sucre", "quantity": 150, "unit": "g", "rayon": "Épicerie" },
-        { "name": "beurre", "quantity": 100, "unit": "g", "rayon": "Produits laitiers, oeufs" },
-        { "name": "pâte brisée", "quantity": 1, "unit": "unité", "rayon": "Épicerie" }
+        {
+          "name": "pommes",
+          "quantity": 1,
+          "unit": "kg",
+          "rayon": "Fruits"
+        },
+        {
+          "name": "sucre",
+          "quantity": 150,
+          "unit": "g",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "beurre",
+          "quantity": 100,
+          "unit": "g",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "pâte brisée",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Épicerie"
+        }
       ],
       "recipe": [
         "Préchauffer le four à 180°C.",
@@ -914,19 +1963,47 @@
       }
     },
     {
-      "id": "7f8a1a74-4582-489c-9446-2d4d4db84a8f",
+      "id": "3f46ccef-efd4-444b-9059-5a86e6119248",
       "name": "Tiramisu",
+      "source": "ChatGPT",
       "category": "Dessert",
       "duration": "long",
-      "source": "ChatGPT",
-      "season": ["automne", "hiver"],
+      "season": [
+        "automne",
+        "hiver"
+      ],
       "servings": 6,
       "ingredients": [
-        { "name": "mascarpone", "quantity": 500, "unit": "g", "rayon": "Fromagerie" },
-        { "name": "café", "quantity": 200, "unit": "ml", "rayon": "Épicerie" },
-        { "name": "sucre", "quantity": 100, "unit": "g", "rayon": "Épicerie" },
-        { "name": "biscuits à la cuillère", "quantity": 200, "unit": "g", "rayon": "Épicerie" },
-        { "name": "cacao en poudre", "quantity": 30, "unit": "g", "rayon": "Épicerie" }
+        {
+          "name": "mascarpone",
+          "quantity": 500,
+          "unit": "g",
+          "rayon": "Fromagerie"
+        },
+        {
+          "name": "café",
+          "quantity": 200,
+          "unit": "ml",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "sucre",
+          "quantity": 100,
+          "unit": "g",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "biscuits à la cuillère",
+          "quantity": 200,
+          "unit": "g",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "cacao en poudre",
+          "quantity": 30,
+          "unit": "g",
+          "rayon": "Épicerie"
+        }
       ],
       "recipe": [
         "Préparer le café et le laisser refroidir.",
