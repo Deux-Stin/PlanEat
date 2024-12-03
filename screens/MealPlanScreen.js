@@ -3,13 +3,35 @@ import { useFocusEffect } from '@react-navigation/native';
 import { View, ScrollView, StyleSheet, TouchableOpacity, Alert, Modal } from 'react-native';
 import { Text, Button, Checkbox, BottomNavigation } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
-import { Calendar } from 'react-native-calendars';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import { MealPlanContext, MealPlanProvider } from './MealPlanContext';
 import 'moment/locale/fr';
 import moment from 'moment';
 moment.locale('fr');
 import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
+
+LocaleConfig.locales['fr'] = {
+  monthNames: [
+    'Janvier',
+    'Février',
+    'Mars',
+    'Avril',
+    'Mai',
+    'Juin',
+    'Juillet',
+    'Août',
+    'Septembre',
+    'Octobre',
+    'Novembre',
+    'Décembre'
+  ],
+  monthNamesShort: ['Janv.', 'Févr.', 'Mars', 'Avril', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.', 'Nov.', 'Déc.'],
+  dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+  dayNamesShort: ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'],
+  today: "Aujourd'hui"
+};
+LocaleConfig.defaultLocale = 'fr';
 
 
 export default function MealPlanScreen({ navigation, route }) {
@@ -44,7 +66,7 @@ export default function MealPlanScreen({ navigation, route }) {
   useEffect(() => {
     if (mealPlan) {
       const updatedSelectedDates = Object.keys(mealPlan).reduce((acc, date) => {
-        acc[date] = { selected: true, selectedColor: 'blue' };
+        acc[date] = { selected: true, selectedColor: '#b1d7ff' };
         return acc;
       }, {});
       setSelectedDates(updatedSelectedDates);
@@ -107,9 +129,6 @@ export default function MealPlanScreen({ navigation, route }) {
   }, [mealPlan]);
 
 
-
-
-
   const mealTypeToCategory = {
     breakfast: 'Petit-déjeuner',
     lunch: 'Déjeuner',
@@ -148,7 +167,7 @@ export default function MealPlanScreen({ navigation, route }) {
         return updatedMealPlan;
       });
     } else {
-      newSelectedDates[day.dateString] = { selected: true, selectedColor: 'blue' };
+      newSelectedDates[day.dateString] = { selected: true, selectedColor: '#b1d7ff' };
     }
     setSelectedDates(newSelectedDates);
   };
@@ -190,7 +209,6 @@ export default function MealPlanScreen({ navigation, route }) {
     // Mise à jour du mealPlan
     setMealPlan(updatedMealPlan);
   };
-  
   
   const handleRecipeSelection = (date, mealType, recipeName, category) => { // Supprimez `portions` du paramètre
     if (!mealPlan[date]) {
@@ -287,8 +305,8 @@ export default function MealPlanScreen({ navigation, route }) {
 
   const filterRecipesByCategory = (category) => {
     return recipes.filter((recipe) => {
-      console.log('test2')
-      console.log('category :', category)
+      // console.log('test2')
+      // console.log('category :', category)
       const normalizedCategory = category.toLowerCase(); // Normaliser la casse de la catégorie entrée
       if (Array.isArray(recipe.category)) {
         return recipe.category.some((cat) => cat.toLowerCase() === normalizedCategory); // Vérifie chaque catégorie si c'est un tableau
@@ -335,6 +353,7 @@ export default function MealPlanScreen({ navigation, route }) {
       return updatedMealPlan;
     });
   };
+ 
 
   return (
     <ImageBackgroundWrapper imageOpacity={0.6}>
@@ -349,9 +368,7 @@ export default function MealPlanScreen({ navigation, route }) {
 
           <Calendar
             current={today} // Affiche la date actuelle
-            //{new Date().toISOString().split('T')[0]}
             onDayPress={handleDayPress}
-            // markedDates={selectedDates}
             markedDates={{ ...selectedDates, ...markedDates }}
             hideExtraDays={true}
             enableSwipeMonths={true}
@@ -360,12 +377,11 @@ export default function MealPlanScreen({ navigation, route }) {
             )}
             monthFormat={'MMMM yyyy'}
             firstDay={1}
-            dayNames={['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']}
-            dayNamesShort={['D', 'L', 'M', 'M', 'J', 'V', 'S']}
-            monthNames={[
-              'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-              'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
-            ]}
+            style={{
+              borderWidth: 1,
+              borderColor: '#000',
+              // height: 350,
+            }}
           />
         </View>
 

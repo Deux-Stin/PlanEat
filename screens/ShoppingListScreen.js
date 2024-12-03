@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, ScrollView, TextInput, TouchableOpacity, Alert, StyleSheet, Modal } from 'react-native';
 import { Text, Button, Checkbox } from 'react-native-paper';
 import * as Clipboard from 'expo-clipboard';
-// import { useAsyncStorage } from '../hooks/useAsyncStorage';
+import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
@@ -10,14 +10,15 @@ import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Im
 export default function ShoppingListScreen({ navigation, route }) {
   const [shoppingList, setShoppingList] = useState({});
   const [mealPlanHistory, setMealPlanHistory] = useState([]);
+  const [mealPlanHistorySaveAsync, setmealPlanHistorySaveAsync, getStoredValue] = useAsyncStorage('mealPlanHistory',[]);
   const [shoppingListReady, setShoppingListReady] = useState(false); // Nouvel état pour suivre l'état de shoppingList
   const [checkedItems, setCheckedItems] = useState({});
   const [manualItem, setManualItem] = useState('');
   const [newItemQuantity, setnewItemQuantity] = useState(''); // État pour la valeur numérique du modal d'unité
   const [showHideMenu, setShowHideMenu] = useState(false);
   const [hideCheckedItems, setHideCheckedItems] = useState(false);
-
   const { mealPlan } = route.params; // Recevoir le mealPlan à partir de la navigation
+  const hasGeneratedShoppingList = useRef(false); // Utiliser useRef pour contrôler l'appel de la sauvegarde
 
   const availableUnits = ['unité', 'g', 'kg', 'ml', 'L', 'c. à café', 'c. à soupe', 'boîte', 'verre', 'gousse(s)'];
   const availableRayons = ['Divers', ,'Alcool', 'Condiments', 'Pâtes', 'Produits frais', 'Herbes aromatiques', 'Fromages', 'Boucherie', 'Poissonnerie', 'Boulangerie', 'Épicerie', 'Fruits et légumes', 'Fruits secs et mélanges', 'Surgelés', 'Conserves', 'Produits laitiers, oeufs', 'Boissons', 'Hygiène', 'Entretien'].sort((a, b) => a.localeCompare(b)); // Trie le tableau par ordre alphabétique
@@ -26,16 +27,11 @@ export default function ShoppingListScreen({ navigation, route }) {
   const [selectedUnit, setSelectedUnit] = useState('unité');
   const [selectedRayon, setSelectedRayon] = useState('Divers');
 
-  const hasGeneratedShoppingList = useRef(false); // Utiliser useRef pour contrôler l'appel de la sauvegarde
-
-  // Charger l'historique des du mealPlan lors du premier rendu
-  useEffect(() => {
-    loadMealPlanHistory();
-  }, []);
-
+  
   useEffect(() => {
     // Charger l'historique au premier rendu
     loadMealPlanHistory();
+    console.log('mealPlanHistory : ', mealPlanHistory)
     
     // Générer et sauvegarder la liste de courses une seule fois à l'arrivée sur la page
     if (mealPlan && !hasGeneratedShoppingList.current) {
@@ -49,7 +45,7 @@ export default function ShoppingListScreen({ navigation, route }) {
       
       hasGeneratedShoppingList.current = true; // Empêcher la régénération et sauvegarde multiple
     }
-  }, [mealPlan]);
+  }, [mealPlanHistorySaveAsync]);
   
   
   useEffect(() => {
@@ -247,44 +243,63 @@ export default function ShoppingListScreen({ navigation, route }) {
 
     const newEntry = {
       date: now,
-      mealPlan: mealPlan,  // Enregistrez le mealPlan complet
-      title: title
+      mealPlan,  // Enregistrez le mealPlan complet
+      title
     };
 
-    const updatedHistory = [...mealPlanHistory, newEntry];
-    const sortedHistory = updatedHistory
-      .sort((a, b) => moment(b.date, 'DD/MM/YYYY à HH:mm') - moment(a.date, 'DD/MM/YYYY à HH:mm'))
-      .slice(0, 10);
-
-    setMealPlanHistory(sortedHistory);
-
     try {
-      // Vérification supplémentaire pour éviter un problème de sauvegarde
-      if (sortedHistory && sortedHistory.length > 0) {
-        await AsyncStorage.setItem('mealPlanHistory', JSON.stringify(sortedHistory));
-        console.log('Succès', 'MealPlan sauvegardé avec succès !');
-      } else {
-        console.warn("Aucun historique à sauvegarder.");
-      }
-    } catch (error) {
-      console.error('Erreur lors de l\'enregistrement de l\'historique', error);
-    }
+      // Récupérer l'historique actuel
+      // const currentHistory = await mealPlanHistorySaveAsync || [];
 
-    loadMealPlanHistory();
-    // navigation.goBack();
+      // const currentHistory = await AsyncStorage.getItem('mealPlanHistory');
+      // const parsedHistory = currentHistory ? JSON.parse(currentHistory) : [];
+      
+      // const updatedHistory = [...parsedHistory, newEntry];
+
+      const currentHistory = await getStoredValue();
+      const updatedHistory = [...currentHistory, newEntry]
+
+      console.log('Historique actuel avant sauvegarde :', currentHistory);
+      console.log('Nouveau mealPlan ajouté :', newEntry);
+      
+  
+      // Trier et limiter à 10 éléments
+      const sortedHistory = updatedHistory
+        .sort((a, b) => moment(b.date, 'DD/MM/YYYY à HH:mm') - moment(a.date, 'DD/MM/YYYY à HH:mm'))
+        .slice(0, 10);
+  
+      // Mettre à jour l'état local et sauvegarder
+      setMealPlanHistory(sortedHistory);
+      await setmealPlanHistorySaveAsync(sortedHistory);
+  
+      console.log('MealPlan sauvegardé avec succès :', sortedHistory);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde du MealPlan :', error);
+    }
   };
 
+  const validateHistory = (history) => {
+    return Array.isArray(history) && history.every(entry => 
+      entry.date && entry.mealPlan && entry.title
+    );
+  };
+  
   const loadMealPlanHistory = async () => {
     try {
-      const value = await AsyncStorage.getItem('mealPlanHistory');
-      if (value !== null) {
-        const history = JSON.parse(value);
-        setMealPlanHistory(history);
+      const savedHistory = mealPlanHistorySaveAsync;
+      if (Array.isArray(savedHistory)) {
+        setMealPlanHistory(savedHistory.slice(-10)); // Limiter à 10 éléments
+        console.log('Historique chargé avec succès :', savedHistory.slice(-10));
+      } else {
+        console.warn('Historique non valide ou vide. Réinitialisation...');
+        setMealPlanHistory([]);
+        await setmealPlanHistorySaveAsync([]); // Réinitialiser
       }
     } catch (error) {
-      console.error('Erreur lors de la récupération de l\'historique', error);
+      console.error('Erreur lors du chargement de l\'historique :', error);
     }
   };
+ 
 
   const addManualItem = () => {
     if (manualItem && newItemQuantity) {
