@@ -10,6 +10,7 @@ import 'moment/locale/fr';
 import moment from 'moment';
 moment.locale('fr');
 import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
+import { globalStyles } from '../globalStyles';
 
 LocaleConfig.locales['fr'] = {
   monthNames: [
@@ -146,14 +147,19 @@ export default function MealPlanScreen({ navigation, route }) {
 
     // Vérifier si la date sélectionnée est passée
     if (moment(day.dateString).isBefore(today)) {
-      Alert.alert("Hum, try again !","Vous essayez vraiment de sélectionner une date du passé ? \n \nEssayez plutôt le turfu, ça a l'air sympa ! :)")
+      Alert.alert(
+        "Hum, try again !",
+        "Vous essayez vraiment de sélectionner une date du passé ? \n \nEssayez plutôt le turfu, ça a l'air sympa ! :)")
       return; // Ne rien faire si la date est dans le passé
     }
 
     const newSelectedDates = { ...selectedDates };
+
     if (newSelectedDates[day.dateString]) {
       // Date déjà sélectionnée, on la désélectionne
-      delete newSelectedDates[day.dateString];
+      // delete newSelectedDates[day.dateString];
+      newSelectedDates[day.dateString] = undefined;
+
 
       // Supprimer les sélections de repas pour cette date
       const newMealsSelection = { ...mealsSelection };
@@ -354,7 +360,6 @@ export default function MealPlanScreen({ navigation, route }) {
     });
   };
  
-
   return (
     <ImageBackgroundWrapper imageOpacity={0.6}>
     <MealPlanProvider>
@@ -364,7 +369,7 @@ export default function MealPlanScreen({ navigation, route }) {
 
         <View style={styles.section}>
           <View style={styles.somespace}></View>
-          {/* <Text style={styles.sectionTitle}>Planifier vos repas</Text> */}
+          <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Planifier vos repas</Text>
 
           <Calendar
             current={today} // Affiche la date actuelle
@@ -387,7 +392,7 @@ export default function MealPlanScreen({ navigation, route }) {
 
           
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Sélection des repas</Text>
+          <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Sélection des repas</Text>
 
           {Object.keys(selectedDates).length > 0 ? (
             Object.keys(selectedDates).map((date) => (
@@ -516,7 +521,7 @@ export default function MealPlanScreen({ navigation, route }) {
       <Modal visible={showPortionModal} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            {[1, 2, 3, 4, 5, 6].map((num) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
               <TouchableOpacity
                 key={num}
                 onPress={() => {
@@ -538,10 +543,10 @@ export default function MealPlanScreen({ navigation, route }) {
       <View style={styles.section}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.mainButton} onPress={handleSaveMealPlan}>
-            <Text style={styles.mainButtonText}>Voir mon récapitulatif</Text>
+            <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Voir mon récapitulatif</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.mainButton} onPress={resetSelections}>
-            <Text style={styles.mainButtonText}>Réinitialiser</Text>
+            <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Réinitialiser</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -571,9 +576,9 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 22,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     color: '#444',
-    marginTop: 20,
+    marginTop: 10,
     marginBottom: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
@@ -658,7 +663,6 @@ const styles = StyleSheet.create({
     flex: 1, // Prend l'espace restant
     height: 50,
   },
-
   portionSelector: {
     width: 50,
     height: 50,
@@ -683,6 +687,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
     borderRadius: 10,
+    // marginBottom: 10,
   },
   modalText: {
     fontSize: 18,
@@ -749,14 +754,14 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     padding: 15,
     borderRadius: 10,
-    marginVertical: 5, // Espace entre les boutons
+    marginVertical: 2.5, // Espace entre les boutons
     alignItems: 'center',
     width: '95%', // Ajuster la largeur pour ne pas prendre toute la place
   },
   mainButtonText: {
     color: '#000',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 18,
+    // fontWeight: 'bold',
     textAlign: 'center',
   },
   somespace: {

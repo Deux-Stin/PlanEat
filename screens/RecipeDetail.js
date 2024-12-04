@@ -1,10 +1,10 @@
 import React from 'react';
-import { ScrollView, Text, Button, Alert, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, Button, Image, Alert, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
 
 export default function RecipeDetail({ route, navigation }) {
-  const { recipe, addRecipe, deleteRecipe } = route.params;
+  const { recipe } = route.params; //, addRecipe, deleteRecipe 
 
   // Utiliser useAsyncStorage pour obtenir les recettes
   const [storedRecipes, setStoredRecipes] = useAsyncStorage('recipes', []);
@@ -21,7 +21,7 @@ export default function RecipeDetail({ route, navigation }) {
             try {
               const updatedRecipes = storedRecipes.filter(r => r.name !== recipe.name);
               await setStoredRecipes(updatedRecipes);
-              await deleteRecipe(recipe);
+              // await deleteRecipe(recipe);
               navigation.navigate('RecipeLibrary', { refresh: true });
             } catch (error) {
               console.error('Erreur lors de la suppression de la recette :', error);
@@ -36,7 +36,7 @@ export default function RecipeDetail({ route, navigation }) {
     console.log('recipe : ', recipe)
     navigation.navigate('AddRecipe', {
       recipe,
-      addRecipe: addRecipe
+      // addRecipe: addRecipe
     });
   };
 
@@ -47,6 +47,16 @@ export default function RecipeDetail({ route, navigation }) {
         <View style={styles.header}>
           <Text style={styles.title}>{recipe.name}</Text>
         </View>
+
+        {/* Affichage de l'image de la recette */}
+        {recipe.image ? (
+          <Image 
+            source={{ uri: recipe.image }} 
+            style={{ width: 200, height: 200, alignSelf: 'center', marginBottom: 30 }} 
+          />
+        ) : (
+          <Text style={{ textAlign: 'center'}}></Text>
+        )}
 
         {/* Section Détails de la recette */}
         <View style={styles.section}>

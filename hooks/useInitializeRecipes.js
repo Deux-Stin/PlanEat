@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useAsyncStorage } from './useAsyncStorage';
-// import recipesData from '../data/recipes.json'; 
 import * as FileSystem from 'expo-file-system';
 
 

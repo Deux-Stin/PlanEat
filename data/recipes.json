@@ -1,16 +1,686 @@
 {
   "recipes": [
     {
+      "id": "750a381a-76ea-4e73-bedb-534c14235cfc",
+      "name": "Verrine betterave et fromage de chèvre au miel et noix",
+      "category": "Apéritif",
+      "duration": "court",
+      "source": "Livre",
+      "season": ["printemps", "été", "automne", "hiver"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "betterave rouge cuite", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "cerneaux de noix", "quantity": 6, "unit": "unité", "rayon": "Fruits secs et mélanges" },
+        { "name": "vinaigre balsamique", "quantity": 1, "unit": "c. à café", "rayon": "Epicerie" },
+        { "name": "Aneth", "quantity": 1.5, "unit": "unité", "rayon": "Herbes aromatiques" },
+        { "name": "Chavrou", "quantity": 0.5, "unit": "unité", "rayon": "Fromagerie" },
+        { "name": "Crème épaisse", "quantity": 20, "unit": "g", "rayon": "Produits laitiers, oeufs" },
+        { "name": "Miel", "quantity": 1, "unit": "c. à café", "rayon": "Epicerie" }
+      ],
+      "recipe": [
+        "Écrasez le chèvre à la fourchette et mélangez-le avec la crème et le miel. Répartissez-le dans les verrines.",
+        "Épluchez les betteraves et coupez-les en dés. Mixez-les avec une cuillère à soupe de crème, le vinaigre, du sel et du poivre. Déposez ce mélange sur le chèvre dans les verrines.",
+        "Concassez les cerneaux de noix et déposez-les sur le tout. Terminez par un brin d’aneth et réservez au frais jusqu'au service.",
+        "Cuire l'omelette à feu doux et ajouter le fromage râpé."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "33820f0e-a17e-4093-a065-a23e8bfab3fa",
+      "name": "Nutella maison",
+      "category": "Petit-déjeuner",
+      "duration": "court",
+      "source": "Bouche à oreille",
+      "season": ["printemps", "été", "automne", "hiver"],
+      "servings": 2,
+      "ingredients": [
+        { "name": "chocolat noir >70%", "quantity": 200, "unit": "g", "rayon": "Epicerie" },
+        { "name": "lait concentré sucré", "quantity": 450, "unit": "g", "rayon": "Produits laitiers, oeufs" },
+        { "name": "poudre de noisette", "quantity": 50, "unit": "g", "rayon": "Fruits secs et mélanges" }
+      ],
+      "recipe": [
+        "Faire fondre le chocolat et y ajouter 100ml d'eau pour 200g de chocolat.",
+        "Ajouter le lait concentré et la poudre de noisette une fois que le chocolat est bien fondu (attention à ne pas faire brûler le chocolat).",
+        "Mettre en pot et laisser refroidir."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "e34ae4db-498d-466d-bc97-5c1dd1a1fdea",
+      "name": "Far aux pruneaux façon Mamie Paulette",
+      "category": "Dessert",
+      "duration": "long",
+      "source": "Bouche à oreille",
+      "season": ["printemps", "été", "automne", "hiver"],
+      "servings": 8,
+      "ingredients": [
+        { "name": "lait tiède", "quantity": 2, "unit": "verre", "rayon": "Produits laitiers, oeufs" },
+        { "name": "farine", "quantity": 1, "unit": "verre", "rayon": "Epicerie" },
+        { "name": "sucre", "quantity": 1, "unit": "verre", "rayon": "Epicerie" },
+        { "name": "oeufs", "quantity": 4, "unit": "unité", "rayon": "Produits laitiers, oeufs" },
+        { "name": "rhum", "quantity": 4, "unit": "c. à soupe", "rayon": "Produits laitiers, oeufs" },
+        { "name": "sucre vanillé", "quantity": 1, "unit": "unité", "rayon": "Epicerie" },
+        { "name": "levure", "quantity": 1, "unit": "unité", "rayon": "Epicerie" },
+        { "name": "pruneaux dénoyautés", "quantity": 25, "unit": "unité", "rayon": "Fruits secs et mélanges" }
+      ],
+      "recipe": [
+        "Faire tremper les pruneaux dans du rhum au préalable",
+        "Faire tiédir le lait.",
+        "Dans un grand saladier, mélanger farine, sucre, oeufs, rhum, sucre vanillé et levure.",
+        "Délayer au fouet en ajoutant le lait tiède.",
+        "Ajouter les pruneaux égouttés.",
+        "Verser dans un moule préalablement beurré",
+        "Cuire 45min thermostat 7.",
+        "Couvrir après cuisson."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "6a13374f-a72a-4971-a821-87c01662b603",
+      "name": "Fondant au chocolat au micro ondes",
+      "category": "Dessert",
+      "duration": "court",
+      "source": "Internet",
+      "season": ["printemps", "été", "automne", "hiver"],
+      "servings": 2,
+      "ingredients": [
+        { "name": "Chocolat noir >50%", "quantity": 150, "unit": "g", "rayon": "Epicerie" },
+        { "name": "oeufs", "quantity": 3, "unit": "unité", "rayon": "Produits laitiers, oeufs" },
+        { "name": "farine", "quantity": 60, "unit": "g", "rayon": "Epicerie" },
+        { "name": "levure", "quantity": 1, "unit": "c. à café", "rayon": "Epicerie" },
+        { "name": "beurre", "quantity": 80, "unit": "g", "rayon": "Epicerie" },
+        { "name": "sucre", "quantity": 80, "unit": "g", "rayon": "Epicerie" },
+        { "name": "lait", "quantity": 100, "unit": "ml", "rayon": "Produits laitiers, oeufs" }
+      ],
+      "recipe": [
+        "Faire fondre le chocolat avec le beurre puis réserver.",
+        "Battre les oeufs avec le sucre jusqu'à ce que le mélange blanchisse.",
+        "Mélanger les 2 précédents mélanges et ajouter farine, levure et lait.",
+        "Verser dans un moule à micro onde",
+        "Faire cuire 4-5min à 750W."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "c352ea37-13b4-42fa-9457-aae41c92f344",
+      "name": "Cookies de Sylvie",
+      "category": "Dessert",
+      "duration": "court",
+      "source": "Bouche à oreille",
+      "season": ["printemps", "été", "automne", "hiver"],
+      "servings": 8,
+      "ingredients": [
+        { "name": "sucre roux", "quantity": 60, "unit": "g", "rayon": "Epicerie" },
+        { "name": "sucre blanc", "quantity": 80, "unit": "g", "rayon": "Epicerie" },
+        { "name": "beurre 1/2 sel", "quantity": 110, "unit": "g", "rayon": "Epicerie" },
+        { "name": "farine type 65", "quantity": 220, "unit": "g", "rayon": "Epicerie" },
+        { "name": "chocolat noir >70%", "quantity": 30, "unit": "g", "rayon": "Epicerie" },
+        { "name": "oeuf", "quantity": 1, "unit": "unité", "rayon": "Produits laitiers, oeufs" },
+        { "name": "levure", "quantity": 0.5, "unit": "unité", "rayon": "Epicerie" },
+        { "name": "vanille liquide", "quantity": 0.5, "unit": "c. à café", "rayon": "Epicerie" }
+      ],
+      "recipe": [
+        "Préchauffer le four à 170°C.",
+        "Couper le beurre1/2 sel en petits morceaux et laisser ramolir.",
+        "Ajouter les sucres blanc et roux au beurre, incorporer l'extrait de vanille et l'oeuf. Fouetter jusqu'à ce que le mélange pâlisse un peu.",
+        "Tamiser farine et levure et les ajouter au mélange précédent. Mélanger à la cuillère en bois.",
+        "Poser de grosser cuillère à café de pâte sur une plaque de cuisson, applatisser légèrement, espacer d'au moins 3cm.",
+        "Casser le chocolat en petits morceaux et répartisser à la surface des pâtons.",
+        "Enfourner environ 10min.",
+        "Les cookies doivent être levés, uniformément blondis, attendez 3-4min. Décoller à la spatule."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "7219cb23-f063-4c2a-97a0-134dd39d30d7",
+      "name": "Poulet Coco Curry",
+      "category": "Plat",
+      "duration": "long",
+      "source": "Internet",
+      "season": ["printemps", "été", "automne", "hiver"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "poulet", "quantity": 400, "unit": "g", "rayon": "Boucherie" },
+        { "name": "ail", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "gingembre", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "pousse de soja", "quantity": 1, "unit": "unité", "rayon": "Conserves" },
+        { "name": "pâte de curry", "quantity": 2, "unit": "c. à soupe", "rayon": "Epicerie" },
+        { "name": "champignons", "quantity": 300, "unit": "g", "rayon": "Fruits et légumes" },
+        { "name": "épinards", "quantity": 500, "unit": "g", "rayon": "Fruits et légumes" },
+        { "name": "brocolis", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "carottes", "quantity": 2, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "sauce soja salée", "quantity": 2, "unit": "c. à soupe", "rayon": "Epicerie" },
+        { "name": "cacahuètes", "quantity": 50, "unit": "g", "rayon": "Fruits secs et mélanges" },
+        { "name": "lait de coco", "quantity": 500, "unit": "ml", "rayon": "Epicerie" },
+        { "name": "miel", "quantity": 2, "unit": "c. à café", "rayon": "Epicerie" },
+        { "name": "basilic thaï", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" },
+        { "name": "menthe fraîche", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" },
+        { "name": "thym", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" },
+        { "name": "bouillon de légumes", "quantity": 1, "unit": "unité", "rayon": "Epicerie" }
+
+      ],
+      "recipe": [
+        "Faire revenir les morceaux de poulet dans de l'huile sésame et huile de colza.",
+        "Rajouter la pâte de curry, l'ail et le gingembre coupés finement, les pousses de soja, les champignons et les légumes coupé en morceaux.",
+        "Faire sauter le tout, ajouter la sauce soja et le lait de coco.",
+        "Porter à ébullition.",
+        "Ajouter deux c. à café de miel et le basilic thaï haché.",
+        "Laisser mijoter 10min et servir accompagné de riz parfumé au thym + bouillon de légumes",
+        "Servir et ajouter la menthe fraîche et les cacahuètes haché à l'assiette.",
+        ""
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "be376c4d-0d49-4dc0-a5f0-8a12e6067ba3",
+      "name": "Riz sauté aux asperges poulet et amandes",
+      "category": "Plat",
+      "duration": "long",
+      "source": "Livre",
+      "season": ["printemps", "été", "automne", "hiver"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "poulet", "quantity": 300, "unit": "g", "rayon": "Boucherie" },
+        { "name": "riz long grain", "quantity": 200, "unit": "g", "rayon": "" },
+        { "name": "asperges vertes en bocaux", "quantity": 1, "unit": "unité", "rayon": "Conserves" },
+        { "name": "oignon rouge", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "farine", "quantity": 50, "unit": "g", "rayon": "Epicerie" },
+        { "name": "bouillon de légumes", "quantity": 1, "unit": "unité", "rayon": "Epicerie" },
+        { "name": "persil", "quantity": 1, "unit": "c. à soupe", "rayon": "Herbes aromatiques" },
+        { "name": "cannelle", "quantity": 0.5, "unit": "c. à café", "rayon": "Epicerie" },
+        { "name": "amandes effilées", "quantity": 30, "unit": "g", "rayon": "Epicerie" }
+      ],
+      "recipe": [
+        "Egoutter les asperges. Emincer le poulet en lanières puis le saler et le saupoudrer de farine.",
+        "Dans un wok faire revenir dans de l'huile d'olive le poulet à feu moyen pendant 5min. Réserver.",
+        "Préparer le bouillon de légumes, 1 cube pour 60cL d'eau.",
+        "Faite revenir l'oignon finement émincé pendant 3min, ajouter la cannelle pour bien imprégner l'oignon. Verser le riz, remuer 1 à 2min avant de rajouter le bouillon.",
+        "Porter le tout à ébullition. Baisser le feu, couvrer et laisser frémir 20min en mélangeant de temps en temps. Saler, poivrer à convenance.",
+        "Poêler les amandes à sec jusqu'à coloration.",
+        "Ajouter le poulet, les pointes d'asperges coupées en 3-4 morceaux, et le persil au riz.",
+        "Mélanger et servir chaud avec les amandes grillées."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "3e94871b-afd0-4ad8-bc88-2338d5ac58f3",
+      "name": "Roulé de brocolis",
+      "category": "Entrée",
+      "duration": "long",
+      "source": "Livre",
+      "season": ["printemps", "été", "automne", "hiver"],
+      "servings": 6,
+      "ingredients": [
+        { "name": "brocolis", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "oeufs", "quantity": 4, "unit": "unité", "rayon": "Produits laitiers, oeufs" },
+        { "name": "yaourt nature", "quantity": 2, "unit": "c. à soupe", "rayon": "Produits laitiers, oeufs" },
+        { "name": "bouillon de volaille", "quantity": 0.5, "unit": "unité", "rayon": "Epicerie" },
+        { "name": "lait 1/2 écrémé", "quantity": 200, "unit": "ml", "rayon": "Produits laitiers, oeufs" },
+        { "name": "emmental rapé", "quantity": 40, "unit": "g", "rayon": "Fromagerie" },
+        { "name": "maïzena", "quantity": 15, "unit": "g", "rayon": "Epicerie" },
+        { "name": "noix de muscade", "quantity": 0.5, "unit": "c. à café", "rayon": "Condiments" }
+      ],
+      "recipe": [
+        "Préchauffer le four à 180°C. Huiler une plaque à roulés, puis la tapisser d'une feuille de papier sulfurisé",
+        "Faire cuire le brocolis dans le bouillon de volaille pendant 10-15min. Une fois cuit, l'égoutter.",
+        "Séparer les blancs des jaunes. Mixer les brocolis avec le yaourt, les jaunes d'oeufs et du sel poivre.",
+        "Monter les blancs en neige ferme (ne pas oublier la pincée de sel sinon ça ne monte pas) et incorporer les délicatement à la purée de brocolis.",
+        "Verser la préparation sur la plaque préparée et étaper uniformément. Enfourner pour 15-20min, jusqu'à ce qu'elle gonfle.",
+        "Préparer la béchamel. Délayer la maïzena avec un peu de lait froid. Faire chauffer le reste du lait dans une casserolle.",
+        "A frémissements, ajouter la fécule délayée et remuer au fouet jusqu'à épaississement de la sauce. Poivrer, ajouter l'emmental râpé et la muscade (optionnel).",
+        "Humidifier un torchon propdre. Sortir la plaque du four, poser le torchon dessus et la retourner. Enlever la plaque puis étaler la béchamel sur la préparation cuite et enrouler le tout à l'aide du linge.",
+        "Servir le tout découpé en tranches épaisses (environ 3 par personne)."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "9430485c-4b78-4228-9783-4ee4844ee2cf",
+      "name": "Bricks Champignons Poireaux Cabécou",
+      "category": "Entrée",
+      "duration": "court",
+      "source": "Livre",
+      "season": ["automne", "hiver"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "champignons de Paris", "quantity": 300, "unit": "g", "rayon": "Fruits et légumes" },
+        { "name": "blancs de poireaux", "quantity": 3, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "citron", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "cabécou", "quantity": 4, "unit": "unité", "rayon": "Fromagerie" },
+        { "name": "paquet de feuilles de bricks", "quantity": 1, "unit": "unité", "rayon": "Epicerie" },
+        { "name": "persil", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" },
+        { "name": "thym séché", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" }
+      ],
+      "recipe": [
+        "Préchauffer le four à 180°C. Emincer finelement les poireaux puis les laver. Nettoyer et émincer les champignons. Les arroser de jus de citron pour éviter qu'ils noircissent.",
+        "Dans une poêle préalablement huilée, faire revenir les champignons et les poireaux pendant 3min en remuant. Saler et couvrir. Laisser mijoter 5min à feu doux. Hors du feu ajouter le persil et mélanger.",
+        "Sortir les feuilles de brick du réfrigérateur. Disposer une portion raisonnable de légumes, y ajouter le cabécou (coupé en morceaux ou entier), saupoudrer de thym, poivrer. Et refermer la feuille de brick selon votre style en faisant tout rentrer.",
+        "Disposer les bricks sur la plaque du four huile au pinceau puis enfourner pour 6-8min jusqu'à ce qu'elles dorent."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "d05465ad-9157-448c-a242-7e0097269a6a",
+      "name": "Lasagnes Ricotta Epinards",
+      "category": "Plat",
+      "duration": "long",
+      "source": "Livre",
+      "season": ["printemps", "été", "automne", "hiver"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "épinards", "quantity": 300, "unit": "g", "rayon": "Fruits et légumes" },
+        { "name": "champignons de Paris", "quantity": 1, "unit": "boîte(s)", "rayon": "Conserves" },
+        { "name": "ricotta", "quantity": 250, "unit": "g", "rayon": "Fromagerie" },
+        { "name": "parmesan", "quantity": 40, "unit": "g", "rayon": "Fromagerie" },
+        { "name": "pulpe de tomate", "quantity": 400, "unit": "g", "rayon": "Conserves" },
+        { "name": "feuilles de lasagne", "quantity": 9, "unit": "unité", "rayon": "Pâtes" }
+      ],
+      "recipe": [
+        "Préchauffer le four à 180°C.",
+        "Déposer les épinards dans une sauteuse avec un petit fond d'eau, saler et couvrir. Faire chauffer à feu moyen pour les ramolir, les faire égoutter dans une passoire.",
+        "Pendant ce temps, faire cuire les feuilles de lasagne 5min à l'eau bouillante, de façon à les garder 'al dente', puis égoutter les feuilles sur une grande assiette sans les superposer (sec, ça colle)",
+        "Faire fondre dans une casserolle la ricotta mélanger à la moitié du parmesan, puis ajouter la pulpe de tomates ainsi que les champignons égouttés. Mélanger. Laisser cuire quelques minutes à feu doux. Ôter du feu.",
+        "Dans un plat à gratin huilé au pinceau, déposer 3 feuilles de lasagne, une couche d'épinards et une couche de sauce ricotta. Renouveller l'opération et terminer par une couche de pâtes recouverte de sauce. Parsemer du reste du parmesan et cuire 10-15min jusqu'à ce que les lasagnes soient gratinées."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "8b39ce5f-523d-49e3-8d45-b3438b65c686",
+      "name": "Tartines Houmous & Radis",
+      "category": "Apéritif",
+      "duration": "court",
+      "source": "Livre",
+      "season": ["printemps", "été", "automne", "hiver"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "baguette", "quantity": 1, "unit": "unité", "rayon": "Boulangerie" },
+        { "name": "houmous", "quantity": 400, "unit": "g", "rayon": "Produits frais" },
+        { "name": "brins de ciboulette", "quantity": 5, "unit": "unité", "rayon": "Herbes aromatiques" },
+        { "name": "radis", "quantity": 5, "unit": "unité", "rayon": "Herbes aromatiques" },
+        { "name": "huile d'olive", "quantity": 1, "unit": "unité", "rayon": "Condiments" }
+      ],
+      "recipe": [
+        "Couper la baguette en quatre puis en deux dans le sens de la largeur. Trancher les radis en très fines lamelles et ciseler finement la ciboulette.",
+        "Préchauffer le gril. Arroser le côté mie des tartines d'un filet d'huile d'olive et les faire griller au four.",
+        "Tartiner de houmous puis déposer quelques lamelles de radis et parsemer de ciboulette ciselée."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "c8a203b1-c249-42e7-86d2-bb58002ff373",
+      "name": "Pan Con Tomate",
+      "category": "Apéritif",
+      "duration": "court",
+      "source": "Livre",
+      "season": ["printemps", "été"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "ciabatta", "quantity": 1, "unit": "unité", "rayon": "Boulangerie" },
+        { "name": "tomates concassées", "quantity": 450, "unit": "g", "rayon": "Fruits et légumes" },
+        { "name": "ail", "quantity": 2, "unit": "gousse(s)", "rayon": "Fruits et légumes" }
+      ],
+      "recipe": [
+        "Couper le pain en deux dans le sens de la longueur puis chaque tranche en 4. Couper les gousses d'ail en deux.",
+        "Faire chauffer une poêle-gril et arroser le pain d'un filet d'huile d'olive, faire griller les morceaux de pain des deux côtés puis frotter la mie avec l'ail.",
+        "Recouvrir de tomates concassées. Saler, poivrer puis verser à nouveau un filet d'huile d'olive pour le côté généreux."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "fac4797f-784c-418e-ae2c-3d8cefb2de4e",
+      "name": "Salade Betteraves & Pistaches",
+      "category": "Entrée",
+      "duration": "court",
+      "source": "Livre",
+      "season": ["printemps", "été", "automne"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "betteraves cuites", "quantity": 4, "unit": "g", "rayon": "Fruits et légumes" },
+        { "name": "semoule de couscous", "quantity": 175, "unit": "g", "rayon": "Epicerie" },
+        { "name": "eau", "quantity": 375, "unit": "ml", "rayon": "Divers" },
+        { "name": "vinaigre de vin rouge", "quantity": 1, "unit": "unité", "rayon": "Epicerie" },
+        { "name": "pistaches décortiquées", "quantity": 30, "unit": "g", "rayon": "Fruits secs et mélanges" },
+        { "name": "feta", "quantity": 100, "unit": "g", "rayon": "Fromagerie" },
+        { "name": "huile d'olive", "quantity": 4, "unit": "c. à soupe", "rayon": "Condiments" }
+      ],
+      "recipe": [
+        "Couper les betteraves en morceaux. Emietter la feta et hacher les pistaches.",
+        "Verser la quantité d'eau chaude sur la semoule dans un saladier. Couvrir et laisser gonfler 10min. Saler, poivrer et égrainer.",
+        "Mélanger tous les ingrédients, assaisonner d'huile et de vinaigre."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "54bfaa6e-6dae-4776-a59b-27634c5fd35b",
+      "name": "Comme un Bo Bun",
+      "category": "Plat",
+      "duration": "court",
+      "source": "Livre",
+      "season": ["printemps", "été"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "concombre", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "carottes", "quantity": 2, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "cacahuètes", "quantity": 30, "unit": "g", "rayon": "Fruits secs et mélanges" },
+        { "name": "citron vert", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "menthe", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" },
+        { "name": "sauche chili", "quantity": 4, "unit": "c. à soupe", "rayon": "Condiments" }
+      ],
+      "recipe": [
+        "Mélanger la sauce chili au jus de citron vert. Hacher les cacahuètes.",
+        "Eplucher les carottes et le concombre. Réaliser des spaghettis à l'aide d'un spiralizer.",
+        "Verser un peu de sauce sur les spaghettis, mélanger, goûter et rectifier au besoin. Ajouter les feuilles de menthe hachées et les cacahuètes."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "e2fe3067-8054-4f37-8377-e2b473a6a1f7",
+      "name": "Potimarron lentilles corail coco",
+      "category": "Plat",
+      "duration": "court",
+      "source": "Livre",
+      "season": ["automne", "hiver"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "potimarron", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "épinards", "quantity": 200, "unit": "g", "rayon": "Fruits et légumes" },
+        { "name": "lentilles corail", "quantity": 150, "unit": "g", "rayon": "Epicerie" },
+        { "name": "oignon", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "lait de coco", "quantity": 500, "unit": "ml", "rayon": "Epicerie" },
+        { "name": "curry en poudre", "quantity": 2, "unit": "c. à soupe", "rayon": "Condiments" }
+      ],
+      "recipe": [
+        "Couper le potimarron en fin quartiers, émincer l'oignon.",
+        "Dans une cocotte, porter à frémissement le lait de coco, le curry, l'oignon et la courge. Assaisonner. Cuire 4min à couvert.",
+        "Ajouter les lentilles, poursuivre la cuisson 6min à couvert, puis ajouter les épinards et finir de cuire 1 minute."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "16f829b8-9b9b-4e00-9b0f-161c0a082038",
+      "name": "Champignons Stroganoff",
+      "category": "Entrée",
+      "duration": "court",
+      "source": "Livre",
+      "season": ["printemps", "été"],
+      "servings": 2,
+      "ingredients": [
+        { "name": "assortiments de champignons", "quantity": 600, "unit": "g", "rayon": "Fruits et légumes" },
+        { "name": "vin blanc", "quantity": 100, "unit": "ml", "rayon": "Alcool" },
+        { "name": "persil", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" },
+        { "name": "ail", "quantity": 2, "unit": "gousse(s)", "rayon": "Alcool" },
+        { "name": "crème fraîche", "quantity": 50, "unit": "ml", "rayon": "Produits laitiers, oeufs" },
+        { "name": "huile d'olive", "quantity": 2, "unit": "c. à soupe", "rayon": "Condiments" }
+      ],
+      "recipe": [
+        "Emincer les champignons. Hacher grossièrement le persil et finement l'ail.",
+        "Faire chauffer l'huile et déposer les champignons. Assaisonner puis les faire sauter pendant 4min. Ajouter l'ail et faire revenir 1min.",
+        "Verser le vin blanc et faire réduire pendant 4-5min. Mettre la crème et laisser mijoter jusqu'à ce que la sauce épaississe, puis retirer du feu et parsemener de persil."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "9a7f0833-3c53-431e-99f4-2703a0f2d6f4",
+      "name": "Chakchouka",
+      "category": "Plat",
+      "duration": "court",
+      "source": "Internet",
+      "season": ["printemps", "été"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "tomates pelées hachées", "quantity": 2, "unit": "boîte(s)", "rayon": "Conserves" },
+        { "name": "poivron jaune", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "poivron rouge", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "oignon", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "ail", "quantity": 2, "unit": "gousse(s)", "rayon": "Fruits et légumes" },
+        { "name": "oeufs", "quantity": 4, "unit": "unité", "rayon": "Produits laitiers, oeufs" },
+        { "name": "paprika", "quantity": 1, "unit": "c. à café", "rayon": "Condiments" },
+        { "name": "cumin", "quantity": 1, "unit": "unité", "rayon": "Condiments" },
+        { "name": "cannelle", "quantity": 1, "unit": "unité", "rayon": "Condiments" },
+        { "name": "feta", "quantity": 100, "unit": "g", "rayon": "Fromagerie" }
+      ],
+      "recipe": [
+        "Emincer l'oignon et écraser l'ail au presse ail. Laver et préparer les poivron en fines lamelles. Faire revenir le tout environ 5min à feu moyen.",
+        "Ajouter les tomates et les épices jusqu'au poivre inclus, mijoter 20-25 min à feu moyen, sans couvrir et en remuant de temps à autre, jusqu'à ce que le liquide soit évaporé et que le mélange ait épaissi. Ajouter le fromage, rectifier l'assaisonnement.",
+        "Former 4 puits, casser 1 œuf dans chaque puits. Pocher à couvert env. 8-10 min jusqu'à ce que le blanc d'œuf soit ferme. Le jaune d'œuf peut être encore moelleux ou liquide.",
+        "Décorer la chakchouka de coriandre, de persil ou d'autres fines herbes."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },       
+    {
+      "id": "303f0b37-6103-4002-86b7-195b9cb4dea4",
+      "name": "Petit Salé aux Lentilles",
+      "category": "Plat",
+      "duration": "long",
+      "source": "Livre",
+      "season": ["printemps", "automne", "hiver"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "oignon", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "carottes", "quantity": 3, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "lentilles", "quantity": 350, "unit": "g", "rayon": "Epicerie" },
+        { "name": "bouquet garni", "quantity": 1, "unit": "unité", "rayon": "Condiments" },
+        { "name": "ail", "quantity": 1, "unit": "gousse(s)", "rayon": "Fruits et légumes" },
+        { "name": "saucisses", "quantity": 4, "unit": "unité", "rayon": "Charcuterie" }
+      ],
+      "recipe": [
+        "Verser un filet d'huile d'olive et faire revenir l'oignon finement haché. Laisser colorer et ajouter les carottes coupées en cubes ou rondelles, l'ail haché et les lentilles.",
+        "Mélanger, ajouter le bouquet garni et couvrir d'eau à hauteur. Laisser mijoter 20min.",
+        "En parallèle, préparer les saucisses à couvert en les tournant de temps en temps.",
+        "Couper les saucisses et les mélanger au petit salé. Existe également en version végé avec du tofu."
+      ],
+      "nutritionalValues": {
+        "glucides": "", 
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },                    
+    {
+      "id": "1f10bdbf-d362-466a-9504-2e9dbfce7751",
+      "name": "Crème de Champignons",
+      "category": "Entrée",
+      "duration": "long",
+      "source": "Livre",
+      "season": ["automne", "hiver"],
+      "servings": 2,
+      "ingredients": [
+        { "name": "champignons", "quantity": 500, "unit": "g", "rayon": "Fruits et légumes" },
+        { "name": "beurre", "quantity": 25, "unit": "g", "rayon": "Produits frais" },
+        { "name": "oignon", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "ail", "quantity": 2, "unit": "gousse(s)", "rayon": "Fruits et légumes" },
+        { "name": "persil", "quantity": 2, "unit": "c. à soupe", "rayon": "Herbes aromatiques" },
+        { "name": "maïzena", "quantity": 1, "unit": "c. à soupe", "rayon": "Epicerie" },
+        { "name": "crème fraîche liquide", "quantity": 500, "unit": "ml", "rayon": "Produits frais" }
+      ],
+      "recipe": [
+        "Nettoyer, préparer les champignons et les couper en tranches.",
+        "Dans une grande casserolle, faire fondre le beurre, ajouter l'ail et l'oignon finement hachés ainsi que les champignons.",
+        "Assaisonner et ajouter le persil.",
+        "Mélanger et laisser cuire 10-15min à feu doux en remuant régulièrement.",
+        "Ajouter la crème fraiche et un peu de lait si besoin et laisser cuire à feu doux pendant 15min.",
+        "Mixer et rajouter du lait ou de la maïzena selon la consistance souhaitée."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },       
+    {
+      "id": "8bf52e88-f427-42aa-99aa-c703a3a37e7c",
+      "name": "Velouté de Potimarron au lait de coco, curry, coriandre et noix de cajou grillées",
+      "category": "Entrée",
+      "duration": "court",
+      "source": "Livre",
+      "season": ["automne", "hiver"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "noix de cajou", "quantity": 70, "unit": "g", "rayon": "Fruits secs et mélanges" },
+        { "name": "oignons", "quantity": 2, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "potimarron", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "lait de coco", "quantity": 500, "unit": "ml", "rayon": "Epicerie" },
+        { "name": "pâte de curry", "quantity": 1, "unit": "c. à soupe", "rayon": "Epicerie" }
+      ],
+      "recipe": [
+        "Placer les noix de cajou dans un petit plat et enfourner au four pour 5min afin de les faire griller. Laisser refroidir et les réserver.",
+        "Eplucher et potimarron, le couper en deux, enlever les fibres et les graines. Le détailler en cubes.",
+        "Faire revenir les oignons finement hachés dans un fond d'huile. Ajouter la pâte de curry, mélanger et incorporer les cubes de potimarron.",
+        "Verser le lait de coco, remplir cette boîte d'eau et l'y ajouter également.",
+        "Laisser bouillonner doucement pendant 20min. Assaisonner puis mixer en velouté."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },           
+    {
+      "id": "1dk12e88-f427-42aa-99aa-c709z7a37e2w",
+      "name": "Lablabi revisité",
+      "category": "Plat",
+      "duration": "long",
+      "source": "",
+      "season": ["printemps", "été", "automne", "hiver"],
+      "servings": 4,
+      "ingredients": [
+        { "name": "pois chiches", "quantity": 1, "unit": "boîte(s)", "rayon": "Conserves" },
+        { "name": "carottes", "quantity": 2, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "oignons", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
+        { "name": "cumin", "quantity": 1, "unit": "c. à café", "rayon": "Condiments" },
+        { "name": "tomates concassées", "quantity": 2, "unit": "boîte(s)", "rayon": "Conserves" },
+        { "name": "sirop d'érable", "quantity": 1, "unit": "c. à soupe", "rayon": "Condiments" },
+        { "name": "paprika", "quantity": 1, "unit": "c. à café", "rayon": "Condiments" },
+        { "name": "persil", "quantity": 1, "unit": "unité", "rayon": "Herbes aromatiques" },
+        { "name": "oeufs", "quantity": 4, "unit": "unité", "rayon": "Produits laitiers, oeufs" }
+      ],
+      "recipe": [
+        "Dans une grande poêle ou wok, faire revenir avec un fond d'huile d'olive l'oignon avec les carottes finement coupées, y ajouter le cumin et remuer.",
+        "Rincer les pois chiches et ajouter les, incorporer les tomates concassées et 1/2 verre d'eau.",
+        "Ajouter le sirop d'érable, assaisonner et mélanger. Laisser mijoter pendant 20min.",
+        "Faire 4 nids et y casser les oeufs sans mélanger. Saupoudrer de paprika et de persil.",
+        "Laisser cuire jusqu'à ce que les blancs d'oeufs aient pris. Cette opération peut se faire à couvert mais pas trop longtemps pour que le jaune ne cuise pas intégralement."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },                                                                                                                                       
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {
       "id": "c12c2f9d-8a10-4d5e-988f-16a573a30a6d",
       "name": "Omelette aux champignons",
       "category": "Petit-déjeuner",
       "duration": "court",
+      "source": "ChatGPT",
       "season": ["printemps", "été", "automne", "hiver"],
       "servings": 2,
       "ingredients": [
         { "name": "oeufs", "quantity": 3, "unit": "unité", "rayon": "Produits frais" },
         { "name": "champignons", "quantity": 100, "unit": "g", "rayon": "Fruits et légumes" },
-        { "name": "beurre", "quantity": 10, "unit": "g", "rayon": "Produits laitiers" },
+        { "name": "beurre", "quantity": 10, "unit": "g", "rayon": "Produits laitiers, oeufs" },
         { "name": "fromage râpé", "quantity": 30, "unit": "g", "rayon": "Fromagerie" }
       ],
       "recipe": [
@@ -31,11 +701,12 @@
       "name": "Porridge à l'avoine",
       "category": "Petit-déjeuner",
       "duration": "court",
+      "source": "ChatGPT",
       "season": ["printemps", "été", "automne", "hiver"],
       "servings": 2,
       "ingredients": [
         { "name": "flocons d'avoine", "quantity": 100, "unit": "g", "rayon": "Épicerie" },
-        { "name": "lait", "quantity": 250, "unit": "ml", "rayon": "Produits laitiers" },
+        { "name": "lait", "quantity": 250, "unit": "ml", "rayon": "Produits laitiers, oeufs" },
         { "name": "banane", "quantity": 1, "unit": "unité", "rayon": "Fruits et légumes" },
         { "name": "miel", "quantity": 20, "unit": "g", "rayon": "Épicerie" }
       ],
@@ -56,6 +727,7 @@
       "name": "Salade César",
       "category": "Plat",
       "duration": "court",
+      "source": "ChatGPT",
       "season": ["printemps", "été"],
       "servings": 2,
       "ingredients": [
@@ -83,6 +755,7 @@
       "name": "Pâtes Carbonara",
       "category": "Plat",
       "duration": "court",
+      "source": "ChatGPT",
       "season": ["printemps", "été", "automne", "hiver"],
       "servings": 2,
       "ingredients": [
@@ -109,6 +782,7 @@
       "name": "Poulet Curry",
       "category": "Plat",
       "duration": "long",
+      "source": "ChatGPT",
       "season": ["printemps", "automne", "hiver"],
       "servings": 2,
       "ingredients": [
@@ -135,13 +809,14 @@
       "name": "Bruschetta aux tomates",
       "category": "Entrée",
       "duration": "court",
+      "source": "ChatGPT",
       "season": ["printemps", "été"],
       "servings": 4,
       "ingredients": [
         { "name": "pain ciabatta", "quantity": 1, "unit": "unité", "rayon": "Épicerie" },
         { "name": "tomates", "quantity": 200, "unit": "g", "rayon": "Fruits et légumes" },
         { "name": "basilic", "quantity": 10, "unit": "g", "rayon": "Fruits et légumes" },
-        { "name": "huile d'olive", "quantity": 30, "unit": "ml", "rayon": "Épicerie" }
+        { "name": "huile d'olive", "quantity": 30, "unit": "ml", "rayon": "Condiments" }
       ],
       "recipe": [
         "Couper le pain en tranches et les faire griller.",
@@ -160,6 +835,7 @@
       "name": "Mojito",
       "category": "Cocktail",
       "duration": "court",
+      "source": "ChatGPT",
       "season": ["printemps", "été"],
       "servings": 1,
       "ingredients": [
@@ -186,13 +862,14 @@
       "name": "Crème brûlée",
       "category": "Dessert",
       "duration": "long",
+      "source": "ChatGPT",
       "season": ["hiver", "été"],
       "servings": 4,
       "ingredients": [
-        { "name": "crème fraîche", "quantity": 500, "unit": "ml", "rayon": "Produits laitiers" },
+        { "name": "crème fraîche", "quantity": 500, "unit": "ml", "rayon": "Produits laitiers, oeufs" },
         { "name": "sucre", "quantity": 100, "unit": "g", "rayon": "Épicerie" },
-        { "name": "jaunes d'œufs", "quantity": 4, "unit": "unités", "rayon": "Produits frais" },
-        { "name": "vanille", "quantity": 1, "unit": "gousse", "rayon": "Épicerie" }
+        { "name": "jaunes d'œufs", "quantity": 4, "unit": "unité", "rayon": "Produits frais" },
+        { "name": "vanille", "quantity": 1, "unit": "gousse(s)", "rayon": "Épicerie" }
       ],
       "recipe": [
         "Préchauffer le four à 150°C.",
@@ -213,12 +890,13 @@
       "name": "Tarte Tatin",
       "category": "Dessert",
       "duration": "long",
+      "source": "ChatGPT",
       "season": ["automne", "hiver"],
       "servings": 6,
       "ingredients": [
         { "name": "pommes", "quantity": 1, "unit": "kg", "rayon": "Fruits" },
         { "name": "sucre", "quantity": 150, "unit": "g", "rayon": "Épicerie" },
-        { "name": "beurre", "quantity": 100, "unit": "g", "rayon": "Produits laitiers" },
+        { "name": "beurre", "quantity": 100, "unit": "g", "rayon": "Produits laitiers, oeufs" },
         { "name": "pâte brisée", "quantity": 1, "unit": "unité", "rayon": "Épicerie" }
       ],
       "recipe": [
@@ -239,6 +917,7 @@
       "name": "Tiramisu",
       "category": "Dessert",
       "duration": "long",
+      "source": "ChatGPT",
       "season": ["automne", "hiver"],
       "servings": 6,
       "ingredients": [

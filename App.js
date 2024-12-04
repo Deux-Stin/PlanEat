@@ -18,7 +18,7 @@ import AddRecipe from './screens/AddRecipe';
 import RecipeDetail from './screens/RecipeDetail';
 import MealPlanScreen from './screens/MealPlanScreen';
 import ShoppingListScreen from './screens/ShoppingListScreen';
-import useInitializeRecipes from './hooks/useInitializeRecipes'; // Export par défaut
+import useInitializeRecipes from './hooks/useInitializeRecipes';
 import SeasonalCalendarScreen from './screens/SeasonalCalendarScreen';
 import MealPlanSummaryScreen from './screens/MealPlanSummaryScreen';
 import { MealPlanProvider } from './screens/MealPlanContext';
@@ -41,8 +41,8 @@ export default function App() {
     montserrat_alternates: require('./assets/fonts/montserrat-alternates/MontserratAlternates-Regular.ttf'),
   });
 
-    // Initialiser les recettes au démarrage
-    const loading = useInitializeRecipes(); 
+  // Initialiser les recettes au démarrage
+  const loading = useInitializeRecipes(); 
 
   // Gestion des autorisations android
   const requestStoragePermission = async () => {
@@ -71,7 +71,6 @@ export default function App() {
     requestStoragePermission();
   }, []);
 
-
   // Déclenche la mise à jour de l'état quand les ressources sont prêtes
   useEffect(() => {
     if (fontsLoaded && !loading) {
@@ -88,7 +87,6 @@ export default function App() {
       setIsAnimationDone(true); // Passe à l'écran principal quand tout est prêt
     }
   };
-
 
   // Affiche l'écran de chargement si les ressources ou l'animation ne sont pas prêtes
   if (!isAnimationDone) {
@@ -148,10 +146,13 @@ export default function App() {
         />
 
         {/* Planifier les repas */}
-        <Stack.Screen name="MealPlanScreen" component={MealPlanScreen} options={{ title: 'Planifier vos repas' }} />
+        <Stack.Screen name="MealPlanScreen" component={MealPlanScreen} options={{ title: 'Planification' }} />
 
         {/* Page de résumé des menus attribués selon la date */}
-        <Stack.Screen name="MealPlanSummaryScreen" component={MealPlanSummaryScreen}  options={{ title: 'Résumé de vos choix' }} />
+        <Stack.Screen name="MealPlanSummaryScreen" component={MealPlanSummaryScreen}  options={{ 
+          title: 'Résumé de vos choix',
+          headerShown: true,
+          }} />
 
         {/* Liste de courses */}
         <Stack.Screen name="ShoppingListScreen" component={ShoppingListScreen} options={{ title: 'Liste de courses', headerShown: true }} />

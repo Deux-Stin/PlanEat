@@ -11,7 +11,6 @@ export default function ShoppingListScreen({ navigation, route }) {
   const [shoppingList, setShoppingList] = useState({});
   const [mealPlanHistory, setMealPlanHistory] = useState([]);
   const [mealPlanHistorySaveAsync, setmealPlanHistorySaveAsync, getStoredValue] = useAsyncStorage('mealPlanHistory',[]);
-  const [shoppingListReady, setShoppingListReady] = useState(false); // Nouvel état pour suivre l'état de shoppingList
   const [checkedItems, setCheckedItems] = useState({});
   const [manualItem, setManualItem] = useState('');
   const [newItemQuantity, setnewItemQuantity] = useState(''); // État pour la valeur numérique du modal d'unité
@@ -46,7 +45,6 @@ export default function ShoppingListScreen({ navigation, route }) {
       hasGeneratedShoppingList.current = true; // Empêcher la régénération et sauvegarde multiple
     }
   }, [mealPlanHistorySaveAsync]);
-  
   
   useEffect(() => {
     const loadCheckedItems = async () => {
@@ -277,12 +275,6 @@ export default function ShoppingListScreen({ navigation, route }) {
       console.error('Erreur lors de la sauvegarde du MealPlan :', error);
     }
   };
-
-  const validateHistory = (history) => {
-    return Array.isArray(history) && history.every(entry => 
-      entry.date && entry.mealPlan && entry.title
-    );
-  };
   
   const loadMealPlanHistory = async () => {
     try {
@@ -300,7 +292,6 @@ export default function ShoppingListScreen({ navigation, route }) {
     }
   };
  
-
   const addManualItem = () => {
     if (manualItem && newItemQuantity) {
       if (manualItem.trim() === '') {

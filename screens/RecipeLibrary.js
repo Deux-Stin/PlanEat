@@ -7,9 +7,10 @@ import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import uuid from 'react-native-uuid';
 import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
+import { globalStyles } from '../globalStyles';
 
 export default function RecipeLibrary({ navigation, route }) {
-  const [recipes, setRecipes] = useAsyncStorage('recipes', []);
+  const [recipes, setRecipes, getStoredRecipes] = useAsyncStorage('recipes', []);
   const [expandedCategory, setExpandedCategory] = useState(null);
 
   const [selectedSeasons, setSelectedSeason] = useState([]); // État pour le filtre saison
@@ -64,11 +65,21 @@ export default function RecipeLibrary({ navigation, route }) {
     }
   };
 
- // Vérifier si une mise à jour est nécessaire
- useEffect(() => {
+  // Vérifier si une mise à jour est nécessaire
+  useEffect(() => {
     if (route.params?.refresh) {
+      if (route.params?.refresh) {
+        loadRecipes(); // Recharge les données lorsqu'un rafraîchissement est demandé
+      }
+      navigation.setParams({ refresh: false }); // Réinitialiser le paramètre pour éviter des boucles infinies
     }
-  }, [route.params]);
+  }, [route.params?.refresh]);
+
+  const loadRecipes = async () => {
+    const recipes = await getStoredRecipes(); // Récupère les recettes depuis le stockage
+    setRecipes(recipes); // Met à jour l'état local
+  };
+
 
   const importRecipesFromJsonOrTxt = async () => {
     try {
@@ -172,7 +183,6 @@ export default function RecipeLibrary({ navigation, route }) {
     return { recipes };
   };
   
-
   const exportRecipes = async () => {
     try {
 
@@ -380,13 +390,13 @@ export default function RecipeLibrary({ navigation, route }) {
       <TouchableOpacity
         key={recipe.id}
         style={styles.recipeItem}
-        onPress={() => navigation.navigate('RecipeDetail', { recipe, deleteRecipe })}
+        onPress={() => navigation.navigate('RecipeDetail', { recipe, deleteRecipe }, { refresh: true })}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center'}}>
           <Text style={[styles.recipeSource, {marginRight: 10}]}>
             {getSourceIcon(recipe.source)}{/* Affiche l'émoticône et la source */}
           </Text>
-          <Text style={styles.recipeName}>{recipe.name}</Text>
+          <Text style={[styles.recipeName, globalStyles.textTitleDeux]}>{recipe.name}</Text>
         </View>
       </TouchableOpacity>
     )
@@ -407,7 +417,7 @@ export default function RecipeLibrary({ navigation, route }) {
   const renderFilters = () => (
     <View style={styles.section}>
       {/* <Text style={styles.filtersHeader}></Text> */}
-      <Text style={styles.sectionTitle}>Filtres</Text>
+      <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Filtres</Text>
       <View style={styles.filterRow}>
         {Object.keys(seasonColors).slice(0, -1).map(season => (
           <TouchableOpacity
@@ -420,7 +430,7 @@ export default function RecipeLibrary({ navigation, route }) {
             ]}
             onPress={() => toggleSeason(season)}
           >
-            <Text style={styles.filterText}>{season.charAt(0).toUpperCase() + season.slice(1)}</Text>
+            <Text style={[styles.filterText, globalStyles.textTitleDeux]}>{season.charAt(0).toUpperCase() + season.slice(1)}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -429,13 +439,13 @@ export default function RecipeLibrary({ navigation, route }) {
           style={[styles.durationButton, { backgroundColor: selectedDuration === 'court' ? '#FCE7E8' : '#fff' }]}
           onPress={() => toggleDuration('court')}
         >
-          <Text style={styles.filterText}>Court</Text>
+          <Text style={[styles.filterText, globalStyles.textTitleDeux]}>Court</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.durationButton, { backgroundColor: selectedDuration === 'long' ? '#FCE7E8' : '#fff' }]}
           onPress={() => toggleDuration('long')}
         >
-          <Text style={styles.filterText}>Long</Text>
+          <Text style={[styles.filterText, globalStyles.textTitleDeux]}>Long</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -451,7 +461,7 @@ export default function RecipeLibrary({ navigation, route }) {
     return (
       <View key={category} style={styles.categoryContainer}>
         <TouchableOpacity style={styles.categoryHeader} onPress={() => toggleCategory(category)}>
-          <Text style={styles.categoryTitle}>{category}</Text>
+          <Text style={[styles.categoryTitle, globalStyles.textTitleDeux]}>{category}</Text>
           <Text style={styles.categoryToggle}>{expandedCategory === category ? '-' : '+'}</Text>
         </TouchableOpacity>
         {expandedCategory === category && (
@@ -484,16 +494,16 @@ export default function RecipeLibrary({ navigation, route }) {
           <View style={styles.buttonContainer}>
           <Text style={styles.sectionTitle}></Text>
             <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('AddRecipe', { addRecipe })}>
-              <Text style={styles.mainButtonText}>Ajouter une recette</Text>
+              <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Ajouter une recette</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.mainButton} onPress={importRecipesFromJsonOrTxt}>
-              <Text style={styles.mainButtonText}>Importer un fichier</Text>
+              <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Importer un fichier</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.mainButton} onPress={exportRecipes}>
-              <Text style={styles.mainButtonText}>Partager mes recettes</Text>
+              <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Partager mes recettes</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.mainButton} onPress={deleteAllRecipes}>
-              <Text style={styles.mainButtonText}>Supprimer mes recettes</Text>
+              <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Supprimer mes recettes</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -552,6 +562,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#b0e0e6',
   },
   filterText: {
+    color: '#000',
     fontSize: 16,
     textAlign: 'center', // Centrer le texte dans les boutons
   },
@@ -582,7 +593,8 @@ const styles = StyleSheet.create({
   },
   categoryTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
+    color: '#000',
   },
   categoryToggle: {
     fontSize: 20,
@@ -629,8 +641,8 @@ const styles = StyleSheet.create({
   },
   mainButtonText: {
     color: '#000',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 18,
+    // fontWeight: 'bold',
     textAlign: 'center',
   },
   section: {
@@ -638,8 +650,8 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   sectionTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: 30,
+    // fontWeight: 'bold',
     color: '#444',
     marginTop: 20,
     marginBottom: 20,

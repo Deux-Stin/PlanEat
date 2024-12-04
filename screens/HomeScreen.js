@@ -108,7 +108,7 @@ export default function HomeScreen({ navigation }) {
               <View style={styles.section}>
                 <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Accès rapide</Text>
                 <View style={styles.buttonContainer}>
-                  <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('RecipeLibrary')}>
+                  <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('RecipeLibrary', {refresh: true})}>
                     <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Bibliothèque de recettes</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('MealPlanScreen', {fromHome: true})}>
