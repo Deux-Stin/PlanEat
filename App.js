@@ -21,6 +21,7 @@ import ShoppingListScreen from './screens/ShoppingListScreen';
 import useInitializeRecipes from './hooks/useInitializeRecipes';
 import SeasonalCalendarScreen from './screens/SeasonalCalendarScreen';
 import MealPlanSummaryScreen from './screens/MealPlanSummaryScreen';
+import RecipeSelectionScreen from './screens/RecipeSelectionScreen';
 import { MealPlanProvider } from './screens/MealPlanContext';
 
 const Stack = createStackNavigator();
@@ -121,6 +122,9 @@ export default function App() {
 
         {/* Détails de la recette */}
         <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ title: 'Détails de la Recette' }} />
+
+        {/* Ecran de sélection des recettes */}
+        <Stack.Screen name="RecipeSelectionScreen" component={RecipeSelectionScreen} options={{ title: 'Faites vos choix' }} />
 
         {/* Calendrier de saison */}
         <Stack.Screen 

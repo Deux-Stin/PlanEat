@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal } from 'react-native';
+import { View, Image, Text, TextInput, SectionList, Button, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal } from 'react-native';
 import { Checkbox } from 'react-native-paper';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import uuid from 'react-native-uuid';
@@ -238,12 +238,6 @@ export default function ({ route, navigation }) {
     try {
       const newFileName = `${recipeId}.jpg`; // Nom unique basé sur l'ID de la recette
       const newUri = FileSystem.documentDirectory + newFileName; // Chemin complet de destination
-  
-      // Vérifie si l'image source et destination sont réellement identiques
-      // if (uri === newUri) {
-      //   console.log("L'image source et destination sont identiques, pas besoin de copier.");
-      //   return newUri;
-      // }
   
       // Supprime le fichier existant, s'il y en a un
       const fileInfo = await FileSystem.getInfoAsync(newUri);

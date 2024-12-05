@@ -9,7 +9,6 @@ import moment from 'moment';
 import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
 
 
-
 export default function HomeScreen({ navigation }) {
   const [mealPlanHistory, setmealPlanHistory] = useAsyncStorage('mealPlanHistory', []);
   const swipeableRefs = useRef([]); 

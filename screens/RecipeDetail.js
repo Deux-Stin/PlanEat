@@ -50,10 +50,12 @@ export default function RecipeDetail({ route, navigation }) {
 
         {/* Affichage de l'image de la recette */}
         {recipe.image ? (
-          <Image 
-            source={{ uri: recipe.image }} 
-            style={{ width: 200, height: 200, alignSelf: 'center', marginBottom: 30 }} 
-          />
+          <View style={styles.imageContainer}>
+            <Image 
+              source={{ uri: recipe.image }} 
+              style={styles.imageWithBorder} 
+            />
+          </View>
         ) : (
           <Text style={{ textAlign: 'center'}}></Text>
         )}
@@ -62,23 +64,28 @@ export default function RecipeDetail({ route, navigation }) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Détails de la recette</Text>
           <Text style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Catégorie: </Text>
-            {recipe.category || "Non spécifié"}
+            <Text style={styles.detailLabel}>Catégorie : </Text>
+            {recipe.category.charAt(0).toUpperCase() + recipe.category.slice(1) || "Non spécifié"}
           </Text>
           <Text style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Durée: </Text>
-            {recipe.duration || "Non spécifié"}
+            <Text style={styles.detailLabel}>Durée : </Text>
+            {recipe.duration.charAt(0).toUpperCase() + recipe.duration.slice(1) || "Non spécifié"}
+
           </Text>
           <Text style={styles.detailItem}>
             <Text style={styles.detailLabel}>Source: </Text>
-            {recipe.source || "Non spécifié"}
+            {recipe.source.charAt(0).toUpperCase() + recipe.source.slice(1) || "Non spécifié"}
           </Text>
           <Text style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Saison: </Text>
-            {Array.isArray(recipe.season) ? recipe.season.join(', ') : "Non spécifié"}
+            <Text style={styles.detailLabel}>Saison : </Text>
+            {Array.isArray(recipe.season) && recipe.season.length > 0
+              ? recipe.season
+                  .map((item) => item.charAt(0).toUpperCase() + item.slice(1)) // Transforme chaque élément
+                  .join(', ') // Combine les éléments en une chaîne
+              : "Non spécifié"}
           </Text>
           <Text style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Nombre de parts: </Text>
+            <Text style={styles.detailLabel}>Nombre de parts : </Text>
             {recipe.servings || "Non spécifié"}
           </Text>
         </View>
@@ -89,7 +96,7 @@ export default function RecipeDetail({ route, navigation }) {
           {recipe.ingredients.length > 0 ? (
             recipe.ingredients.map((ingredient, index) => (
               <Text key={index} style={styles.itemText}>
-                - {ingredient.name}: {ingredient.quantity} {ingredient.unit} ({ingredient.rayon})
+                - <Text style={styles.italicText}>{ingredient.name.charAt(0).toUpperCase() + ingredient.name.slice(1)}</Text> : {ingredient.quantity} {ingredient.unit}
               </Text>
             ))
           ) : (
@@ -102,7 +109,7 @@ export default function RecipeDetail({ route, navigation }) {
           <Text style={styles.sectionTitle}>Étapes de la Recette</Text>
           {recipe.recipe.length > 0 ? (
             recipe.recipe.map((step, index) => (
-              <Text key={index} style={styles.itemText}>
+              <Text key={index} style={[styles.itemText, {marginBottom: 15}]}>
                 {index + 1}. {step}
               </Text>
             ))
@@ -146,8 +153,6 @@ export default function RecipeDetail({ route, navigation }) {
         )}
 
 
-
-
         {/* Boutons Modifier et Supprimer */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.buttonWrapper} onPress={handleEdit}>
@@ -171,7 +176,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Centrer horizontalement
   },
   header: {
-    marginBottom: 20,
+    marginTop: 10,
     alignItems: 'center',
   },
   title: {
@@ -179,11 +184,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     textAlign: 'center', // Centrer le texte du titre
-    marginBottom: 30,
+    marginBottom: 10,
   },
   section: {
     marginBottom: 20,
-    width: '100%', // Prendre toute la largeur disponible
+    width: '80%', // Prendre toute la largeur disponible
   },
   sectionTitle: {
     fontSize: 22,
@@ -238,7 +243,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     flexWrap: 'wrap',
-    marginTop: 20,
+    // marginTop: 20,
   },
   buttonWrapper: {
     backgroundColor: '#fff',
@@ -254,4 +259,27 @@ const styles = StyleSheet.create({
     color: '#000', // Couleur du texte
     fontSize: 16,
   },
+  imageContainer: {
+    alignItems: 'center',
+    marginVertical: 10,
+    marginBottom: 30,
+  },
+  imageWithBorder: {
+    width: 300,
+    height: 300,
+    borderWidth: 2.5,
+    borderColor: '#FFFFFF', // Bordure blanche
+    borderRadius: 50, // Coins arrondis plus extrêmes
+    padding: 5, // L'espace entre l'image et la bordure
+    backgroundColor: '#f4f4f4', // Couleur d'arrière-plan neutre
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
+    elevation: 5, // Ombre sur Android
+    overflow: 'hidden', // Important pour garder les coins arrondis
+  },
+  italicText:{
+    fontStyle: 'italic', // Mettre le texte en italique
+  },  
 });
