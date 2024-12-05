@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity, ImageBackground } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
@@ -11,6 +11,8 @@ import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Im
 
 export default function HomeScreen({ navigation }) {
   const [mealPlanHistory, setmealPlanHistory] = useAsyncStorage('mealPlanHistory', []);
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0); // Sauvegarde l'index du fond
+
   const swipeableRefs = useRef([]); 
 
   useFocusEffect(
@@ -18,6 +20,12 @@ export default function HomeScreen({ navigation }) {
       loadmealPlanHistory();
     }, [])
   );
+
+  // Fonction pour sélectionner un fond aléatoire et sauvegarder le choix
+  const selectRandomBackground = useCallback(() => {
+    const randomIndex = Math.floor(Math.random() * 10); // Nombre aléatoire entre 0 et 9
+    setBackgroundIndex(randomIndex); // Sauvegarde l'index dans AsyncStorage
+  }, [setBackgroundIndex]);
 
   const loadmealPlanHistory = async () => {
     try {
@@ -85,9 +93,13 @@ export default function HomeScreen({ navigation }) {
   );
 
   return (
-    <ImageBackgroundWrapper imageOpacity={0.6}>
+    <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.6}>
       <View>
 
+        {/* Bouton pour changer le fond */}
+        <TouchableOpacity onPress={selectRandomBackground} style={styles.changeBackgroundButton}>
+          <Text style={styles.infoButtonText}>🎨</Text>
+        </TouchableOpacity>
 
         {/* Bouton d'information */}
         <TouchableOpacity onPress={showInfoAlert} style={styles.infoButton}>
@@ -235,6 +247,20 @@ const styles = StyleSheet.create({
   somespace: {
     height: 5,
     // backgroundColor: '#fff',
+  },
+  changeBackgroundButton: {
+    position: 'absolute',
+    zIndex: 10, // S'assurer que le bouton est au-dessus
+    top: 60, // Positionner le bouton à une distance du bas de l'écran
+    // backgroundColor: '#d8d8d8',
+    // padding: 10,
+    left: 30, // Ajuste la position pour qu'il ne soit pas superposé avec le bouton menu
+    width: 40,
+    height: 40,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // elevation: 4, // Ombre pour Android
   },
   infoButton: {
     position: 'absolute',

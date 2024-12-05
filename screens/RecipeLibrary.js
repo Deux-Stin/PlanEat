@@ -16,6 +16,7 @@ import RecipeUtils from "../utils/RecipeUtils"; // Import des fonctions utilitai
 import { globalStyles } from "../globalStyles";
 
 export default function RecipeLibrary({ navigation, route }) {
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0); // Recupère l'index du background actuel
   const [recipes, setRecipes, getStoredRecipes] = useAsyncStorage(
     "recipes",
     []
@@ -305,7 +306,7 @@ export default function RecipeLibrary({ navigation, route }) {
   };
 
   return (
-    <ImageBackgroundWrapper imageOpacity={0.6}>
+    <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.6}>
       <ScrollView style={styles.container}>
         {/* <Text style={styles.header}>Bibliothèque de recettes</Text> */}
 

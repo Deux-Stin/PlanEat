@@ -4,6 +4,8 @@ import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
 
 export default function RecipeDetail({ route, navigation }) {
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0); //Recupère l'index du background
+
   const { recipe } = route.params; //, addRecipe, deleteRecipe 
 
   // Utiliser useAsyncStorage pour obtenir les recettes
@@ -41,7 +43,7 @@ export default function RecipeDetail({ route, navigation }) {
   };
 
   return (
-    <ImageBackgroundWrapper imageOpacity={0.5}>
+    <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.5}>
       <ScrollView contentContainerStyle={styles.container}>
         {/* En-tête avec le titre */}
         <View style={styles.header}>

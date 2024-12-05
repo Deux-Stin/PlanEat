@@ -10,7 +10,8 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import * as FileSystem from 'expo-file-system';
 
 export default function ({ route, navigation }) {
-  // const { addRecipe } = route.params; // Récupérer la fonction addRecipe
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0);
+
   const [recipes, setRecipes] = useAsyncStorage('recipes', []);
   const [newRecipe, setNewRecipe] = useState({
     id: '',
@@ -355,7 +356,7 @@ export default function ({ route, navigation }) {
   };
 
   return (
-    <ImageBackgroundWrapper imageOpacity={0.2}>
+    <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.2}>
       <ScrollView style={styles.container}>
         <View style={styles.centeredContainer}>
           {/* <Text style={styles.header}>Ajouter une nouvelle recette</Text> */}

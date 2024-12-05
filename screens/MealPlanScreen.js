@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { View,  ScrollView,  StyleSheet,  TouchableOpacity,  Alert,  Modal} from "react-native";
-import { Text, Button, Checkbox, BottomNavigation } from "react-native-paper";
+import { Text, Checkbox } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
@@ -56,6 +56,7 @@ LocaleConfig.locales["fr"] = {
 LocaleConfig.defaultLocale = "fr";
 
 export default function MealPlanScreen({ navigation, route }) {
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0); //Recupère l'index du background
   const [selectedDates, setSelectedDates] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
   const [mealsSelection, setMealsSelection] = useState({});
@@ -401,7 +402,7 @@ export default function MealPlanScreen({ navigation, route }) {
   };
 
   return (
-    <ImageBackgroundWrapper imageOpacity={0.6}>
+    <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.6}>
       <MealPlanProvider>
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>

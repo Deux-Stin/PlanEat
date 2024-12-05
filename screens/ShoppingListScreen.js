@@ -8,6 +8,7 @@ import moment from 'moment';
 import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
 
 export default function ShoppingListScreen({ navigation, route }) {
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0); //Recupère l'index du background
   const [shoppingList, setShoppingList] = useState({});
   const [mealPlanHistory, setMealPlanHistory] = useState([]);
   const [mealPlanHistorySaveAsync, setmealPlanHistorySaveAsync, getStoredValue] = useAsyncStorage('mealPlanHistory',[]);
@@ -514,7 +515,7 @@ export default function ShoppingListScreen({ navigation, route }) {
 
   return (
 
-    <ImageBackgroundWrapper imageOpacity={0.46}>
+    <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.4}>
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <TouchableOpacity onPress={toggleHideMenu} style={styles.menuButton}>

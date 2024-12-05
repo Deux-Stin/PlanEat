@@ -17,6 +17,8 @@ import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper"; // Im
 import { globalStyles } from "../globalStyles";
 
 export default function MealPlanSummaryScreen({ route, navigation }) {
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0); //Recupère l'index du background
+  
   const { mealPlan, setMealPlan } = useContext(MealPlanContext);
   const [showPortionModal, setShowPortionModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -178,7 +180,7 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
   };
 
   return (
-    <ImageBackgroundWrapper imageOpacity={0.6}>
+    <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.6}>
       <ScrollView style={styles.container}>
         <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
           Résumé de vos repas

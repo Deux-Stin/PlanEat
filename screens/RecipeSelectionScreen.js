@@ -8,10 +8,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Checkbox } from "react-native-paper";
+import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper"; // Import du wrapper
 import { globalStyles } from "../globalStyles";
 
 const RecipeSelectionScreen = ({ route, navigation }) => {
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0); //Recupère l'index du background
   const { recipes = [], mode, onImport, onExport } = route.params || {};
   const [groupedRecipes, setGroupedRecipes] = useState([]);
   const [selectedRecipes, setSelectedRecipes] = useState(
@@ -67,7 +69,7 @@ const RecipeSelectionScreen = ({ route, navigation }) => {
   };
 
   return (
-    <ImageBackgroundWrapper imageOpacity={0.5}>
+    <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.3}>
       <View style={styles.container}>
         <SectionList
           sections={groupedRecipes}
