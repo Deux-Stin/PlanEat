@@ -10,7 +10,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import * as FileSystem from 'expo-file-system';
 
 export default function ({ route, navigation }) {
-  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0);
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0); 
 
   const [recipes, setRecipes] = useAsyncStorage('recipes', []);
   const [newRecipe, setNewRecipe] = useState({
@@ -802,14 +802,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row', // Alignement horizontal
     borderRadius: 5,
     flex: 1, // Prend tout l'espace disponible
-    justifyContent: 'space-evenly', // Espace entre chaque checkbox
-    marginLeft: 0, // Espace entre le label et les checkboxes
+    justifyContent: 'flex-start', // Espace entre chaque checkbox
+    marginRight: 0, // Espace entre le label et les checkboxes
+    flexWrap: 'wrap',
 
     elevation: 10,
   },
   checkboxItem: {
     flexDirection: 'column', // Aligne chaque checkbox avec son texte
     alignItems: 'center', // Centre les checkbox et le texte
+    marginRight: 10, // Ajout d'un espacement constant autour de chaque élément
+    // width: '20%', // Largeur relative pour mieux gérer l'espace (ajuster au besoin)
   },
   checkboxLabel: {
     fontSize: 16,

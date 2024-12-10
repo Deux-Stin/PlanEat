@@ -109,8 +109,10 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
   };
 
   const generateMealPlanSummary = () => {
-    return Object.keys(mealPlan).map((date) => {
-      const formattedDate = moment(date).format("DD-MM-YYYY");
+    return Object.keys(mealPlan)
+    .sort((a, b) => new Date(a) - new Date(b)) // Trier les dates par ordre croissant
+    .map((date) => {
+      const formattedDate = `${moment(date).format("DD/MM/YYYY")} - ${moment(date).format("dddd").charAt(0).toUpperCase() + moment(date).format("dddd").slice(1)}`;
 
       return (
         <View key={date} style={styles.dateSection}>
@@ -194,7 +196,7 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                 <TouchableOpacity
                   key={num}
                   onPress={() => {
@@ -207,7 +209,7 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
                     setShowPortionModal(false);
                   }}
                 >
-                  <Text style={styles.modalText}>{num}p</Text>
+                  <Text style={styles.modalText}>{num} portions</Text>
                 </TouchableOpacity>
               ))}
               <TouchableOpacity onPress={() => setShowPortionModal(false)}>
@@ -220,7 +222,7 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
         <View style={styles.section}>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
-              style={styles.mainButton}
+              style={[styles.mainButton, {marginTop: 50}]}
               onPress={() =>
                 navigation.navigate("MealPlanScreen", { mealPlan: mealPlan })
               }
@@ -263,16 +265,23 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
+    paddingHorizontal: 5,
+    paddingVertical: 10,
   },
   section: {
     width: "100%",
     marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: 25,
+    fontSize: 22,
     // fontWeight: 'bold',
-    marginVertical: 20,
+    color: "#444",
+    marginTop: 10,
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+    paddingBottom: 5,
+    textAlign: "center",
   },
   dateSection: {
     marginVertical: 5,
@@ -281,10 +290,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   dateText: {
-    fontWeight: "bold",
-    fontSize: 18,
+    // fontWeight: "bold",
+    fontSize: 16,
     backgroundColor: "#f5f5f5",
-    width: 125,
+    // width: 150,
+    alignSelf: "flex-start",  // Le texte occupera uniquement l'espace nécessaire
     padding: 5,
     borderRadius: 10,
     marginBottom: 10,
@@ -318,8 +328,12 @@ const styles = StyleSheet.create({
     flex: 1, // Prend le reste de l'espace disponible
   },
   portionSelector: {
-    width: 40,
-    height: 30,
+    // width: 40,
+    alignSelf: "flex-end",  // Le texte occupera uniquement l'espace nécessaire
+    // height: 30,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginBottom: 5,
     backgroundColor: "#d6d6d6",
     borderRadius: 5,
     justifyContent: "center",
@@ -336,7 +350,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: 150,
+    width: 200,
     padding: 20,
     backgroundColor: "#fff",
     borderRadius: 10,
@@ -346,6 +360,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     padding: 10,
     textAlign: "center",
+    // alignSelf: "flex-end",  // Le texte occupera uniquement l'espace nécessaire
   },
   modalCancel: {
     marginTop: 10,

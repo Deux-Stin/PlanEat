@@ -30,6 +30,7 @@ const ImageBackgroundWrapper = ({ children, style, backgroundIndex, imageOpacity
 const styles = StyleSheet.create({
   background: {
     flex: 1, // Prendre toute la place
+    // resizeMode: 'cover', // Remplit sans déformer
   },
 });
 

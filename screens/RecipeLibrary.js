@@ -232,7 +232,7 @@ export default function RecipeLibrary({ navigation, route }) {
               ]}
               onPress={() => toggleSeason(season)}
             >
-              <Text style={[styles.filterText, globalStyles.textTitleDeux]}>
+              <Text style={[styles.filterText, globalStyles.textTitleDeux, {fontSize: 16}]}>
                 {season.charAt(0).toUpperCase() + season.slice(1)}
               </Text>
             </TouchableOpacity>
@@ -406,11 +406,12 @@ const styles = StyleSheet.create({
     borderRadius: 5, // Coins arrondis
   },
   filterButton: {
-    padding: 10,
+    paddingHorizontal: 2,
+    paddingVertical: 10,
     backgroundColor: "#e0e0e0",
     borderRadius: 5,
     flex: 1, // Ajout pour égaliser la taille des boutons
-    marginHorizontal: 2.5, // Ajoute un léger espacement horizontal entre les boutons
+    marginHorizontal: 2, // Ajoute un léger espacement horizontal entre les boutons
   },
   selectedFilter: {
     backgroundColor: "#b0e0e6",

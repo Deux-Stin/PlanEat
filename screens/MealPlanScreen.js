@@ -3,7 +3,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { View,  ScrollView,  StyleSheet,  TouchableOpacity,  Alert,  Modal} from "react-native";
 import { Text, Checkbox } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
-import { Calendar, LocaleConfig } from "react-native-calendars";
+import { Calendar, CalendarList, LocaleConfig } from "react-native-calendars";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import { MealPlanContext, MealPlanProvider } from "./MealPlanContext";
 import "moment/locale/fr";
@@ -48,7 +48,7 @@ LocaleConfig.locales["fr"] = {
     "Mercredi",
     "Jeudi",
     "Vendredi",
-    "Samedi",
+    "Samedi"
   ],
   dayNamesShort: ["Dim.", "Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam."],
   today: "Aujourd'hui",
@@ -65,6 +65,8 @@ export default function MealPlanScreen({ navigation, route }) {
   const [selectedMealType, setSelectedMealType] = useState(null);
   const { mealPlan, setMealPlan } = useContext(MealPlanContext);
   const [recipes] = useAsyncStorage("recipes", []);
+  const [defaultServings, setDefaultServings] = useAsyncStorage("defaultServings", 2);
+
 
   // Obtenir la date actuelle
   const today = moment().format("YYYY-MM-DD");
@@ -81,35 +83,58 @@ export default function MealPlanScreen({ navigation, route }) {
 
   useEffect(() => {
     if (route.params?.mealPlan) {
-      setMealPlan(route.params.mealPlan);
+      setMealPlan((prevMealPlan) => ({
+        ...prevMealPlan,
+        ...route.params.mealPlan,
+      }));
     }
   }, [route.params?.mealPlan]);
 
+  // Initialisation au premier chargement
   useEffect(() => {
-    if (mealPlan) {
-      const updatedSelectedDates = Object.keys(mealPlan).reduce((acc, date) => {
-        acc[date] = { selected: true, selectedColor: "#b1d7ff" };
-        return acc;
-      }, {});
-      setSelectedDates(updatedSelectedDates);
-    }
-  }, [mealPlan]);
+    const updatedSelectedDates = Object.keys(mealPlan || {}).reduce((acc, date) => {
+      acc[date] = { selected: true, selectedColor: "#b1d7ff" };
+      return acc;
+    }, {});
+    setSelectedDates(updatedSelectedDates);
 
-  // Utilisez un effet pour initialiser mealsSelection uniquement lors du chargement de mealPlan
-  useEffect(() => {
-    const newMealsSelection = {};
-
-    Object.keys(mealPlan || {}).forEach((date) => {
+    const updatedMealsSelection = Object.keys(mealPlan || {}).reduce((acc, date) => {
       const meals = mealPlan[date];
-      newMealsSelection[date] = {
+      acc[date] = {
         breakfast: !!meals?.breakfast,
         lunch: !!meals?.lunch,
         dinner: !!meals?.dinner,
       };
-    });
+      return acc;
+    }, {});
+    setMealsSelection(updatedMealsSelection);
+  }, []); // Ne s'exécute qu'une seule fois
 
-    setMealsSelection(newMealsSelection);
-  }, [mealPlan]);
+  // // Utilisez un effet pour initialiser mealsSelection uniquement lors du chargement de mealPlan
+  // useEffect(() => {
+  //   if (Object.keys(mealPlan || {}).length > 0) {
+  //     setSelectedDates((prevDates) => {
+  //       const updatedDates = { ...prevDates };
+  //       Object.keys(mealPlan).forEach((date) => {
+  //         updatedDates[date] = { selected: true, selectedColor: "#b1d7ff" };
+  //       });
+  //       return updatedDates;
+  //     });
+  
+  //     setMealsSelection((prevSelections) => {
+  //       const updatedSelections = { ...prevSelections };
+  //       Object.keys(mealPlan).forEach((date) => {
+  //         const meals = mealPlan[date];
+  //         updatedSelections[date] = {
+  //           breakfast: !!meals?.breakfast,
+  //           lunch: !!meals?.lunch,
+  //           dinner: !!meals?.dinner,
+  //         };
+  //       });
+  //       return updatedSelections;
+  //     });
+  //   }
+  // }, [mealPlan]);
 
   // Initialise les portions si elles ne sont pas définies, sans mettre mealPlan à jour à chaque rendu
   useEffect(() => {
@@ -122,7 +147,7 @@ export default function MealPlanScreen({ navigation, route }) {
       if (meals?.breakfast && !meals.breakfast.servingsSelected) {
         newMealPlan[date] = {
           ...newMealPlan[date],
-          breakfast: { ...meals.breakfast, servingsSelected: 2 },
+          breakfast: { ...meals.breakfast, servingsSelected: defaultServings },
         };
         needsUpdate = true;
       }
@@ -130,7 +155,7 @@ export default function MealPlanScreen({ navigation, route }) {
       if (meals?.lunch && !meals.lunch.servingsSelected) {
         newMealPlan[date] = {
           ...newMealPlan[date],
-          lunch: { ...meals.lunch, servingsSelected: 2 },
+          lunch: { ...meals.lunch, servingsSelected: defaultServings },
         };
         needsUpdate = true;
       }
@@ -138,7 +163,7 @@ export default function MealPlanScreen({ navigation, route }) {
       if (meals?.dinner && !meals.dinner.servingsSelected) {
         newMealPlan[date] = {
           ...newMealPlan[date],
-          dinner: { ...meals.dinner, servingsSelected: 2 },
+          dinner: { ...meals.dinner, servingsSelected: defaultServings },
         };
         needsUpdate = true;
       }
@@ -176,74 +201,76 @@ export default function MealPlanScreen({ navigation, route }) {
       return; // Ne rien faire si la date est dans le passé
     }
 
-    const newSelectedDates = { ...selectedDates };
 
-    if (newSelectedDates[day.dateString]) {
-      // Date déjà sélectionnée, on la désélectionne
-      // delete newSelectedDates[day.dateString];
-      newSelectedDates[day.dateString] = undefined;
+    setSelectedDates((prevDates) => {
+      const updatedDates = { ...prevDates };
+      if (updatedDates[day.dateString]) {
+        delete updatedDates[day.dateString]; // Désélectionne
+      } else {
+        updatedDates[day.dateString] = {
+          selected: true,
+          selectedColor: "#b1d7ff",
+        };
+      }
+      return updatedDates;
+    });
+  
+    setMealsSelection((prevSelections) => {
+      const updatedSelections = { ...prevSelections };
+      if (updatedSelections[day.dateString]) {
+        delete updatedSelections[day.dateString];
+      } else {
+        updatedSelections[day.dateString] = {
+          breakfast: false,
+          lunch: false,
+          dinner: false,
+        };
+      }
+      return updatedSelections;
+    });
+  };
 
-      // Supprimer les sélections de repas pour cette date
-      const newMealsSelection = { ...mealsSelection };
-      delete newMealsSelection[day.dateString];
-      setMealsSelection(newMealsSelection);
-
-      // Supprimer les repas du mealPlan pour cette date
-      setMealPlan((prevMealPlan) => {
-        const updatedMealPlan = { ...prevMealPlan };
-        delete updatedMealPlan[day.dateString];
-        return updatedMealPlan;
-      });
-    } else {
-      newSelectedDates[day.dateString] = {
-        selected: true,
-        selectedColor: "#b1d7ff",
+  const handleMealCheckboxChange = (date, meal) => {
+    console.log("=== Avant mise à jour ===");
+    console.log("mealPlan:", mealPlan);
+  
+    setMealsSelection((prevSelections) => {
+      const updatedSelections = { ...prevSelections };
+      updatedSelections[date] = {
+        ...updatedSelections[date],
+        [meal]: !updatedSelections[date]?.[meal],
       };
-    }
-    setSelectedDates(newSelectedDates);
-  };
-
-  const handleMealCheckboxChange = async (date, meal) => {
-    const newMealsSelection = { ...mealsSelection };
-
-    // Si le repas est déjà sélectionné, on le désélectionne
-    newMealsSelection[date] = {
-      ...newMealsSelection[date],
-      [meal]: !newMealsSelection[date]?.[meal], // Inverse la sélection
-    };
-
-    // Mise à jour de l'état des repas sélectionnés
-    setMealsSelection(newMealsSelection);
-
-    // Mise à jour de mealPlan pour ajouter ou supprimer le repas
-    const updatedMealPlan = { ...mealPlan };
-
-    // Si le repas est désélectionné, on le retire de mealPlan
-    if (!newMealsSelection[date][meal]) {
-      if (updatedMealPlan[date]) {
-        delete updatedMealPlan[date][meal]; // Supprime le repas de mealPlan
-        // Si aucun autre repas n'est présent pour cette date, on supprime la date
+      return updatedSelections;
+    });
+  
+    setMealPlan((prevMealPlan) => {
+      const updatedMealPlan = { ...prevMealPlan };
+  
+      if (!prevMealPlan[date]) {
+        updatedMealPlan[date] = {};
+      }
+  
+      if (updatedMealPlan[date][meal]) {
+        // Si le repas est désélectionné
+        delete updatedMealPlan[date][meal];
         if (
-          !updatedMealPlan[date].breakfast &&
-          !updatedMealPlan[date].lunch &&
-          !updatedMealPlan[date].dinner
+          !updatedMealPlan[date]?.breakfast &&
+          !updatedMealPlan[date]?.lunch &&
+          !updatedMealPlan[date]?.dinner
         ) {
-          delete updatedMealPlan[date];
+          delete updatedMealPlan[date]; // Supprime la date si plus de repas
         }
+      } else {
+        // Si le repas est sélectionné
+        updatedMealPlan[date][meal] = { servingsSelected: 2 }; // Ajoute avec portions par défaut
       }
-    }
-
-    // Si le repas est sélectionné, on ajoute un objet vide pour ce repas si nécessaire
-    if (newMealsSelection[date][meal]) {
-      if (!updatedMealPlan[date]) {
-        updatedMealPlan[date] = {}; // Crée la date si elle n'existe pas
-      }
-      updatedMealPlan[date][meal] = {}; // On initialise un objet vide pour le repas sélectionné
-    }
-
-    // Mise à jour du mealPlan
-    setMealPlan(updatedMealPlan);
+  
+      console.log("=== Mise à jour mealPlan ===");
+      console.log("Updated mealPlan:", updatedMealPlan);
+      return updatedMealPlan;
+    });
   };
+  
 
   const handleRecipeSelection = (date, mealType, recipeName, category) => {
     // Supprimez `portions` du paramètre
@@ -269,7 +296,7 @@ export default function MealPlanScreen({ navigation, route }) {
       if (mealType === "breakfast") {
         updatedMealPlan[date][mealType] = {
           ...selectedRecipe,
-          servingsSelected: 2, // Valeur par défaut
+          servingsSelected: defaultServings, // Valeur par défaut
         };
       } else {
         // Pour le déjeuner et dîner, assure que la catégorie (entrée, plat, dessert) existe
@@ -281,7 +308,7 @@ export default function MealPlanScreen({ navigation, route }) {
           ...updatedMealPlan[date][mealType],
           [category]: {
             ...selectedRecipe,
-            servingsSelected: 2, // Valeur par défaut
+            servingsSelected: defaultServings, // Valeur par défaut
           },
         };
       }
@@ -406,7 +433,7 @@ export default function MealPlanScreen({ navigation, route }) {
       <MealPlanProvider>
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <View style={styles.section}>
+            <View style={[styles.section, {alignItems: 'stretch', paddingHorizontal: 5}]}>
               <View style={styles.somespace}></View>
               <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
                 Planifier vos repas
@@ -424,12 +451,59 @@ export default function MealPlanScreen({ navigation, route }) {
                 monthFormat={"MMMM yyyy"}
                 firstDay={1}
                 style={{
+                  // flex: 1,
+                  // paddingHorizontal: 10,
+                  // justifyContent: 'center',
+                  // width: '100%',
+                  padding: 6,
+                  borderRadius: 20,
                   borderWidth: 1,
                   borderColor: "#000",
                   // height: 350,
                 }}
+                theme={{
+                  backgroundColor: '#ffffff',
+                  calendarBackground: '#ffffff',
+                  // textSectionTitleColor: '#b6c1cd',
+                  // textSectionTitleDisabledColor: '#d9e1e8',
+                  // selectedDayBackgroundColor: '#00adf5',
+                  // selectedDayTextColor: '#ffffff',
+                  // todayTextColor: '#00adf5',
+                  // dayTextColor: '#2d4150',
+                  // textDisabledColor: '#d9e1e8',
+                  // dotColor: '#00adf5',
+                  // selectedDotColor: '#ffffff',
+                  // arrowColor: 'orange',
+                  // disabledArrowColor: '#d9e1e8',
+                  // monthTextColor: 'blue',
+                  // indicatorColor: 'blue',
+                  // textDayFontFamily: 'monospace',
+                  // textMonthFontFamily: 'monospace',
+                  // textDayHeaderFontFamily: 'monospace',
+                  // textDayFontWeight: '300',
+                  // textMonthFontWeight: 'bold',
+                  // textDayHeaderFontWeight: '300',
+                  // textDayFontSize: 16,
+                  // textMonthFontSize: 16,
+                  // textDayHeaderFontSize: 16
+                }}
               />
             </View>
+
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Portions par défaut</Text>
+              <Picker
+                selectedValue={defaultServings}
+                onValueChange={(value) => setDefaultServings(value)}
+                style={[styles.portionPicker, globalStyles.textTitleTrois]}
+              >
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                  <Picker.Item key={num} label={`${num} portions`} value={num} 
+                  style={[styles.mainButtonText, globalStyles.textTitleTrois]}/>
+                ))}
+              </Picker>
+            </View>
+
 
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
@@ -437,13 +511,15 @@ export default function MealPlanScreen({ navigation, route }) {
               </Text>
 
               {Object.keys(selectedDates).length > 0 ? (
-                Object.keys(selectedDates).map((date) => (
+                Object.keys(selectedDates)
+                  .sort((a, b) => new Date(a) - new Date(b)) // Trier les dates par ordre croissant
+                  .map((date) => (
                   <View key={date} style={styles.mealSection}>
                     <View style={styles.mealHeader}>
                       {/* Affichage de la date et des repas */}
                       <View style={styles.dateTextContainer}>
                         <Text style={styles.dateText}>
-                          {moment(date).format("DD/MM/YYYY")}
+                          {moment(date).format("DD/MM/YYYY")} - {moment(date).format("dddd").charAt(0).toUpperCase() + moment(date).format("dddd").slice(1)}
                         </Text>
                       </View>
 
@@ -557,7 +633,7 @@ export default function MealPlanScreen({ navigation, route }) {
                                   >
                                     <Text style={styles.portionText}>
                                       {mealPlan[date][mealType]
-                                        .servingsSelected || 2}
+                                        .servingsSelected || defaultServings}
                                       p
                                     </Text>
                                   </TouchableOpacity>
@@ -620,7 +696,7 @@ export default function MealPlanScreen({ navigation, route }) {
                                     >
                                       <Text style={styles.portionText}>
                                         {mealPlan[date][mealType][category]
-                                          .servingsSelected || 2}
+                                          .servingsSelected || defaultServings}
                                         p
                                       </Text>
                                     </TouchableOpacity>
@@ -746,33 +822,38 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     elevation: 5,
   },
-
   mealHeader: {
-    flexDirection: "row", // Date et repas sur la même ligne
+    flexDirection: "column", // Date et repas sur la même ligne
     justifyContent: "space-between", // Espacement entre les éléments
     alignItems: "center",
     // marginBottom: 10,
   },
   dateTextContainer: {
-    backgroundColor: "#d6d6d6",
-    padding: 5,
     borderRadius: 5,
+    padding: 5,
+    backgroundColor: "#d6d6d6",
+    alignSelf: "flex-start", // Ajuste la largeur au contenu
     elevation: 2,
+    marginBottom: 10,
   },
   dateText: {
     fontWeight: "bold",
     fontSize: 14,
+    // marginLeft: 10,
+    // marginBottom: 10,
+    // backgroundColor: '#fff',
   },
   mealTypesContainer: {
     flexDirection: "row", // Checkbox sous chaque repas
-    marginRight: 20,
+    marginHorizontal: 10,
+    marginTop: 5,
   },
   mealTypeWrapper: {
     flexDirection: "column", // Intitulé et checkbox sur la même ligne
     alignItems: "center",
     // marginBottom: 10,
-    marginHorizontal: 30,
-    justifyContent: "space-evenly",
+    marginHorizontal: 20,
+    justifyContent: "space-around"
   },
 
   mealAttribution: {
@@ -805,6 +886,16 @@ const styles = StyleSheet.create({
   recipePicker: {
     flex: 1, // Prend l'espace restant
     height: 50,
+  },
+  portionPicker: {
+    flex: 1, // Prend l'espace restant
+    height: 50,
+    alignContent: 'center',
+    marginHorizontal: 5,
+    backgroundColor: "#fff",
+    opacity: 0.8,
+    padding: 15,
+    // borderRadius: 10,
   },
   portionSelector: {
     width: 50,
@@ -862,21 +953,6 @@ const styles = StyleSheet.create({
     padding: 0, // Supprimer le padding autour du texte
   },
 
-  dateTextContainer: {
-    borderRadius: 5,
-    padding: 5,
-    backgroundColor: "#d6d6d6",
-    alignSelf: "flex-start", // Ajuste la largeur au contenu
-    elevation: 2,
-    marginBottom: 10,
-  },
-  dateText: {
-    fontWeight: "bold",
-    fontSize: 14,
-    // marginLeft: 10,
-    // marginBottom: 10,
-    // backgroundColor: '#fff',
-  },
   checkboxContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",

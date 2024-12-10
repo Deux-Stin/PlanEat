@@ -7,6 +7,7 @@ const FILE_PATHS = {
   mealPlanHistory: `${FileSystem.documentDirectory}mealPlanHistory.json`,
   favoris: `${FileSystem.documentDirectory}favoris.json`,
   backgroundIndex: `${FileSystem.documentDirectory}backgroundIndex.json`,
+  defaultServings: `${FileSystem.documentDirectory}defaultServings.json`,
 };
 
 export const useAsyncStorage = (key, initialValue) => {

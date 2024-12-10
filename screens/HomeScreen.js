@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity, Dimensions } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,6 +8,7 @@ import { globalStyles } from '../globalStyles';
 import moment from 'moment';
 import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
 
+const { width, height } = Dimensions.get('window');
 
 export default function HomeScreen({ navigation }) {
   const [mealPlanHistory, setmealPlanHistory] = useAsyncStorage('mealPlanHistory', []);
@@ -251,11 +252,8 @@ const styles = StyleSheet.create({
   changeBackgroundButton: {
     position: 'absolute',
     zIndex: 10, // S'assurer que le bouton est au-dessus
-    top: 60, // Positionner le bouton à une distance du bas de l'écran
-    // backgroundColor: '#d8d8d8',
-    // padding: 10,
-    left: 30, // Ajuste la position pour qu'il ne soit pas superposé avec le bouton menu
-    width: 40,
+    top: height * 0.05,   // Par exemple, 5% de la hauteur de l'écran
+    left: width * 0.05,   // 5% de la largeur de l'écran width: 40,
     height: 40,
     borderRadius: 25,
     justifyContent: 'center',
@@ -265,10 +263,10 @@ const styles = StyleSheet.create({
   infoButton: {
     position: 'absolute',
     zIndex: 10, // Ajout d'un zIndex pour le rendre au-dessus
-    top: 60,
-    right: 30, // Ajuste la position pour qu'il ne soit pas superposé avec le bouton menu
-    width: 40,
-    height: 40,
+    top: height * 0.05,
+    right: width * 0.05, // Ajuste la position pour qu'il ne soit pas superposé avec le bouton menu
+    width: 35,
+    height: 35,
     borderRadius: 25,
     backgroundColor: '#ccc', // Couleur du bouton d'information
     justifyContent: 'center',
