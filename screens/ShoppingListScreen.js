@@ -38,6 +38,7 @@ export default function ShoppingListScreen({ navigation, route }) {
   const [hideCheckedItems, setHideCheckedItems] = useState(false);
   const { mealPlan } = route.params; // Recevoir le mealPlan à partir de la navigation
   const hasGeneratedShoppingList = useRef(false); // Utiliser useRef pour contrôler l'appel de la sauvegarde
+  const [isHistoryLoaded, setIsHistoryLoaded] = useState(false);
 
   const availableUnits = [
     "unité",
@@ -78,24 +79,46 @@ export default function ShoppingListScreen({ navigation, route }) {
   const [selectedUnit, setSelectedUnit] = useState("unité");
   const [selectedRayon, setSelectedRayon] = useState("Divers");
 
+  const isMealPlanInHistory = (mealPlan, history) => {
+    return history.some(entry => JSON.stringify(entry.mealPlan) === JSON.stringify(mealPlan));
+  };  
+
   useEffect(() => {
-    // Charger l'historique au premier rendu
     loadMealPlanHistory();
-    // console.log('mealPlanHistory : ', mealPlanHistory)
+  }, []);  
 
-    // Générer et sauvegarder la liste de courses une seule fois à l'arrivée sur la page
+  useEffect(() => {
+    if (!isHistoryLoaded) return; // Ne pas continuer tant que l'historique n'est pas chargé
+    // Charger l'historique une seule fois
+    // loadMealPlanHistory();
+  
+    // Vérifier et générer la liste uniquement si elle n'existe pas
     if (mealPlan && !hasGeneratedShoppingList.current) {
-      console.log("Génération et sauvegarde de la shopping list...");
+      const alreadyExists = isMealPlanInHistory(mealPlan, mealPlanHistory);
 
-      const ingredients = generateShoppingList(mealPlan);
-      setShoppingList(ingredients);
+      console.log('alreadyExists :', alreadyExists)
+      console.log('mealPlan :', mealPlan)
+      console.log('mealPlanHistory :', mealPlanHistory)
 
-      // Appeler handleSaveMealPlan une fois la liste générée
-      handleSaveMealPlan();
-
-      hasGeneratedShoppingList.current = true; // Empêcher la régénération et sauvegarde multiple
+  
+      if (!alreadyExists) {
+        console.log("Génération et sauvegarde de la shopping list...");
+  
+        const ingredients = generateShoppingList(mealPlan);
+        setShoppingList(ingredients);
+  
+        // Sauvegarder le mealPlan
+        handleSaveMealPlan();
+      } else {
+        console.log("La liste de courses pour ce mealPlan existe déjà.");
+        const ingredients = generateShoppingList(mealPlan);
+        setShoppingList(ingredients);
+      }
+  
+      hasGeneratedShoppingList.current = true; // Empêcher les appels multiples
     }
-  }, [mealPlanHistorySaveAsync]);
+  }, [mealPlan, isHistoryLoaded]); // Ne pas inclure mealPlanHistory pour éviter les boucles
+  
 
   useEffect(() => {
     const loadCheckedItems = async () => {
@@ -352,7 +375,7 @@ export default function ShoppingListScreen({ navigation, route }) {
       setMealPlanHistory(sortedHistory);
       await setmealPlanHistorySaveAsync(sortedHistory);
 
-      console.log("MealPlan sauvegardé avec succès :", sortedHistory);
+      // console.log("MealPlan sauvegardé avec succès :", sortedHistory);
     } catch (error) {
       console.error("Erreur lors de la sauvegarde du MealPlan :", error);
     }
@@ -360,7 +383,7 @@ export default function ShoppingListScreen({ navigation, route }) {
 
   const loadMealPlanHistory = async () => {
     try {
-      const savedHistory = mealPlanHistorySaveAsync;
+      const savedHistory = await getStoredValue();
       if (Array.isArray(savedHistory)) {
         setMealPlanHistory(savedHistory.slice(-10)); // Limiter à 10 éléments
         console.log("Historique chargé avec succès :", savedHistory.slice(-10));
@@ -371,8 +394,11 @@ export default function ShoppingListScreen({ navigation, route }) {
       }
     } catch (error) {
       console.error("Erreur lors du chargement de l'historique :", error);
+    } finally {
+      setIsHistoryLoaded(true); // Marque le chargement comme terminé
     }
   };
+  
 
   const addManualItem = () => {
     if (manualItem && newItemQuantity) {
@@ -700,7 +726,8 @@ export default function ShoppingListScreen({ navigation, route }) {
                           }}
                         />
                         <Text style={styles.ingredientText}>
-                          {ingredient.name} - {ingredient.quantity}{" "}
+                          {ingredient.name.charAt(0).toUpperCase() +
+                        ingredient.name.slice(1)} - {ingredient.quantity}{" "}
                           {ingredient.unit}
                         </Text>
                         <View style={styles.buttonGroup}>
@@ -907,7 +934,7 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
   rayonHeader: {
-    fontSize: 20,
+    fontSize: 22,
     // fontWeight: "bold",
     marginBottom: 5,
   },
@@ -919,10 +946,10 @@ const styles = StyleSheet.create({
   },
   ingredientText: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 15,
   },
   input: {
-    fontSize: 11,
+    fontSize: 13,
     borderWidth: 1,
     borderColor: "#ccc",
     paddingHorizontal: 2.5,
@@ -932,7 +959,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   numericInput: {
-    fontSize: 11,
+    fontSize: 13,
     borderWidth: 1,
     borderColor: "#ccc",
     paddingHorizontal: 2.5,

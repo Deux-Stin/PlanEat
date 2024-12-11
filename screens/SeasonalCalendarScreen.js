@@ -12,12 +12,15 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Dimensions,
+  ScrollView
 } from "react-native";
 import { InteractionManager } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import { globalStyles } from "../globalStyles";
 import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper"; // Import du wrapper
+const { width, height } = Dimensions.get('window');
 
 const calendrier = {
   janvier: {
@@ -773,14 +776,16 @@ export default function SeasonalCalendarScreen({ navigation }) {
         >
           {item.charAt(0).toUpperCase() + item.slice(1)}
         </Text>
-        <View style={styles.categoryContainer}>
-          <Text style={[styles.categoryTitle, globalStyles.textTitleDeux]}>
-            Fruits:
-          </Text>
-          <View style={styles.itemGrid}>
-            {renderItems(fruits, item, "fruits")}
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.categoryContainer}>
+            <Text style={[styles.categoryTitle, globalStyles.textTitleDeux]}>
+              Fruits:
+            </Text>
+            <View style={styles.itemGrid}>
+              {renderItems(fruits, item, "fruits")}
+            </View>
           </View>
-        </View>
+        
         <View style={styles.categoryContainer}>
           <Text style={[styles.categoryTitle, globalStyles.textTitleDeux]}>
             Légumes:
@@ -789,6 +794,7 @@ export default function SeasonalCalendarScreen({ navigation }) {
             {renderItems(legumes, item, "legumes")}
           </View>
         </View>
+        </ScrollView>
         {/* <View style={styles.categoryContainer}>
                     <Text style={[styles.categoryTitle, globalStyles.textTitleDeux]}>Céréales et Légumineuses:</Text>
                     <View style={styles.itemGrid}>{renderItems(cereales_legumineuses, item, 'cereales_legumineuses')}</View>
@@ -866,19 +872,21 @@ export default function SeasonalCalendarScreen({ navigation }) {
 
   return (
     <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.6}>
-      <View style={styles.container}>
-        <CustomFlatList // Utilisation du composant FlatList personnalisé
-          ref={flatListRef} // Ajout de la référence
-          data={months}
-          renderItem={renderMonth}
-          keyExtractor={(item) => item}
-          horizontal
-          showsHorizontalScrollIndicator={true}
-          getItemLayout={getItemLayout}
-          contentContainerStyle={styles.flatList}
-          style={styles.flatListStyle} // Ajout du style ici
-        />
-      </View>
+      {/* <ScrollView style={{ flex: 1 }}> */}
+        <View style={styles.container}>
+          <CustomFlatList // Utilisation du composant FlatList personnalisé
+            ref={flatListRef} // Ajout de la référence
+            data={months}
+            renderItem={renderMonth}
+            keyExtractor={(item) => item}
+            horizontal
+            showsHorizontalScrollIndicator={true}
+            // getItemLayout={getItemLayout}
+            contentContainerStyle={styles.flatList}
+            style={styles.flatListStyle} // Ajout du style ici
+          />
+        </View>
+      {/* </ScrollView> */}
     </ImageBackgroundWrapper>
   );
 }
@@ -900,8 +908,8 @@ const styles = StyleSheet.create({
   },
 
   menuItem: {
-    paddingVertical: 10, // Espacement vertical pour chaque élément
-    paddingHorizontal: 15, // Espacement horizontal
+    paddingVertical: height * 0.010, // Espacement vertical pour chaque élément
+    paddingHorizontal: width * 0.015, // Espacement horizontal
     width: "100%", // Prendre toute la largeur du menu
   },
   container: {
@@ -923,38 +931,45 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   flatList: {
-    //   paddingVertical: 30,
-    paddingTop: 20,
-    paddingBottom: 30,
+    paddingVertical: height * 0.02,
+    paddingHorizontal: width * 0.02,
+    // paddingBottom: 0,
   },
   flatListStyle: {
-    marginHorizontal: 10, // Marge à gauche et à droite
+    marginHorizontal: width * 0.005, // Marge à gauche et à droite
+  },
+  scrollContent: {
+    // flexGrow: 1,
+    // flex: 1,
+    justifyContent: 'center',
   },
   monthContainer: {
-    marginVertical: 30,
-    marginHorizontal: 10,
-    padding: 15,
-    borderRadius: 10,
-    //   backgroundColor: '#f0f0f0',
-    width: 430, // Ajustez la largeur selon vos besoins
+    marginVertical: height * 0.01,
+    marginHorizontal: width * 0.03,
+    padding: width * 0.02,
+    borderRadius: 25,
+    width: width * 0.9, // 90% de la largeur de l'écran
+    // minHeight: height * 0.7, // Minimum 70% de la hauteur
+    maxHeight: height * 0.8,
+    // backgroundColor: '#f0f0f0',
+    overflow: 'hidden', // Empêche le contenu de déborder
+    alignSelf: 'center',
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 5, // Pour Android
-  },
+},
   monthTitle: {
-    //   fontFamily: 'POLYA',
-    fontSize: 60,
-    //   fontWeight: 'bold', // ne fonctionne pas avec la custom font
-    marginBottom: 15,
-    textAlign: "center",
+    fontSize: Math.min(60, width * 0.15), // Ajuste la taille du titre
+    marginBottom: height * 0.04,
+    textAlign: 'center',
   },
   categoryContainer: {
-    marginBottom: 5,
+    marginBottom: height * 0.01,
   },
   categoryTitle: {
-    fontSize: 18,
+    fontSize: 20,
     //   fontFamily: 'rubik_moonrocks',
     //   fontWeight: 'bold',
     marginBottom: 10,
@@ -970,13 +985,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   itemButton: {
-    borderWidth: 0.5,
+    borderWidth: 1,
+    // borderColor: 'red',
     // backgroundColor: '#e0e0e0', // Couleur de fond pour les boutons
     // padding: 5,
-    paddingHorizontal: 5,
+    paddingHorizontal: 0,
     paddingVertical: 3,
-    margin: 2.5,
-    borderRadius: 10,
+    marginHorizontal: 2.5,
+    marginVertical: 1.5,
+    borderRadius: 15,
     flexBasis: "30%", // Ajuste la largeur selon tes besoins
     alignItems: "center",
   },
@@ -985,8 +1002,8 @@ const styles = StyleSheet.create({
     color: "red",
   },
   itemText: {
-    fontSize: 15,
-  },
+    fontSize: Math.min(15, width * 0.035), // Ajuste la taille des éléments
+},
   infoButton: {
     position: "absolute",
     top: 10,
