@@ -1,3 +1,4 @@
+import { useKeepAwake } from 'expo-keep-awake';
 import React from 'react';
 import { ScrollView, Text, Button, Image, Alert, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
@@ -6,12 +7,13 @@ import { globalStyles } from "../globalStyles";
 
 export default function RecipeDetail({ route, navigation }) {
   const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0); //Recupère l'index du background
-
   const { recipe } = route.params; //, addRecipe, deleteRecipe 
 
-  // Utiliser useAsyncStorage pour obtenir les recettes
   const [storedRecipes, setStoredRecipes] = useAsyncStorage('recipes', []);
   const [mealChoice, setMealChoice] = useAsyncStorage('mealChoice', []);
+
+  // Empêche l'écran de s'éteindre lorsque l'on suit une recette
+  useKeepAwake();
 
   const addToMealChoice = () => {
     setMealChoice((prevMealChoice) => {
@@ -65,7 +67,7 @@ export default function RecipeDetail({ route, navigation }) {
       <ScrollView contentContainerStyle={styles.container}>
         {/* En-tête avec le titre */}
         <View style={styles.header}>
-          <Text style={styles.title}>{recipe.name}</Text>
+          <Text style={[styles.title, globalStyles.textTitleDeux]}>{recipe.name}</Text>
         </View>
 
         {/* Affichage de l'image de la recette */}
@@ -82,7 +84,7 @@ export default function RecipeDetail({ route, navigation }) {
 
         {/* Section Détails de la recette */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Détails de la recette</Text>
+          <Text style={[styles.sectionTitle, globalStyles.textTitleTrois]}>Détails de la recette</Text>
           <Text style={styles.detailItem}>
             <Text style={styles.detailLabel}>Catégorie : </Text>
             {recipe.category.charAt(0).toUpperCase() +
@@ -114,7 +116,7 @@ export default function RecipeDetail({ route, navigation }) {
 
         {/* Section Ingrédients */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Ingrédients</Text>
+          <Text style={[styles.sectionTitle, globalStyles.textTitleTrois]}>Ingrédients</Text>
           {recipe.ingredients.length > 0 ? (
             recipe.ingredients.map((ingredient, index) => (
               <Text key={index} style={styles.itemText}>
@@ -133,7 +135,7 @@ export default function RecipeDetail({ route, navigation }) {
 
         {/* Section Recette */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Étapes de la Recette</Text>
+          <Text style={[styles.sectionTitle, globalStyles.textTitleTrois]}>Étapes de la Recette</Text>
           {recipe.recipe.length > 0 ? (
             recipe.recipe.map((step, index) => (
               <Text key={index} style={[styles.itemText, { marginBottom: 15 }]}>
@@ -155,7 +157,7 @@ export default function RecipeDetail({ route, navigation }) {
           (recipe.nutritionalValues?.kiloCalories &&
             recipe.nutritionalValues?.kiloCalories !== "0")) && (
           <View style={styles.nutritionalSection}>
-            <Text style={styles.sectionTitle}>Valeurs nutritionnelles</Text>
+            <Text style={[styles.sectionTitle, globalStyles.textTitleTrois]}>Valeurs nutritionnelles</Text>
 
             {/* Ligne pour Glucides et Protéines */}
             <View style={styles.nutritionalRow}>
@@ -215,28 +217,30 @@ export default function RecipeDetail({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    padding: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 5,
     // backgroundColor: '#fff',
     alignItems: 'center', // Centrer horizontalement
   },
   header: {
-    marginTop: 10,
+    marginTop: 20,
+    paddingHorizontal: 10,
     alignItems: 'center',
   },
   title: {
-    fontSize: 26,
-    fontWeight: 'bold',
+    fontSize: 40,
+    // fontWeight: 'bold',
     color: '#333',
     textAlign: 'center', // Centrer le texte du titre
     marginBottom: 10,
   },
   section: {
     marginBottom: 20,
-    width: '80%', // Prendre toute la largeur disponible
+    width: '95%', // Prendre toute la largeur disponible
   },
   sectionTitle: {
     fontSize: 22,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     color: '#444',
     marginBottom: 10,
     borderBottomWidth: 1,
