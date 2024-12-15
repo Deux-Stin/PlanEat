@@ -3,7 +3,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { View,  ScrollView,  StyleSheet,  TouchableOpacity,  Alert,  Modal} from "react-native";
 import { Text, Checkbox } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
-import { Calendar, CalendarList, LocaleConfig } from "react-native-calendars";
+import { Calendar, LocaleConfig } from "react-native-calendars";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import { MealPlanContext, MealPlanProvider } from "./MealPlanContext";
 import "moment/locale/fr";
@@ -109,32 +109,6 @@ export default function MealPlanScreen({ navigation, route }) {
     }, {});
     setMealsSelection(updatedMealsSelection);
   }, []); // Ne s'exécute qu'une seule fois
-
-  // // Utilisez un effet pour initialiser mealsSelection uniquement lors du chargement de mealPlan
-  // useEffect(() => {
-  //   if (Object.keys(mealPlan || {}).length > 0) {
-  //     setSelectedDates((prevDates) => {
-  //       const updatedDates = { ...prevDates };
-  //       Object.keys(mealPlan).forEach((date) => {
-  //         updatedDates[date] = { selected: true, selectedColor: "#b1d7ff" };
-  //       });
-  //       return updatedDates;
-  //     });
-  
-  //     setMealsSelection((prevSelections) => {
-  //       const updatedSelections = { ...prevSelections };
-  //       Object.keys(mealPlan).forEach((date) => {
-  //         const meals = mealPlan[date];
-  //         updatedSelections[date] = {
-  //           breakfast: !!meals?.breakfast,
-  //           lunch: !!meals?.lunch,
-  //           dinner: !!meals?.dinner,
-  //         };
-  //       });
-  //       return updatedSelections;
-  //     });
-  //   }
-  // }, [mealPlan]);
 
   // Initialise les portions si elles ne sont pas définies, sans mettre mealPlan à jour à chaque rendu
   useEffect(() => {
@@ -260,18 +234,14 @@ export default function MealPlanScreen({ navigation, route }) {
         ) {
           delete updatedMealPlan[date]; // Supprime la date si plus de repas
         }
-      } else {
-        // Si le repas est sélectionné
-        updatedMealPlan[date][meal] = { servingsSelected: 2 }; // Ajoute avec portions par défaut
       }
-  
+        
       console.log("=== Mise à jour mealPlan ===");
       console.log("Updated mealPlan:", updatedMealPlan);
       return updatedMealPlan;
     });
   };
   
-
   const handleRecipeSelection = (date, mealType, recipeName, category) => {
     // Supprimez `portions` du paramètre
     if (!mealPlan[date]) {
@@ -333,7 +303,8 @@ export default function MealPlanScreen({ navigation, route }) {
     }
 
     // Naviguer vers la liste de courses en passant le mealPlan
-    console.log("mealPlan envoyé au MealPlanSummaryScreen :", mealPlan);
+    console.log("mealPlan envoyé au MealPlanSummaryScreen :", JSON.stringify(mealPlan, 2, null));
+    // console.log("mealPlan envoyé au MealPlanSummaryScreen :", mealPlan);
     navigation.navigate("MealPlanSummaryScreen", { mealPlan });
   };
 

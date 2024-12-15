@@ -1,24 +1,17 @@
 import React, { useState, useContext, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  ScrollView,
-  TouchableOpacity,
-  Modal,
-  Alert,
-} from "react-native";
+import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity, Modal, Alert } from "react-native";
 import moment from "moment";
 import * as Clipboard from "expo-clipboard";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { MealPlanContext } from "./MealPlanContext";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper"; // Import du wrapper
 import { globalStyles } from "../globalStyles";
 
 export default function MealPlanSummaryScreen({ route, navigation }) {
-  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0); //Recupère l'index du background
-  
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage("backgroundIndex", 0); //Recupère l'index du background
+    const [mealPlanFromAssignation, setMealPlanFromAssignation] = useAsyncStorage("mealPlanFromAssignation", {});
+
   const { mealPlan, setMealPlan } = useContext(MealPlanContext);
   const [showPortionModal, setShowPortionModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -33,16 +26,44 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
     if (route.params?.mealPlan) {
       setMealPlan(route.params.mealPlan);
     }
-  }, [route.params?.mealPlan]);
+
+    if (route.params?.mealPlanFromAssignation) {
+      setMealPlan(route.params.mealPlanFromAssignation);
+    }
+  }, [route.params?.mealPlan, route.param?.mealPlanFromAssignation]);
+
+  const handleBack = () => {
+    console.log("goBack");
+    setMealPlanFromAssignation(mealPlan);
+    navigation.navigate("MealAssignmentScreen");
+  };
+
+  useEffect(() => {
+    // Vérifiez d'où provient la navigation avant de configurer le bouton retour
+    const canGoBack = navigation.canGoBack();
+
+    // console.log("canGoBack", canGoBack);
+    // console.log("route.params?.fromMealPlanSummaryScreen", route.params?.fromMealPlanSummaryScreen);
+    // Si la page précédente est MealPlanAssignmentScreen, vous envoyez la variable
+    if (canGoBack && route.params?.fromMealPlanSummaryScreen) {
+      console.log("test canGoBack");
+      navigation.setOptions({
+        headerLeft: () => (
+          <TouchableOpacity onPress={handleBack}>
+            <Icon name="arrow-left" size={25} color="#000" marginLeft={15} />
+          </TouchableOpacity>
+        ),
+      });
+    }
+  }, [navigation, route.params]);
 
   const handleServingsChange = (date, mealType, category, newServings) => {
     setMealPlan((prevMealPlan) => {
       const updatedMealPlan = { ...prevMealPlan };
-      if (mealType === "breakfast") {
+      if (mealType === "breakfast" || mealType === "apéritif" || mealType === "cocktail") {
         updatedMealPlan[date][mealType].servingsSelected = newServings;
       } else {
-        updatedMealPlan[date][mealType][category].servingsSelected =
-          newServings;
+        updatedMealPlan[date][mealType][category].servingsSelected = newServings;
       }
       return updatedMealPlan;
     });
@@ -53,9 +74,7 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
 
     return (
       <View key={category} style={styles.mealItem}>
-        <Text style={styles.mealItemLabel}>
-          {category.charAt(0).toUpperCase() + category.slice(1)} :
-        </Text>
+        <Text style={styles.mealItemLabel}>{category.charAt(0).toUpperCase() + category.slice(1)} :</Text>
         <TouchableOpacity
           style={styles.mealItemValue}
           onPress={() => {
@@ -87,22 +106,20 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
     if (!meal) return null;
 
     const categories =
-      mealType === "breakfast" ? ["breakfast"] : ["entrée", "plat", "dessert"];
+      mealType === "breakfast"
+        ? ["breakfast"]
+        : mealType === "apéritif"
+        ? ["apéritif"]
+        : mealType === "cocktail"
+        ? ["cocktail"]
+        : ["entrée", "plat", "dessert"]; // Pour les autres types de repas
 
     return (
       <View key={mealType}>
         <Text style={styles.mealHeader}>{label} :</Text>
         {categories.map((category) => {
           const item = meal[category] || meal;
-          return item
-            ? renderMealItem(
-                date,
-                mealType,
-                category,
-                item.name,
-                item.servingsSelected
-              )
-            : null;
+          return item ? renderMealItem(date, mealType, category, item.name, item.servingsSelected) : null;
         })}
       </View>
     );
@@ -110,19 +127,23 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
 
   const generateMealPlanSummary = () => {
     return Object.keys(mealPlan)
-    .sort((a, b) => new Date(a) - new Date(b)) // Trier les dates par ordre croissant
-    .map((date) => {
-      const formattedDate = `${moment(date).format("DD/MM/YYYY")} - ${moment(date).format("dddd").charAt(0).toUpperCase() + moment(date).format("dddd").slice(1)}`;
+      .sort((a, b) => new Date(a) - new Date(b)) // Trier les dates par ordre croissant
+      .map((date) => {
+        const formattedDate = `${moment(date).format("DD/MM/YYYY")} - ${
+          moment(date).format("dddd").charAt(0).toUpperCase() + moment(date).format("dddd").slice(1)
+        }`;
 
-      return (
-        <View key={date} style={styles.dateSection}>
-          <Text style={styles.dateText}>{formattedDate} :</Text>
-          {renderMealsByType(date, "breakfast", "Petit déjeuner")}
-          {renderMealsByType(date, "lunch", "Déjeuner")}
-          {renderMealsByType(date, "dinner", "Dîner")}
-        </View>
-      );
-    });
+        return (
+          <View key={date} style={styles.dateSection}>
+            <Text style={styles.dateText}>{formattedDate} :</Text>
+            {renderMealsByType(date, "breakfast", "Petit déjeuner")}
+            {renderMealsByType(date, "apéritif", "Apéritif")}
+            {renderMealsByType(date, "lunch", "Déjeuner")}
+            {renderMealsByType(date, "dinner", "Dîner")}
+            {renderMealsByType(date, "cocktail", "Cocktail")}
+          </View>
+        );
+      });
   };
 
   const generateSummaryText = () => {
@@ -138,11 +159,7 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
         if (meal) {
           // Titre du repas : Petit déjeuner, Déjeuner, ou Dîner
           summary += `  ${
-            mealType === "breakfast"
-              ? "Petit déjeuner"
-              : mealType === "lunch"
-              ? "Déjeuner"
-              : "Dîner"
+            mealType === "breakfast" ? "Petit déjeuner" : mealType === "lunch" ? "Déjeuner" : "Dîner"
           } :\n`;
 
           // Si c'est le petit déjeuner, on affiche directement le nom du plat (s'il y en a un)
@@ -155,9 +172,9 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
             ["entrée", "plat", "dessert"].forEach((category) => {
               const item = meal[category];
               if (item && item.name && item.servingsSelected !== undefined) {
-                summary += `    ${
-                  category.charAt(0).toUpperCase() + category.slice(1)
-                } : ${item.name} - ${item.servingsSelected}p\n`;
+                summary += `    ${category.charAt(0).toUpperCase() + category.slice(1)} : ${item.name} - ${
+                  item.servingsSelected
+                }p\n`;
               }
             });
           }
@@ -174,38 +191,24 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
   const copyToClipboard = () => {
     const summaryText = generateSummaryText();
     Clipboard.setStringAsync(summaryText); // Copie le texte dans le presse-papier
-    Alert.alert(
-      "Bonne nouvelle !",
-      "\nVotre résumé des repas a été copié dans le presse-papier !"
-    ); // Optionnel: un message d'alerte
+    Alert.alert("Bonne nouvelle !", "\nVotre résumé des repas a été copié dans le presse-papier !"); // Optionnel: un message d'alerte
     console.log(summaryText);
   };
 
   return (
     <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.6}>
       <ScrollView style={styles.container}>
-        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
-          Résumé de vos repas
-        </Text>
+        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Résumé de vos repas</Text>
         {generateMealPlanSummary()}
 
-        <Modal
-          visible={showPortionModal}
-          transparent={true}
-          animationType="slide"
-        >
+        <Modal visible={showPortionModal} transparent={true} animationType="slide">
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                 <TouchableOpacity
                   key={num}
                   onPress={() => {
-                    handleServingsChange(
-                      selectedDate,
-                      selectedMealType,
-                      selectedCategory,
-                      num
-                    );
+                    handleServingsChange(selectedDate, selectedMealType, selectedCategory, num);
                     setShowPortionModal(false);
                   }}
                 >
@@ -222,38 +225,19 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
         <View style={styles.section}>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
-              style={[styles.mainButton, {marginTop: 50}]}
-              onPress={() =>
-                navigation.navigate("MealPlanScreen", { mealPlan: mealPlan })
-              }
+              style={[styles.mainButton, { marginTop: 50 }]}
+              onPress={() => navigation.navigate("MealPlanScreen", { mealPlan: mealPlan })}
             >
-              <Text
-                style={[styles.mainButtonText, globalStyles.textTitleTrois]}
-              >
-                Modifier le plan de repas
-              </Text>
+              <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Modifier le plan de repas</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.mainButton} onPress={copyToClipboard}>
+              <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Copier le résumé</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.mainButton}
-              onPress={copyToClipboard}
+              onPress={() => navigation.navigate("ShoppingListScreen", { mealPlan })}
             >
-              <Text
-                style={[styles.mainButtonText, globalStyles.textTitleTrois]}
-              >
-                Copier le résumé
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.mainButton}
-              onPress={() =>
-                navigation.navigate("ShoppingListScreen", { mealPlan })
-              }
-            >
-              <Text
-                style={[styles.mainButtonText, globalStyles.textTitleTrois]}
-              >
-                Voir ma liste de courses
-              </Text>
+              <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Voir ma liste de courses</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -294,7 +278,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: "#f5f5f5",
     // width: 150,
-    alignSelf: "flex-start",  // Le texte occupera uniquement l'espace nécessaire
+    alignSelf: "flex-start", // Le texte occupera uniquement l'espace nécessaire
     padding: 5,
     borderRadius: 10,
     marginBottom: 10,
@@ -329,7 +313,7 @@ const styles = StyleSheet.create({
   },
   portionSelector: {
     // width: 40,
-    alignSelf: "flex-end",  // Le texte occupera uniquement l'espace nécessaire
+    alignSelf: "flex-end", // Le texte occupera uniquement l'espace nécessaire
     // height: 30,
     paddingHorizontal: 10,
     paddingVertical: 5,

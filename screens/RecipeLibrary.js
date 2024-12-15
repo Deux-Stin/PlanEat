@@ -1,4 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useMemo,
+  useEffect,
+  useLayoutEffect,
+} from "react";
 import {
   Platform,
   View,
@@ -8,7 +14,9 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Modal,
 } from "react-native";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper"; // Import du wrapper
 import RecipeUtils from "../utils/RecipeUtils"; // Import des fonctions utilitaires
@@ -16,15 +24,27 @@ import RecipeUtils from "../utils/RecipeUtils"; // Import des fonctions utilitai
 import { globalStyles } from "../globalStyles";
 
 export default function RecipeLibrary({ navigation, route }) {
-  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0); // Recupère l'index du background actuel
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage(
+    "backgroundIndex",
+    0
+  ); // Recupère l'index du background actuel
   const [recipes, setRecipes, getStoredRecipes] = useAsyncStorage(
     "recipes",
     []
   );
+  const [mealChoice, setMealChoice, getStoredMealChoice] = useAsyncStorage(
+    "mealChoice",
+    []
+  );
+  const [mealPlanFromAssignation, setMealPlanFromAssignation] = useAsyncStorage("mealPlanFromAssignation", {});
   const [expandedCategory, setExpandedCategory] = useState(null);
 
   const [selectedSeasons, setSelectedSeason] = useState([]); // État pour le filtre saison
   const [selectedDuration, setSelectedDuration] = useState([]);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const clickCountRef = useRef(0); // Utiliser une référence pour stocker le compteur
+  const timeoutRef = useRef(null); // Référence pour le timeout actif
 
   const seasonColors = {
     printemps: "#E6F3CE",
@@ -74,6 +94,48 @@ export default function RecipeLibrary({ navigation, route }) {
       navigation.setParams({ refresh: false }); // Réinitialiser le paramètre pour éviter des boucles infinies
     }
   }, [route.params?.refresh]);
+
+  // Met à jour `mealChoice` et `recipeNames` lorsqu'on revient sur la page
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", async () => {
+      const storedMealChoice = await getStoredMealChoice();
+      // console.log("Reloading mealChoice on focus:", storedMealChoice);
+      setMealChoice(storedMealChoice);
+    });
+
+    return unsubscribe; // Nettoie l'écouteur lors du démontage
+  }, [navigation, getStoredMealChoice]);
+
+  const recipeNames = mealChoice.map((recipe) => recipe.name);
+
+  // Paramétrage de l'en-tête avec le bouton retour et le bouton favoris avec "i"
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerBackTitleVisible: false, // pour afficher la flèche de retour par défaut
+      headerLeft: () => (
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="arrow-left" size={25} color="#000" marginLeft={15} />
+        </TouchableOpacity>
+      ),
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => handlePanierClick()}
+          style={styles.menuButton}
+        >
+          <Text style={styles.panier}>🛒</Text>
+          <View style={styles.recipesNumber}>
+            <Text style={styles.recipesNumberText}>
+              {Array.isArray(recipeNames)
+                ? recipeNames.length > 10
+                  ? "..."
+                  : recipeNames.length
+                : "0"}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, menuVisible, recipeNames]);
 
   const loadRecipes = async () => {
     const recipes = await getStoredRecipes(); // Récupère les recettes depuis le stockage
@@ -232,7 +294,13 @@ export default function RecipeLibrary({ navigation, route }) {
               ]}
               onPress={() => toggleSeason(season)}
             >
-              <Text style={[styles.filterText, globalStyles.textTitleDeux, {fontSize: 16}]}>
+              <Text
+                style={[
+                  styles.filterText,
+                  globalStyles.textTitleDeux,
+                  { fontSize: 16 },
+                ]}
+              >
                 {season.charAt(0).toUpperCase() + season.slice(1)}
               </Text>
             </TouchableOpacity>
@@ -275,7 +343,7 @@ export default function RecipeLibrary({ navigation, route }) {
       .filter((recipe) => recipe.category === category)
       .sort((a, b) => a.name.localeCompare(b.name)); // Trie les recettes par nom alphabétique
 
-    console.log("Recettes dans la catégorie:", category, categoryRecipes);
+    // console.log("Recettes dans la catégorie:", category, categoryRecipes);
 
     return (
       <View key={category} style={styles.categoryContainer}>
@@ -305,8 +373,104 @@ export default function RecipeLibrary({ navigation, route }) {
     );
   };
 
+  const handlePanierClick = () => {
+    // console.log("mealChoice:", mealChoice);
+    console.log("recipeNames:", recipeNames);
+
+    clickCountRef.current += 1; // Incrémenter la référence
+    console.log("clickCount:", clickCountRef.current);
+
+    // Réinitialiser après 5 clics rapides
+    if (clickCountRef.current === 3 && recipeNames.length > 0) {
+      setMealChoice([]);
+      setMealPlanFromAssignation([]);
+      // setIsResetting(true); // Indiquer qu'une réinitialisation est en cours
+      Alert.alert(
+        "Réinitialisation",
+        "Les recettes sélectionnées ont été réinitialisées."
+      );
+
+      // Annuler le timeout actif pour éviter d'afficher le modal
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+
+      clickCountRef.current = 0; // Réinitialiser le compteur
+      return;
+    }
+
+    // Afficher le modal après un délai si moins de 3 clics et des recettes sont présentes
+    if (!timeoutRef.current) {
+      timeoutRef.current = setTimeout(() => {
+        // Vérifier que le panier n'est pas vide
+        if (recipeNames.length > 0) {
+          setModalVisible(true);
+        }
+        // Toujours réinitialiser le compteur
+        clickCountRef.current = 0;
+        timeoutRef.current = null; // Réinitialiser la référence du timeout
+      }, 500);
+    }
+  };
+
   return (
-    <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.6}>
+    <ImageBackgroundWrapper
+      backgroundIndex={backgroundIndex}
+      imageOpacity={0.6}
+    >
+      <View>
+        {/* Votre contenu principal */}
+        <Modal
+          visible={modalVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text>Recettes sélectionnées :</Text>
+              {mealChoice.map((recipe, index) => (
+                <View key={index}>
+                  <Text>{recipe.name}</Text>
+                </View>
+              ))}
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                style={styles.closeButton}
+              >
+                <Text style={styles.closeButtonText}>Fermer</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisible(false);
+                  navigation.navigate("MealAssignmentScreen");
+                }}
+                style={styles.closeButton}
+              >
+                <Text style={styles.closeButtonText}>
+                  Passer à l'attribution
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisible(false);
+                  console.log("Ajouter une fonction qui permet de mettre une date random au mealChoice pour qu'il devienne un mealPlan")
+                  navigation.navigate("ShoppingListScreen");
+                }}
+                style={styles.closeButton}
+              >
+                <Text style={styles.closeButtonText}>
+                  Voir ma liste de courses
+                </Text>
+              </TouchableOpacity>
+
+            </View>
+          </View>
+        </Modal>
+      </View>
+
       <ScrollView style={styles.container}>
         {/* <Text style={styles.header}>Bibliothèque de recettes</Text> */}
 
@@ -518,5 +682,53 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 5,
     paddingBottom: 40,
+  },
+  panier: {
+    fontSize: 30,
+    color: "#000",
+    marginRight: 15,
+    zIndex: 10,
+    elevation: 10,
+  },
+  recipesNumber: {
+    position: "absolute",
+    backgroundColor: "red",
+    // opacity: 0.1,
+    fontSize: 15,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  recipesNumberText: {
+    color: "#fff",
+    // fontSize: 24,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center", // Pour aligner le modal en bas de l'écran
+    backgroundColor: "rgba(0, 0, 0, 0.35)", // Fond semi-transparent
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    maxHeight: "80%",  // Limiter la hauteur du modal
+    marginVertical: "10%",  // Ajuster cette valeur pour tenir compte de la hauteur de l'en-tête
+    marginHorizontal: "10%",  // Créer une marge horizontale pour ne pas remplir toute la largeur
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+  },
+  closeButton: {
+    backgroundColor: "#007bff",
+    padding: 5,
+    borderRadius: 10,
+    marginVertical: 2.5,
+    alignItems: "center",
+  },
+  closeButtonText: {
+    color: "#fff", // Couleur du texte
+    fontSize: 16, // Taille du texte
+    textAlign: "center", // Centre le texte
   },
 });

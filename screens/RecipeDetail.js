@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, Text, Button, Image, Alert, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import ImageBackgroundWrapper from '../components/ImageBackgroundWrapper'; // Import du wrapper
+import { globalStyles } from "../globalStyles";
 
 export default function RecipeDetail({ route, navigation }) {
   const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0); //Recupère l'index du background
@@ -10,6 +11,20 @@ export default function RecipeDetail({ route, navigation }) {
 
   // Utiliser useAsyncStorage pour obtenir les recettes
   const [storedRecipes, setStoredRecipes] = useAsyncStorage('recipes', []);
+  const [mealChoice, setMealChoice] = useAsyncStorage('mealChoice', []);
+
+  const addToMealChoice = () => {
+    setMealChoice((prevMealChoice) => {
+        const updatedMealChoice = [...prevMealChoice, recipe];
+
+        const recipeNames = updatedMealChoice.map((recipe) => recipe.name);
+        console.log('Liste des noms des recettes choisies :', recipeNames);
+        
+        return updatedMealChoice;
+    });
+    // alert('Recette ajoutée à votre sélection !');
+    navigation.goBack()
+};
 
   const handleDelete = async () => {
     Alert.alert(
@@ -43,7 +58,10 @@ export default function RecipeDetail({ route, navigation }) {
   };
 
   return (
-    <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.5}>
+    <ImageBackgroundWrapper
+      backgroundIndex={backgroundIndex}
+      imageOpacity={0.5}
+    >
       <ScrollView contentContainerStyle={styles.container}>
         {/* En-tête avec le titre */}
         <View style={styles.header}>
@@ -53,13 +71,13 @@ export default function RecipeDetail({ route, navigation }) {
         {/* Affichage de l'image de la recette */}
         {recipe.image ? (
           <View style={styles.imageContainer}>
-            <Image 
-              source={{ uri: recipe.image }} 
-              style={styles.imageWithBorder} 
+            <Image
+              source={{ uri: recipe.image }}
+              style={styles.imageWithBorder}
             />
           </View>
         ) : (
-          <Text style={{ textAlign: 'center'}}></Text>
+          <Text style={{ textAlign: "center" }}></Text>
         )}
 
         {/* Section Détails de la recette */}
@@ -67,23 +85,25 @@ export default function RecipeDetail({ route, navigation }) {
           <Text style={styles.sectionTitle}>Détails de la recette</Text>
           <Text style={styles.detailItem}>
             <Text style={styles.detailLabel}>Catégorie : </Text>
-            {recipe.category.charAt(0).toUpperCase() + recipe.category.slice(1) || "Non spécifié"}
+            {recipe.category.charAt(0).toUpperCase() +
+              recipe.category.slice(1) || "Non spécifié"}
           </Text>
           <Text style={styles.detailItem}>
             <Text style={styles.detailLabel}>Durée : </Text>
-            {recipe.duration.charAt(0).toUpperCase() + recipe.duration.slice(1) || "Non spécifié"}
-
+            {recipe.duration.charAt(0).toUpperCase() +
+              recipe.duration.slice(1) || "Non spécifié"}
           </Text>
           <Text style={styles.detailItem}>
             <Text style={styles.detailLabel}>Source: </Text>
-            {recipe.source.charAt(0).toUpperCase() + recipe.source.slice(1) || "Non spécifié"}
+            {recipe.source.charAt(0).toUpperCase() + recipe.source.slice(1) ||
+              "Non spécifié"}
           </Text>
           <Text style={styles.detailItem}>
             <Text style={styles.detailLabel}>Saison : </Text>
             {Array.isArray(recipe.season) && recipe.season.length > 0
               ? recipe.season
                   .map((item) => item.charAt(0).toUpperCase() + item.slice(1)) // Transforme chaque élément
-                  .join(', ') // Combine les éléments en une chaîne
+                  .join(", ") // Combine les éléments en une chaîne
               : "Non spécifié"}
           </Text>
           <Text style={styles.detailItem}>
@@ -98,7 +118,12 @@ export default function RecipeDetail({ route, navigation }) {
           {recipe.ingredients.length > 0 ? (
             recipe.ingredients.map((ingredient, index) => (
               <Text key={index} style={styles.itemText}>
-                - <Text style={styles.italicText}>{ingredient.name.charAt(0).toUpperCase() + ingredient.name.slice(1)}</Text> : {ingredient.quantity} {ingredient.unit}
+                -{" "}
+                <Text>
+                  {ingredient.name.charAt(0).toUpperCase() +
+                    ingredient.name.slice(1)}
+                </Text>{" "}
+                : {ingredient.quantity} {ingredient.unit}
               </Text>
             ))
           ) : (
@@ -111,7 +136,7 @@ export default function RecipeDetail({ route, navigation }) {
           <Text style={styles.sectionTitle}>Étapes de la Recette</Text>
           {recipe.recipe.length > 0 ? (
             recipe.recipe.map((step, index) => (
-              <Text key={index} style={[styles.itemText, {marginBottom: 15}]}>
+              <Text key={index} style={[styles.itemText, { marginBottom: 15 }]}>
                 {index + 1}. {step}
               </Text>
             ))
@@ -121,39 +146,57 @@ export default function RecipeDetail({ route, navigation }) {
         </View>
 
         {/* Section Valeurs nutritionnelles */}
-        {(recipe.nutritionalValues?.glucides && recipe.nutritionalValues?.glucides !== '0' ||
-          recipe.nutritionalValues?.proteines && recipe.nutritionalValues?.proteines !== '0' ||
-          recipe.nutritionalValues?.graisses && recipe.nutritionalValues?.graisses !== '0' ||
-          recipe.nutritionalValues?.kiloCalories && recipe.nutritionalValues?.kiloCalories !== '0') && (
+        {((recipe.nutritionalValues?.glucides &&
+          recipe.nutritionalValues?.glucides !== "0") ||
+          (recipe.nutritionalValues?.proteines &&
+            recipe.nutritionalValues?.proteines !== "0") ||
+          (recipe.nutritionalValues?.graisses &&
+            recipe.nutritionalValues?.graisses !== "0") ||
+          (recipe.nutritionalValues?.kiloCalories &&
+            recipe.nutritionalValues?.kiloCalories !== "0")) && (
           <View style={styles.nutritionalSection}>
             <Text style={styles.sectionTitle}>Valeurs nutritionnelles</Text>
-            
+
             {/* Ligne pour Glucides et Protéines */}
             <View style={styles.nutritionalRow}>
               <View style={styles.nutritionalItem}>
                 <Text style={styles.itemLabel}>Glucides:</Text>
-                <Text style={styles.itemValue}>{recipe.nutritionalValues?.glucides || "Non spécifié"}</Text>
+                <Text style={styles.itemValue}>
+                  {recipe.nutritionalValues?.glucides || "Non spécifié"}
+                </Text>
               </View>
               <View style={styles.nutritionalItem}>
                 <Text style={styles.itemLabel}>Protéines:</Text>
-                <Text style={styles.itemValue}>{recipe.nutritionalValues?.proteines || "Non spécifié"}</Text>
+                <Text style={styles.itemValue}>
+                  {recipe.nutritionalValues?.proteines || "Non spécifié"}
+                </Text>
               </View>
             </View>
-            
+
             {/* Ligne pour Graisses et kCalories */}
             <View style={styles.nutritionalRow}>
               <View style={styles.nutritionalItem}>
                 <Text style={styles.itemLabel}>Graisses:</Text>
-                <Text style={styles.itemValue}>{recipe.nutritionalValues?.graisses || "Non spécifié"}</Text>
+                <Text style={styles.itemValue}>
+                  {recipe.nutritionalValues?.graisses || "Non spécifié"}
+                </Text>
               </View>
               <View style={styles.nutritionalItem}>
                 <Text style={styles.itemLabel}>kCal:</Text>
-                <Text style={styles.itemValue}>{recipe.nutritionalValues?.kiloCalories || "Non spécifié"}</Text>
+                <Text style={styles.itemValue}>
+                  {recipe.nutritionalValues?.kiloCalories || "Non spécifié"}
+                </Text>
               </View>
             </View>
           </View>
         )}
 
+        {/* Bouton d'ajout au "panier"*/}
+        <TouchableOpacity style={styles.mainButton} onPress={addToMealChoice}>
+          <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>
+            Ajouter à mon 🛒
+          </Text>
+        </TouchableOpacity>
 
         {/* Boutons Modifier et Supprimer */}
         <View style={styles.buttonContainer}>
@@ -164,7 +207,6 @@ export default function RecipeDetail({ route, navigation }) {
             <Text style={styles.buttonText}>Supprimer</Text>
           </TouchableOpacity>
         </View>
-
       </ScrollView>
     </ImageBackgroundWrapper>
   );
@@ -227,7 +269,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'left', // Aligne les valeurs à gauche de leur propre cellule
   },  
-  
   detailItem: {
     fontSize: 16,
     marginBottom: 8,
@@ -260,6 +301,21 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#000', // Couleur du texte
     fontSize: 16,
+  },
+  mainButton: {
+    backgroundColor: "#fff",
+    opacity: 0.8,
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 2.5, // Espace entre les boutons
+    alignItems: "center",
+    width: "100%", // Ajuster la largeur pour ne pas prendre toute la place
+  },
+  mainButtonText: {
+    color: "#000",
+    fontSize: 18,
+    // fontWeight: 'bold',
+    textAlign: "center",
   },
   imageContainer: {
     alignItems: 'center',

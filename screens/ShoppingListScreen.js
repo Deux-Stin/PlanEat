@@ -1067,7 +1067,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)", // Fond semi-transparent pour le modal
   },
   scrollContainer: {
-    maxHeight: 300,  // Hauteur maximale avant de commencer à défiler
+    maxHeight: height * 0.5,  // Hauteur maximale avant de commencer à défiler
   },
   modalContent: {
     backgroundColor: "white",

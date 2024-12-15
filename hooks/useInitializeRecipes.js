@@ -1,12 +1,13 @@
 // hooks/useInitializeRecipes.js
 
-import { useEffect, useState } from 'react';
-import { useAsyncStorage } from './useAsyncStorage';
-import * as FileSystem from 'expo-file-system';
-
+import { useEffect, useState } from "react";
+import { useAsyncStorage } from "./useAsyncStorage";
+import * as FileSystem from "expo-file-system";
 
 export default function useInitializeRecipes() {
-  const [storedRecipes, setStoredRecipes] = useAsyncStorage('recipes', []);
+  const [storedRecipes, setStoredRecipes] = useAsyncStorage("recipes", []);
+  const [mealChoice, setMealChoice] = useAsyncStorage("mealChoice", []);
+  const [mealPlanFromAssignation, setMealPlanFromAssignation] = useAsyncStorage("mealPlanFromAssignation", {});
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false); // Drapeau pour éviter de recharger
 
@@ -19,24 +20,33 @@ export default function useInitializeRecipes() {
         return;
       }
       try {
-        const fileUri = `${FileSystem.documentDirectory}recipes.json`; 
+        const fileUri = `${FileSystem.documentDirectory}recipes.json`;
         const fileExists = await FileSystem.getInfoAsync(fileUri);
 
         if (fileExists.exists) {
           // Charger les recettes depuis le fichier JSON
           const fileContent = await FileSystem.readAsStringAsync(fileUri);
           const recipesData = JSON.parse(fileContent);
-          
+
           // Enregistrer les recettes dans AsyncStorage
           await setStoredRecipes(recipesData);
-          console.log('Recettes chargées depuis recipes.json.');
+          console.log("Recettes chargées depuis recipes.json.");
         } else {
-          console.log('Le fichier recipes.json n\'existe pas. Utilisation de recettes par défaut.');
+          console.log("Le fichier recipes.json n'existe pas. Utilisation de recettes par défaut.");
         }
 
         setInitialized(true); // Marquer comme initialisé après la première lecture
+
+        // Réinitialisation du mealChoice à chaque nouveau lancement de l'app
+        setMealChoice([]);
+        console.log("Données du mealChoice réinitialisées.");
+
+        // Réinitialisation du mealPlanFromAssignation (depuis la librairie de recette) au chargement de l'app
+        setMealPlanFromAssignation({});
+        console.log("Données du MealPlanFromAssignation réinitialisées.")
+        
       } catch (error) {
-        console.error('Erreur lors du chargement des recettes :', error);
+        console.error("Erreur lors du chargement des recettes :", error);
       }
       setLoading(false);
     };

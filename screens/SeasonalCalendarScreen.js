@@ -881,7 +881,7 @@ export default function SeasonalCalendarScreen({ navigation }) {
             keyExtractor={(item) => item}
             horizontal
             showsHorizontalScrollIndicator={true}
-            // getItemLayout={getItemLayout}
+            getItemLayout={getItemLayout}
             contentContainerStyle={styles.flatList}
             style={styles.flatListStyle} // Ajout du style ici
           />

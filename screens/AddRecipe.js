@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, Text, TextInput, SectionList, Button, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal } from 'react-native';
+import { View, Image, Text, TextInput, SectionList, Button, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal, Dimensions } from 'react-native';
 import { Checkbox } from 'react-native-paper';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import uuid from 'react-native-uuid';
@@ -8,6 +8,8 @@ import { globalStyles } from '../globalStyles';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as FileSystem from 'expo-file-system';
+
+const { width, height } = Dimensions.get('window');
 
 export default function ({ route, navigation }) {
   const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0); 
@@ -356,7 +358,10 @@ export default function ({ route, navigation }) {
   };
 
   return (
-    <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.2}>
+    <ImageBackgroundWrapper
+      backgroundIndex={backgroundIndex}
+      imageOpacity={0.2}
+    >
       <ScrollView style={styles.container}>
         <View style={styles.centeredContainer}>
           {/* <Text style={styles.header}>Ajouter une nouvelle recette</Text> */}
@@ -367,7 +372,6 @@ export default function ({ route, navigation }) {
             onChangeText={(text) => setNewRecipe({ ...newRecipe, name: text })}
             style={[styles.input, styles.recipeName]}
           />
-
 
           {/* Gestion de l'image */}
           {newRecipe.image ? (
@@ -387,22 +391,30 @@ export default function ({ route, navigation }) {
                 <Text style={styles.deleteImageText}>🗑️ Supprimer l'image</Text>
               </TouchableOpacity>
             </View>
-            ) : (
-              <TouchableOpacity style={styles.mainButtonStep} onPress={selectImageSource}>
-                <Text style={[styles.mainButtonText, styles.photo]}>📷 Ajouter une image</Text>
-              </TouchableOpacity>
-            )}
-          </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.mainButtonStep}
+              onPress={selectImageSource}
+            >
+              <Text style={[styles.mainButtonText, styles.photo]}>
+                📷 Ajouter une image
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
 
-
-        <View style={[styles.categoryContainer, {marginTop:20}]}>
+        <View style={[styles.categoryContainer, { marginTop: 20 }]}>
           <Text style={styles.label}></Text>
           <View style={styles.checkboxContainer}>
             {availableCategories.map((category, index) => (
               <View key={index} style={styles.checkboxItem}>
                 <Text style={styles.checkboxLabel}>{category}</Text>
                 <Checkbox
-                  status={newRecipe.category.includes(category) ? 'checked' : 'unchecked'}
+                  status={
+                    newRecipe.category.includes(category)
+                      ? "checked"
+                      : "unchecked"
+                  }
                   onPress={() => toggleCategory(category)}
                 />
               </View>
@@ -410,8 +422,9 @@ export default function ({ route, navigation }) {
           </View>
         </View>
 
-
-        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Durée de la recette</Text>
+        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
+          Durée de la recette
+        </Text>
         <View style={styles.flexContainer}>
           {availableDuration.map((duration) => (
             <TouchableOpacity
@@ -419,14 +432,27 @@ export default function ({ route, navigation }) {
               onPress={() => toggleDuration(duration)}
               style={[
                 styles.durationButton,
-                newRecipe.duration.includes(duration) ? styles.selectedDurationButton : styles.unselectedDurationButton]}
+                newRecipe.duration.includes(duration)
+                  ? styles.selectedDurationButton
+                  : styles.unselectedDurationButton,
+              ]}
             >
-              <Text style={styles.pickerButtonText}>{duration.charAt(0).toUpperCase() + duration.slice(1)}</Text>
+              <Text style={styles.pickerButtonText}>
+                {duration.charAt(0).toUpperCase() + duration.slice(1)}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux, {marginTop: 5, marginBottom: 5}]}>Source</Text>
+        <Text
+          style={[
+            styles.sectionTitle,
+            globalStyles.textTitleDeux,
+            { marginTop: 5, marginBottom: 5 },
+          ]}
+        >
+          Source
+        </Text>
         <TextInput
           placeholder="Ex: Internet"
           value={newRecipe.source}
@@ -434,7 +460,9 @@ export default function ({ route, navigation }) {
           style={styles.input}
         />
 
-        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Saison</Text>
+        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
+          Saison
+        </Text>
         <View style={styles.flexContainer}>
           {availableSeasons.map((season) => (
             <TouchableOpacity
@@ -442,24 +470,34 @@ export default function ({ route, navigation }) {
               onPress={() => toggleSeason(season)}
               style={[
                 styles.durationButton,
-                newRecipe.season.includes(season) ? styles.selectedDurationButton : styles.unselectedDurationButton, // Appliquer le style en fonction de la sélection
-                { backgroundColor: newRecipe.season.includes(season) ? seasonColors[season] : '#ccc' } // Couleur grise si non sélectionné
+                newRecipe.season.includes(season)
+                  ? styles.selectedDurationButton
+                  : styles.unselectedDurationButton, // Appliquer le style en fonction de la sélection
+                {
+                  backgroundColor: newRecipe.season.includes(season)
+                    ? seasonColors[season]
+                    : "#ccc",
+                }, // Couleur grise si non sélectionné
               ]}
             >
-              <Text style={styles.pickerButtonText}>{season.charAt(0).toUpperCase() + season.slice(1)}</Text>
+              <Text style={styles.pickerButtonText}>
+                {season.charAt(0).toUpperCase() + season.slice(1)}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Portions</Text>
+        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
+          Portions
+        </Text>
         <View style={styles.somespace} />
         <TextInput
           placeholder="Nombre de parts"
-          value={newRecipe.servings?.toString() || ''} // Convertir en chaîne ou afficher une chaîne vide
+          value={newRecipe.servings?.toString() || ""} // Convertir en chaîne ou afficher une chaîne vide
           onChangeText={(text) => {
-            if (text === '') {
+            if (text === "") {
               // Si l'utilisateur efface tout, mettre une valeur vide
-              setNewRecipe({ ...newRecipe, servings: '' });
+              setNewRecipe({ ...newRecipe, servings: "" });
             } else {
               const numericValue = parseInt(text, 10);
               if (!isNaN(numericValue) && numericValue > 0) {
@@ -471,128 +509,183 @@ export default function ({ route, navigation }) {
           style={styles.input}
         />
 
-
-        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Ingrédients</Text>
+        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
+          Ingrédients
+        </Text>
         <View style={styles.somespace} />
-          {newRecipe.ingredients.map((ingredient, index) => (
-            <View key={index} style={styles.itemContainer}>
-              {editingIngredientIndex === index ? (
-                <>
-                  <TextInput
-                    style={styles.input}
-                    value={editedIngredient?.name || ''}
-                    onChangeText={(text) => setEditedIngredient({ ...editedIngredient, name: text })}
-                    placeholder="Nom de l'ingrédient"
-                  />
-                  <TextInput
-                    style={styles.input}
-                    value={editedIngredient?.quantity.toString() || ''}
-                    onChangeText={(text) => setEditedIngredient({ ...editedIngredient, quantity: parseFloat(text) || '' })}
-                    keyboardType="numeric"
-                    placeholder="Quantité"
-                  />
-                  <TouchableOpacity
-                    onPress={() => {
-                      const updatedIngredients = [...newRecipe.ingredients];
-                      updatedIngredients[index] = editedIngredient;
-                      setNewRecipe({ ...newRecipe, ingredients: updatedIngredients });
-                      setEditingIngredientIndex(null);
-                    }}
-                    style={styles.saveButton}
-                  >
-                    <Text style={styles.saveButtonText}>Sauvegarder</Text>
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <>
-                  <Text style={styles.itemText} onPress={() => {
+        {newRecipe.ingredients.map((ingredient, index) => (
+          <View key={index} style={styles.itemContainer}>
+            {editingIngredientIndex === index ? (
+              <>
+                <TextInput
+                  style={styles.input}
+                  value={editedIngredient?.name || ""}
+                  onChangeText={(text) =>
+                    setEditedIngredient({ ...editedIngredient, name: text })
+                  }
+                  placeholder="Nom de l'ingrédient"
+                />
+                <TextInput
+                  style={styles.input}
+                  value={editedIngredient?.quantity.toString() || ""}
+                  onChangeText={(text) =>
+                    setEditedIngredient({
+                      ...editedIngredient,
+                      quantity: parseFloat(text) || "",
+                    })
+                  }
+                  keyboardType="numeric"
+                  placeholder="Quantité"
+                />
+                <TouchableOpacity
+                  onPress={() => {
+                    const updatedIngredients = [...newRecipe.ingredients];
+                    updatedIngredients[index] = editedIngredient;
+                    setNewRecipe({
+                      ...newRecipe,
+                      ingredients: updatedIngredients,
+                    });
+                    setEditingIngredientIndex(null);
+                  }}
+                  style={styles.saveButton}
+                >
+                  <Text style={styles.saveButtonText}>Sauvegarder</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <Text
+                  style={styles.itemText}
+                  onPress={() => {
                     setEditingIngredientIndex(index);
                     setEditedIngredient(ingredient);
-                  }}>
-                    {ingredient.name} - {ingredient.quantity} {ingredient.unit} ({ingredient.rayon})
-                  </Text>
-                  <TouchableOpacity onPress={() => handleRemoveIngredient(index)} style={styles.removeButton}>
-                    <Text style={styles.removeButtonText}>Supprimer</Text>
-                  </TouchableOpacity>
-                </>
-              )}
-            </View>
-          ))}
+                  }}
+                >
+                  {ingredient.name} - {ingredient.quantity} {ingredient.unit} (
+                  {ingredient.rayon})
+                </Text>
+                <TouchableOpacity
+                  onPress={() => handleRemoveIngredient(index)}
+                  style={styles.removeButton}
+                >
+                  <Text style={styles.removeButtonText}>Supprimer</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        ))}
 
         <TextInput
           placeholder="Nom de l'ingrédient"
           value={ingredientInput.name}
-          onChangeText={(text) => setIngredientInput({ ...ingredientInput, name: text })}
+          onChangeText={(text) =>
+            setIngredientInput({ ...ingredientInput, name: text })
+          }
           style={styles.input}
         />
-        
+
         <TextInput
           placeholder="Quantité"
           value={ingredientInput.quantity}
-          onChangeText={(text) => setIngredientInput({ ...ingredientInput, quantity: text })}
+          onChangeText={(text) =>
+            setIngredientInput({ ...ingredientInput, quantity: text })
+          }
           keyboardType="numeric"
           style={styles.input}
         />
 
         {/* Zone pour sélectionner l'unité */}
-        <TouchableOpacity style={styles.pickerButton} onPress={() => setUnitModalVisible(true)}>
+        <TouchableOpacity
+          style={styles.pickerButton}
+          onPress={() => setUnitModalVisible(true)}
+        >
           <Text style={styles.pickerButtonText}>{ingredientInput.unit}</Text>
         </TouchableOpacity>
 
         {/* Zone pour sélectionner le rayon */}
-        <TouchableOpacity style={styles.pickerButton} onPress={() => setRayonModalVisible(true)}>
+        <TouchableOpacity
+          style={styles.pickerButton}
+          onPress={() => setRayonModalVisible(true)}
+        >
           <Text style={styles.pickerButtonText}>{ingredientInput.rayon}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.mainButtonStep} onPress={handleAddIngredient}>
+        <TouchableOpacity
+          style={styles.mainButtonStep}
+          onPress={handleAddIngredient}
+        >
           <Text style={styles.mainButtonText}>Ajouter ingrédient</Text>
         </TouchableOpacity>
 
-
         {/* Modal pour sélectionner l'unité */}
-        <Modal visible={unitModalVisible} animationType="slide" transparent={true}>
+        <Modal
+          visible={unitModalVisible}
+          animationType="slide"
+          transparent={true}
+        >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Choisir une unité</Text>
-              {availableUnits.map((unit) => (
-                <TouchableOpacity key={unit} onPress={() => {
-                  setIngredientInput({ ...ingredientInput, unit });
-                  setUnitModalVisible(false);
-                }}>
-                  <Text style={styles.modalOption}>{unit}</Text>
-                </TouchableOpacity>
-              ))}
-              <TouchableOpacity style={styles.mainButtonStep} onPress={() => setUnitModalVisible(false)}>
-                <Text style={styles.mainButtonText}>Fermer</Text>
+              <ScrollView style={styles.scrollContainer}>
+                {availableUnits.map((unit) => (
+                  <TouchableOpacity
+                    key={unit}
+                    onPress={() => {
+                      setIngredientInput({ ...ingredientInput, unit });
+                      setUnitModalVisible(false);
+                    }}
+                  >
+                    <Text style={styles.modalOption}>{unit}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setUnitModalVisible(false)}
+              >
+                <Text style={styles.closeButtonText}>Fermer</Text>
               </TouchableOpacity>
             </View>
           </View>
         </Modal>
 
         {/* Modal pour sélectionner le rayon */}
-        <Modal visible={rayonModalVisible} animationType="slide" transparent={true}>
+        <Modal
+          visible={rayonModalVisible}
+          animationType="slide"
+          transparent={true}
+        >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Choisir un rayon</Text>
-              {availableRayons.map((rayon) => (
-                <TouchableOpacity key={rayon} onPress={() => {
-                  setIngredientInput({ ...ingredientInput, rayon });
-                  setRayonModalVisible(false);
-                }}>
-                  <Text style={styles.modalOption}>{rayon}</Text>
-                </TouchableOpacity>
-              ))}
-              <TouchableOpacity style={styles.mainButtonStep} onPress={() => setRayonModalVisible(false)}>
-                <Text style={styles.mainButtonText}>Fermer</Text>
+              <ScrollView style={styles.scrollContainer}>
+                {availableRayons.map((rayon) => (
+                  <TouchableOpacity
+                    key={rayon}
+                    onPress={() => {
+                      setIngredientInput({ ...ingredientInput, rayon });
+                      setRayonModalVisible(false);
+                    }}
+                  >
+                    <Text style={styles.modalOption}>{rayon}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setRayonModalVisible(false)}
+              >
+                <Text style={styles.closeButtonText}>Fermer</Text>
               </TouchableOpacity>
             </View>
           </View>
         </Modal>
 
-
         <View style={styles.somespace} />
         <View style={styles.somespace} />
-        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Étapes de la recette</Text>
+        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
+          Étapes de la recette
+        </Text>
         <View style={styles.somespace} />
 
         {newRecipe.recipe.map((step, index) => (
@@ -628,12 +721,14 @@ export default function ({ route, navigation }) {
                 {index + 1}: {step}
               </Text>
             )}
-            <TouchableOpacity onPress={() => handleRemoveStep(index)} style={styles.removeButton}>
+            <TouchableOpacity
+              onPress={() => handleRemoveStep(index)}
+              style={styles.removeButton}
+            >
               <Text style={styles.removeButtonText}>Supprimer</Text>
             </TouchableOpacity>
           </View>
         ))}
-
 
         <TextInput
           placeholder="Ajouter une étape"
@@ -646,30 +741,64 @@ export default function ({ route, navigation }) {
         </TouchableOpacity>
 
         <View style={styles.somespace} />
-        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Valeurs nutritionnelles pour 100g (optionnel)</Text>
+        <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
+          Valeurs nutritionnelles pour 100g (optionnel)
+        </Text>
         <View style={styles.somespace} />
         <TextInput
           placeholder="Glucides (ex: 20g)"
           value={newRecipe.nutritionalValues.glucides}
-          onChangeText={(text) => setNewRecipe({ ...newRecipe, nutritionalValues: { ...newRecipe.nutritionalValues, glucides: text } })}
+          onChangeText={(text) =>
+            setNewRecipe({
+              ...newRecipe,
+              nutritionalValues: {
+                ...newRecipe.nutritionalValues,
+                glucides: text,
+              },
+            })
+          }
           style={styles.input}
         />
         <TextInput
           placeholder="Protéines (ex: 30g)"
           value={newRecipe.nutritionalValues.proteines}
-          onChangeText={(text) => setNewRecipe({ ...newRecipe, nutritionalValues: { ...newRecipe.nutritionalValues, proteines: text } })}
+          onChangeText={(text) =>
+            setNewRecipe({
+              ...newRecipe,
+              nutritionalValues: {
+                ...newRecipe.nutritionalValues,
+                proteines: text,
+              },
+            })
+          }
           style={styles.input}
         />
         <TextInput
           placeholder="Graisses (ex: 10g)"
           value={newRecipe.nutritionalValues.graisses}
-          onChangeText={(text) => setNewRecipe({ ...newRecipe, nutritionalValues: { ...newRecipe.nutritionalValues, graisses: text } })}
+          onChangeText={(text) =>
+            setNewRecipe({
+              ...newRecipe,
+              nutritionalValues: {
+                ...newRecipe.nutritionalValues,
+                graisses: text,
+              },
+            })
+          }
           style={styles.input}
         />
         <TextInput
           placeholder="kCal (ex: 400 kCal)"
           value={newRecipe.nutritionalValues.kiloCalories}
-          onChangeText={(text) => setNewRecipe({ ...newRecipe, nutritionalValues: { ...newRecipe.nutritionalValues, kiloCalories: text } })}
+          onChangeText={(text) =>
+            setNewRecipe({
+              ...newRecipe,
+              nutritionalValues: {
+                ...newRecipe.nutritionalValues,
+                kiloCalories: text,
+              },
+            })
+          }
           style={styles.input}
         />
 
@@ -677,7 +806,10 @@ export default function ({ route, navigation }) {
           <TouchableOpacity style={styles.mainButton} onPress={handleSubmit}>
             <Text style={styles.mainButtonText}>Ajouter la recette</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('RecipeLibrary')}>
+          <TouchableOpacity
+            style={styles.mainButton}
+            onPress={() => navigation.navigate("RecipeLibrary")}
+          >
             <Text style={styles.mainButtonText}>Retour à la bibliothèque</Text>
           </TouchableOpacity>
         </View>
@@ -754,18 +886,24 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: "center",
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
+  scrollContainer: {
+    maxHeight: height * 0.5,  // Hauteur maximale avant de commencer à défiler
+  },
   modalContent: {
-    backgroundColor: 'white',
-    margin: 20,
+    backgroundColor: "white",
+    margin: 10,
     padding: 20,
     borderRadius: 10,
+    elevation: 5, // Pour l'ombre sur Android
   },
   modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 15,
+    textAlign: "center",
   },
   modalOption: {
     fontSize: 16,
@@ -773,6 +911,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+  },
+  closeButton: {
+    backgroundColor: "#007bff",
+    padding: 5,
+    borderRadius: 10,
+    marginVertical: 2.5,
+    alignItems: "center",
+  },
+  closeButtonText: {
+    color: "#fff", // Couleur du texte
+    fontSize: 16, // Taille du texte
+    textAlign: "center", // Centre le texte
   },
   sectionTitle: {
     fontSize: 18,

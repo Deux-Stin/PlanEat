@@ -4,13 +4,9 @@ import React, { useEffect, useState, useRef  } from 'react';
 import { useFonts } from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { ActivityIndicator, View, Text, StyleSheet, PermissionsAndroid, Platform, TouchableOpacity  } from 'react-native';
+import { ActivityIndicator, Dimensions, View, Text, StyleSheet, PermissionsAndroid, Platform, TouchableOpacity  } from 'react-native';
 import { globalStyles } from './globalStyles';
-// import AppLoading from 'expo-app-loading'; // Utilisez cette ligne si vous avez encore besoin de l'écran de chargement
-import * as SplashScreen from 'expo-splash-screen';
 import LottieView from 'lottie-react-native';
-
-// SplashScreen.preventAutoHideAsync(); // Bloque l'affichage du splash jusqu'à ce qu'il soit explicitement masqué
 
 import HomeScreen from './screens/HomeScreen';
 import RecipeLibrary from './screens/RecipeLibrary';
@@ -22,9 +18,12 @@ import useInitializeRecipes from './hooks/useInitializeRecipes';
 import SeasonalCalendarScreen from './screens/SeasonalCalendarScreen';
 import MealPlanSummaryScreen from './screens/MealPlanSummaryScreen';
 import RecipeSelectionScreen from './screens/RecipeSelectionScreen';
+import MealAssignmentScreen from './screens/MealAssignmentScreen';
 import { MealPlanProvider } from './screens/MealPlanContext';
 
 const Stack = createStackNavigator();
+
+const { width, height } = Dimensions.get('window');
 
 export default function App() {
 
@@ -126,6 +125,9 @@ export default function App() {
         {/* Ecran de sélection des recettes */}
         <Stack.Screen name="RecipeSelectionScreen" component={RecipeSelectionScreen} options={{ title: 'Faites vos choix' }} />
 
+        {/* Attribution après le choix des recettes */}
+        <Stack.Screen name="MealAssignmentScreen" component={MealAssignmentScreen} options={{ title: 'Attribuer vos recettes' }} />
+        
         {/* Calendrier de saison */}
         <Stack.Screen 
           name="SeasonalCalendarScreen" 
@@ -175,7 +177,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9F9F9',
   },
   lottie: {
-    width: 300,
-    height: 300,
+    width: width * 1.1,
+    height: width * 1.0,
+    paddingRight: width * 0.1
   },
 });

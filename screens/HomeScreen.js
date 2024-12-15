@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   historyButtonText: {
-    fontSize: 13,
+    fontSize: 16,
     textAlign: "center",
   },
   deleteButton: {
