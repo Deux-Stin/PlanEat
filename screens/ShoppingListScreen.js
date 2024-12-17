@@ -1,14 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  View,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  StyleSheet,
-  Modal,
-  Dimensions
-} from "react-native";
+import { View, ScrollView, TextInput, TouchableOpacity, Alert, StyleSheet, Modal, Dimensions } from "react-native";
 import { Text, Button, Checkbox } from "react-native-paper";
 import * as Clipboard from "expo-clipboard";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
@@ -17,20 +8,16 @@ import moment from "moment";
 import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper"; // Import du wrapper
 import { globalStyles } from "../globalStyles";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 export default function ShoppingListScreen({ navigation, route }) {
-  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage(
-    "backgroundIndex",
-    0
-  ); //Recupère l'index du background
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage("backgroundIndex", 0); //Recupère l'index du background
   const [shoppingList, setShoppingList] = useState({});
   const [mealPlanHistory, setMealPlanHistory] = useState([]);
-  const [
-    mealPlanHistorySaveAsync,
-    setmealPlanHistorySaveAsync,
-    getStoredValue,
-  ] = useAsyncStorage("mealPlanHistory", []);
+  const [mealPlanHistorySaveAsync, setmealPlanHistorySaveAsync, getStoredValue] = useAsyncStorage(
+    "mealPlanHistory",
+    []
+  );
   const [checkedItems, setCheckedItems] = useState({});
   const [manualItem, setManualItem] = useState("");
   const [newItemQuantity, setnewItemQuantity] = useState(""); // État pour la valeur numérique du modal d'unité
@@ -40,21 +27,9 @@ export default function ShoppingListScreen({ navigation, route }) {
   const hasGeneratedShoppingList = useRef(false); // Utiliser useRef pour contrôler l'appel de la sauvegarde
   const [isHistoryLoaded, setIsHistoryLoaded] = useState(false);
 
-  const availableUnits = [
-    "unité",
-    "g",
-    "kg",
-    "ml",
-    "L",
-    "c. à café",
-    "c. à soupe",
-    "boîte",
-    "verre",
-    "gousse(s)",
-  ];
+  const availableUnits = ["unité", "g", "kg", "ml", "L", "c. à café", "c. à soupe", "boîte", "verre", "gousse(s)"];
   const availableRayons = [
     "Divers",
-    ,
     "Alcool",
     "Condiments",
     "Pâtes",
@@ -80,33 +55,32 @@ export default function ShoppingListScreen({ navigation, route }) {
   const [selectedRayon, setSelectedRayon] = useState("Divers");
 
   const isMealPlanInHistory = (mealPlan, history) => {
-    return history.some(entry => JSON.stringify(entry.mealPlan) === JSON.stringify(mealPlan));
-  };  
+    return history.some((entry) => JSON.stringify(entry.mealPlan) === JSON.stringify(mealPlan));
+  };
 
   useEffect(() => {
     loadMealPlanHistory();
-  }, []);  
+  }, []);
 
   useEffect(() => {
     if (!isHistoryLoaded) return; // Ne pas continuer tant que l'historique n'est pas chargé
     // Charger l'historique une seule fois
     // loadMealPlanHistory();
-  
+
     // Vérifier et générer la liste uniquement si elle n'existe pas
     if (mealPlan && !hasGeneratedShoppingList.current) {
       const alreadyExists = isMealPlanInHistory(mealPlan, mealPlanHistory);
 
-      console.log('alreadyExists :', alreadyExists)
-      console.log('mealPlan :', mealPlan)
-      console.log('mealPlanHistory :', mealPlanHistory)
+      console.log("alreadyExists :", alreadyExists);
+      console.log("mealPlan :", mealPlan);
+      console.log("mealPlanHistory :", mealPlanHistory);
 
-  
       if (!alreadyExists) {
         console.log("Génération et sauvegarde de la shopping list...");
-  
+
         const ingredients = generateShoppingList(mealPlan);
         setShoppingList(ingredients);
-  
+
         // Sauvegarder le mealPlan
         handleSaveMealPlan();
       } else {
@@ -114,11 +88,10 @@ export default function ShoppingListScreen({ navigation, route }) {
         const ingredients = generateShoppingList(mealPlan);
         setShoppingList(ingredients);
       }
-  
+
       hasGeneratedShoppingList.current = true; // Empêcher les appels multiples
     }
   }, [mealPlan, isHistoryLoaded]); // Ne pas inclure mealPlanHistory pour éviter les boucles
-  
 
   useEffect(() => {
     const loadCheckedItems = async () => {
@@ -128,20 +101,13 @@ export default function ShoppingListScreen({ navigation, route }) {
         );
 
         if (activeMealPlan) {
-          const savedCheckedItems = await AsyncStorage.getItem(
-            `checkedItems_${activeMealPlan.date}`
-          );
-          setCheckedItems(
-            savedCheckedItems ? JSON.parse(savedCheckedItems) : {}
-          );
+          const savedCheckedItems = await AsyncStorage.getItem(`checkedItems_${activeMealPlan.date}`);
+          setCheckedItems(savedCheckedItems ? JSON.parse(savedCheckedItems) : {});
         } else {
           setCheckedItems({});
         }
       } catch (error) {
-        console.error(
-          "Erreur lors de la récupération de l'état des éléments cochés",
-          error
-        );
+        console.error("Erreur lors de la récupération de l'état des éléments cochés", error);
       }
     };
 
@@ -171,24 +137,16 @@ export default function ShoppingListScreen({ navigation, route }) {
 
           recipe.ingredients.forEach((ingredient) => {
             const { name, quantity, unit, rayon } = ingredient;
-            const adjustedQuantity = parseFloat(
-              adjustQuantity(quantity, servingsSelected, servings)
-            );
+            const adjustedQuantity = parseFloat(adjustQuantity(quantity, servingsSelected, servings));
 
             if (!ingredientsList[rayon]) {
               ingredientsList[rayon] = [];
             }
 
-            const existingIngredient = ingredientsList[rayon].find(
-              (item) => item.name === name
-            );
+            const existingIngredient = ingredientsList[rayon].find((item) => item.name === name);
 
             if (existingIngredient) {
-              const totalQuantity = addQuantities(
-                existingIngredient.quantity,
-                adjustedQuantity,
-                unit
-              );
+              const totalQuantity = addQuantities(existingIngredient.quantity, adjustedQuantity, unit);
               existingIngredient.quantity = totalQuantity.quantity;
               existingIngredient.unit = totalQuantity.unit;
             } else {
@@ -203,37 +161,25 @@ export default function ShoppingListScreen({ navigation, route }) {
         } else {
           Object.entries(mealContent).forEach(([subMealType, recipeData]) => {
             if (recipeData.ingredients) {
-              const servingsSelected =
-                recipeData.servingsSelected || recipeData.servings;
+              const servingsSelected = recipeData.servingsSelected || recipeData.servings;
               const servings = recipeData.servings;
 
               recipeData.ingredients.forEach((ingredient) => {
                 const { name, quantity, unit, rayon } = ingredient;
-                const adjustedQuantity = parseFloat(
-                  adjustQuantity(quantity, servingsSelected, servings)
-                );
+                const adjustedQuantity = parseFloat(adjustQuantity(quantity, servingsSelected, servings));
 
                 if (!ingredientsList[rayon]) {
                   ingredientsList[rayon] = [];
                 }
 
-                const existingIngredient = ingredientsList[rayon].find(
-                  (item) => item.name === name
-                );
+                const existingIngredient = ingredientsList[rayon].find((item) => item.name === name);
 
                 if (existingIngredient) {
-                  const totalQuantity = addQuantities(
-                    existingIngredient.quantity,
-                    adjustedQuantity,
-                    unit
-                  );
+                  const totalQuantity = addQuantities(existingIngredient.quantity, adjustedQuantity, unit);
                   existingIngredient.quantity = totalQuantity.quantity;
                   existingIngredient.unit = totalQuantity.unit;
                 } else {
-                  const formattedQuantity = formatQuantity(
-                    adjustedQuantity,
-                    unit
-                  );
+                  const formattedQuantity = formatQuantity(adjustedQuantity, unit);
                   ingredientsList[rayon].push({
                     name,
                     quantity: formattedQuantity.quantity,
@@ -250,9 +196,7 @@ export default function ShoppingListScreen({ navigation, route }) {
     const sortedIngredientsList = Object.keys(ingredientsList)
       .sort((a, b) => a.localeCompare(b))
       .reduce((acc, rayon) => {
-        acc[rayon] = ingredientsList[rayon].sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
+        acc[rayon] = ingredientsList[rayon].sort((a, b) => a.name.localeCompare(b.name));
         return acc;
       }, {});
 
@@ -339,14 +283,32 @@ export default function ShoppingListScreen({ navigation, route }) {
     console.log(mealPlan);
 
     const dates = Object.keys(mealPlan);
-    const startDate = moment(dates[0]).format("DD/MM");
-    const endDate = moment(dates[dates.length - 1]).format("DD/MM");
+    const startDate = moment(dates[0]).format("YYYY-MM-DD");
+    const endDate = moment(dates[dates.length - 1]).format("YYYY-MM-DD");
     const now = moment().format(`DD/MM/YYYY à HH:mm`);
 
-    const title =
-      startDate === endDate
-        ? `${now} - menus du ${startDate}`
-        : `${now} - menus du ${startDate} au ${endDate}`;
+    console.log("startDate", startDate, "endDate", endDate);
+
+    console.log(
+      'startDate === "2000-01-01" && endDate === "2000-01-01"',
+      startDate === "2000-01-01" && endDate === "2000-01-01"
+    );
+
+    // Titre conditionnel avec comparaison directe des chaînes
+    let title;
+
+    if (startDate === "2000-01-01" && endDate === "2000-01-01") {
+      title = `${now} - sans planification`;
+    } else if (startDate === endDate) {
+      const formattedDate = startDate.split("-").reverse().join("/"); // Transformer YYYY-MM-DD en DD/MM
+      title = `${now} - menus du ${formattedDate}`;
+    } else {
+      const formattedStart = startDate.split("-").reverse().join("/"); // YYYY-MM-DD -> DD/MM
+      const formattedEnd = endDate.split("-").reverse().join("/"); // YYYY-MM-DD -> DD/MM
+      title = `${now} - menus du ${formattedStart} au ${formattedEnd}`;
+    }
+
+    console.log("title:", title);
 
     const newEntry = {
       date: now,
@@ -364,11 +326,7 @@ export default function ShoppingListScreen({ navigation, route }) {
 
       // Trier et limiter à 10 éléments
       const sortedHistory = updatedHistory
-        .sort(
-          (a, b) =>
-            moment(b.date, "DD/MM/YYYY à HH:mm") -
-            moment(a.date, "DD/MM/YYYY à HH:mm")
-        )
+        .sort((a, b) => moment(b.date, "DD/MM/YYYY à HH:mm") - moment(a.date, "DD/MM/YYYY à HH:mm"))
         .slice(0, 10);
 
       // Mettre à jour l'état local et sauvegarder
@@ -398,7 +356,6 @@ export default function ShoppingListScreen({ navigation, route }) {
       setIsHistoryLoaded(true); // Marque le chargement comme terminé
     }
   };
-  
 
   const addManualItem = () => {
     if (manualItem && newItemQuantity) {
@@ -416,9 +373,7 @@ export default function ShoppingListScreen({ navigation, route }) {
 
       // Vérifiez si l'élément existe déjà
       const existingRayonList = shoppingList[selectedRayon] || [];
-      const existingItem = existingRayonList.find(
-        (item) => item.name.toLowerCase() === newItem.name.toLowerCase()
-      );
+      const existingItem = existingRayonList.find((item) => item.name.toLowerCase() === newItem.name.toLowerCase());
 
       if (existingItem) {
         // Si l'élément existe, incrémentez sa quantité
@@ -446,10 +401,7 @@ export default function ShoppingListScreen({ navigation, route }) {
       if (ingredient) {
         // Si quantity est une chaîne (et potentiellement une fraction), on la convertit
         let currentQuantity;
-        if (
-          typeof ingredient.quantity === "string" &&
-          ingredient.quantity.includes("/")
-        ) {
+        if (typeof ingredient.quantity === "string" && ingredient.quantity.includes("/")) {
           // Si la quantité est une fraction, la convertir en décimal
           currentQuantity = parseFloat(fractionToDecimal(ingredient.quantity));
         } else {
@@ -538,9 +490,7 @@ export default function ShoppingListScreen({ navigation, route }) {
           }
         } else {
           // Si la quantité devient 0 ou négative, supprimer l'ingrédient
-          updatedList[rayon] = updatedList[rayon].filter(
-            (item) => item.name !== name
-          );
+          updatedList[rayon] = updatedList[rayon].filter((item) => item.name !== name);
         }
       }
       return updatedList;
@@ -551,25 +501,16 @@ export default function ShoppingListScreen({ navigation, route }) {
     const listText = Object.keys(shoppingList)
       .map(
         (rayon) =>
-          `${rayon}:\n` +
-          shoppingList[rayon]
-            .map((item) => `${item.name}: ${item.quantity} ${item.unit}`)
-            .join("\n")
+          `${rayon}:\n` + shoppingList[rayon].map((item) => `${item.name}: ${item.quantity} ${item.unit}`).join("\n")
       )
       .join("\n\n");
 
     Clipboard.setStringAsync(listText)
       .then(() => {
-        Alert.alert(
-          "Bonne nouvelle !",
-          "\nVotre liste de courses a été copiée dans le presse-papiers !"
-        );
+        Alert.alert("Bonne nouvelle !", "\nVotre liste de courses a été copiée dans le presse-papiers !");
       })
       .catch((err) => {
-        Alert.alert(
-          "Erreur",
-          "\nErreur lors de la copie dans le presse-papiers."
-        );
+        Alert.alert("Erreur", "\nErreur lors de la copie dans le presse-papiers.");
       });
   };
 
@@ -589,8 +530,7 @@ export default function ShoppingListScreen({ navigation, route }) {
 
     if (existingItemIndex !== -1) {
       // L'élément existe déjà, on incrémente la quantité
-      const updatedQuantity =
-        shoppingList[selectedRayon][existingItemIndex].quantity + quantity;
+      const updatedQuantity = shoppingList[selectedRayon][existingItemIndex].quantity + quantity;
       const updatedItem = {
         ...shoppingList[selectedRayon][existingItemIndex],
         quantity: updatedQuantity,
@@ -626,16 +566,10 @@ export default function ShoppingListScreen({ navigation, route }) {
 
       console.log("updatedCheckedItems :", updatedCheckedItems);
       if (activeMealPlan) {
-        await AsyncStorage.setItem(
-          `checkedItems_${activeMealPlan.date}`,
-          JSON.stringify(updatedCheckedItems)
-        );
+        await AsyncStorage.setItem(`checkedItems_${activeMealPlan.date}`, JSON.stringify(updatedCheckedItems));
       }
     } catch (error) {
-      console.error(
-        "Erreur lors de la sauvegarde de l'état des éléments cochés",
-        error
-      );
+      console.error("Erreur lors de la sauvegarde de l'état des éléments cochés", error);
     }
   };
 
@@ -650,10 +584,7 @@ export default function ShoppingListScreen({ navigation, route }) {
   };
 
   return (
-    <ImageBackgroundWrapper
-      backgroundIndex={backgroundIndex}
-      imageOpacity={0.4}
-    >
+    <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.4}>
       <View style={styles.container}>
         <TouchableOpacity onPress={toggleHideMenu} style={styles.menuButton}>
           <Text style={styles.menuButtonText}>?</Text>
@@ -665,19 +596,11 @@ export default function ShoppingListScreen({ navigation, route }) {
             animationType="fade"
             onRequestClose={() => setShowHideMenu(false)}
           >
-            <TouchableOpacity
-              style={styles.modalOverlay}
-              onPress={() => setShowHideMenu(false)}
-            >
+            <TouchableOpacity style={styles.modalOverlay} onPress={() => setShowHideMenu(false)}>
               {/* <View style={styles.menu}> */}
-              <TouchableOpacity
-                onPress={toggleHideCheckedItems}
-                style={styles.menuItem}
-              >
+              <TouchableOpacity onPress={toggleHideCheckedItems} style={styles.menuItem}>
                 <Text style={styles.menuItemText}>
-                  {hideCheckedItems
-                    ? "Afficher les éléments cochés"
-                    : "Masquer les éléments cochés"}
+                  {hideCheckedItems ? "Afficher les éléments cochés" : "Masquer les éléments cochés"}
                 </Text>
               </TouchableOpacity>
               {/* </View> */}
@@ -685,7 +608,7 @@ export default function ShoppingListScreen({ navigation, route }) {
           </Modal>
 
           {/* <View style={styles.headerContainer}> */}
-            {/* <Text style={styles.header}>Liste de courses</Text> */}
+          {/* <Text style={styles.header}>Liste de courses</Text> */}
           {/* </View> */}
         </View>
 
@@ -696,27 +619,20 @@ export default function ShoppingListScreen({ navigation, route }) {
             Object.keys(shoppingList).map((rayon) => {
               // Vérifier si tous les éléments sont masqués (tous les éléments sont cochés)
               const allItemsHidden = shoppingList[rayon].every(
-                (ingredient) =>
-                  hideCheckedItems && checkedItems[ingredient.name]
+                (ingredient) => hideCheckedItems && checkedItems[ingredient.name]
               );
 
               return (
                 <View key={rayon} style={styles.rayonSection}>
                   {/* Affichage conditionnel du nom du rayon */}
-                  {!allItemsHidden && (
-                    <Text style={[styles.rayonHeader, globalStyles.textTitleDeux]}>{rayon}</Text>
-                  )}
+                  {!allItemsHidden && <Text style={[styles.rayonHeader, globalStyles.textTitleDeux]}>{rayon}</Text>}
 
                   {/* Parcours des ingrédients de chaque rayon */}
                   {(shoppingList[rayon] || []).map((ingredient) =>
                     hideCheckedItems && checkedItems[ingredient.name] ? null : (
                       <View key={ingredient.name} style={styles.ingredientRow}>
                         <Checkbox
-                          status={
-                            checkedItems[ingredient.name]
-                              ? "checked"
-                              : "unchecked"
-                          }
+                          status={checkedItems[ingredient.name] ? "checked" : "unchecked"}
                           onPress={() => {
                             toggleCheckbox(ingredient.name);
                             setCheckedItems({
@@ -726,8 +642,7 @@ export default function ShoppingListScreen({ navigation, route }) {
                           }}
                         />
                         <Text style={styles.ingredientText}>
-                          {ingredient.name.charAt(0).toUpperCase() +
-                        ingredient.name.slice(1)} - {ingredient.quantity}{" "}
+                          {ingredient.name.charAt(0).toUpperCase() + ingredient.name.slice(1)} - {ingredient.quantity}{" "}
                           {ingredient.unit}
                         </Text>
                         <View style={styles.buttonGroup}>
@@ -736,8 +651,7 @@ export default function ShoppingListScreen({ navigation, route }) {
                               decrementQuantity(
                                 rayon,
                                 ingredient.name,
-                                ingredient.unit === "g" ||
-                                  ingredient.unit === "ml"
+                                ingredient.unit === "g" || ingredient.unit === "ml"
                                   ? ingredient.quantity < 1000
                                     ? 10
                                     : 100
@@ -753,8 +667,7 @@ export default function ShoppingListScreen({ navigation, route }) {
                               incrementQuantity(
                                 rayon,
                                 ingredient.name,
-                                ingredient.unit === "g" ||
-                                  ingredient.unit === "ml"
+                                ingredient.unit === "g" || ingredient.unit === "ml"
                                   ? ingredient.quantity < 1000
                                     ? 10
                                     : 100
@@ -799,40 +712,27 @@ export default function ShoppingListScreen({ navigation, route }) {
             keyboardType="numeric" // Affiche le clavier numérique
             style={styles.numericInput} // Nouveau style pour le champ de quantité
           />
-          <TouchableOpacity
-            onPress={() => setUnitModalVisible(true)}
-            style={styles.unitButton}
-          >
+          <TouchableOpacity onPress={() => setUnitModalVisible(true)} style={styles.unitButton}>
             <Text style={styles.buttonModalText}>{selectedUnit}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => setRayonModalVisible(true)}
-            style={styles.rayonButton}
-          >
+          <TouchableOpacity onPress={() => setRayonModalVisible(true)} style={styles.rayonButton}>
             <Text style={styles.buttonModalText}>{selectedRayon}</Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          style={styles.AddButtonNotFlex}
-          onPress={addManualItem}
-        >
+        <TouchableOpacity style={styles.AddButtonNotFlex} onPress={addManualItem}>
           <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Ajouter à la liste</Text>
         </TouchableOpacity>
 
         <View style={styles.somespace}></View>
 
         {/* Modal pour sélectionner l'unité */}
-        <Modal
-          visible={unitModalVisible}
-          animationType="slide"
-          transparent={true}
-        >
+        <Modal visible={unitModalVisible} animationType="slide" transparent={true}>
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Choisir une unité</Text>
-              <ScrollView style={styles.scrollContainer}>
+              <ScrollView style={styles.scrollContainerUnit}>
                 {availableUnits.map((unit) => (
                   <TouchableOpacity
                     key={unit}
@@ -845,10 +745,7 @@ export default function ShoppingListScreen({ navigation, route }) {
                   </TouchableOpacity>
                 ))}
               </ScrollView>
-              <TouchableOpacity
-                onPress={() => setUnitModalVisible(false)}
-                style={styles.closeButton}
-              >
+              <TouchableOpacity onPress={() => setUnitModalVisible(false)} style={styles.closeButton}>
                 <Text style={styles.closeButtonText}>Fermer</Text>
               </TouchableOpacity>
             </View>
@@ -856,18 +753,13 @@ export default function ShoppingListScreen({ navigation, route }) {
         </Modal>
 
         {/* Modal pour sélectionner le rayon */}
-        <Modal
-          visible={rayonModalVisible}
-          animationType="slide"
-          transparent={true}
-        >
+        <Modal visible={rayonModalVisible} animationType="slide" transparent={true}>
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Choisir une catégorie</Text>
-              
 
               {/* Ajout du ScrollView pour permettre le défilement */}
-              <ScrollView style={styles.scrollContainer}>
+              <ScrollView style={styles.scrollContainerRayon}>
                 {availableRayons.map((rayon) => (
                   <TouchableOpacity
                     key={rayon}
@@ -882,10 +774,7 @@ export default function ShoppingListScreen({ navigation, route }) {
                 ))}
               </ScrollView>
 
-              <TouchableOpacity
-                onPress={() => setRayonModalVisible(false)}
-                style={styles.closeButton}
-              >
+              <TouchableOpacity onPress={() => setRayonModalVisible(false)} style={styles.closeButton}>
                 <Text style={styles.closeButtonText}>Fermer</Text>
               </TouchableOpacity>
             </View>
@@ -998,19 +887,19 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red',
     paddingHorizontal: 20,
     // paddingVertical: 10,
-    flexDirection: "row",        // Disposer les éléments en ligne
-    alignItems: "center",        // Centrer les éléments verticalement
-    marginLeft: "auto",          // Pousse les boutons à droite
-    justifyContent: 'space-evenly', // Espacement égal entre les boutons
-    width: 100,                   // Limiter la largeur des boutons
+    flexDirection: "row", // Disposer les éléments en ligne
+    alignItems: "center", // Centrer les éléments verticalement
+    marginLeft: "auto", // Pousse les boutons à droite
+    justifyContent: "space-evenly", // Espacement égal entre les boutons
+    width: 100, // Limiter la largeur des boutons
   },
   buttonAddDecrease: {
     // width: 30,                   // Taille des boutons
     // height: 30,                  // Taille des boutons
-    justifyContent: "center",    // Centrer le texte à l'intérieur
-    alignItems: "center",        // Centrer le texte à l'intérieur
-    borderRadius: 0,            // Bord arrondi pour les boutons
-    paddingHorizontal: 10,                  // Enlever le padding supplémentaire
+    justifyContent: "center", // Centrer le texte à l'intérieur
+    alignItems: "center", // Centrer le texte à l'intérieur
+    borderRadius: 0, // Bord arrondi pour les boutons
+    paddingHorizontal: 10, // Enlever le padding supplémentaire
   },
   actionButtons: {
     flexDirection: "row",
@@ -1038,7 +927,7 @@ const styles = StyleSheet.create({
     marginVertical: 2.5,
     flexBasis: "48%",
     alignItems: "center",
-    justifyContent: 'center',
+    justifyContent: "center",
     width: "100%",
   },
   mainButtonText: {
@@ -1066,8 +955,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)", // Fond semi-transparent pour le modal
   },
-  scrollContainer: {
-    maxHeight: height * 0.5,  // Hauteur maximale avant de commencer à défiler
+  scrollContainerUnit: {
+    maxHeight: height * 0.4, // Hauteur maximale avant de commencer à défiler
+  },
+  scrollContainerRayon: {
+    maxHeight: height * 0.65, // Hauteur maximale avant de commencer à défiler
   },
   modalContent: {
     backgroundColor: "white",

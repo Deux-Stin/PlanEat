@@ -29,14 +29,17 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
 
     if (route.params?.mealPlanFromAssignation) {
       setMealPlan(route.params.mealPlanFromAssignation);
+      console.log('MealPlan mis à jour depuis MealAssignmentScreen')
     }
-  }, [route.params?.mealPlan, route.param?.mealPlanFromAssignation]);
+  }, [route.params?.mealPlan, route.params?.mealPlanFromAssignation]);
 
   const handleBack = () => {
-    console.log("goBack");
-    setMealPlanFromAssignation(mealPlan);
-    navigation.navigate("MealAssignmentScreen");
+    console.log("Retour avec le plan modifié");
+    // navigation.navigate("MealAssignmentScreen", { mealPlanFromAssignation: mealPlan });
+    navigation.navigate("MealAssignmentScreen", { fromMealPlanSummaryScreen: true });
+
   };
+  
 
   useEffect(() => {
     // Vérifiez d'où provient la navigation avant de configurer le bouton retour

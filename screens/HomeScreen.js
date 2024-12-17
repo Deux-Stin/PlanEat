@@ -1,13 +1,5 @@
 import React, { useRef, useState, useCallback } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  Alert,
-  TouchableOpacity,
-  Dimensions,
-} from "react-native";
+import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity, Dimensions } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -19,14 +11,8 @@ import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper"; // Im
 const { width, height } = Dimensions.get("window");
 
 export default function HomeScreen({ navigation }) {
-  const [mealPlanHistory, setmealPlanHistory] = useAsyncStorage(
-    "mealPlanHistory",
-    []
-  );
-  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage(
-    "backgroundIndex",
-    0
-  ); // Sauvegarde l'index du fond
+  const [mealPlanHistory, setmealPlanHistory] = useAsyncStorage("mealPlanHistory", []);
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage("backgroundIndex", 0); // Sauvegarde l'index du fond
 
   const swipeableRefs = useRef([]);
 
@@ -56,28 +42,19 @@ export default function HomeScreen({ navigation }) {
   };
 
   const deleteHistoryItem = async (itemToDelete) => {
-    const updatedHistory = mealPlanHistory.filter(
-      (item) => item !== itemToDelete
-    );
+    const updatedHistory = mealPlanHistory.filter((item) => item !== itemToDelete);
     setmealPlanHistory(updatedHistory);
-    await AsyncStorage.setItem(
-      "mealPlanHistory",
-      JSON.stringify(updatedHistory)
-    );
+    await AsyncStorage.setItem("mealPlanHistory", JSON.stringify(updatedHistory));
   };
 
   const renderRightActions = (item, index) => (
     <TouchableOpacity
       style={styles.deleteButton}
       onPress={() => {
-        Alert.alert(
-          "Confirmation",
-          "Êtes-vous sûr de vouloir supprimer cette entrée ?",
-          [
-            { text: "Annuler", style: "cancel" },
-            { text: "Supprimer", onPress: () => deleteHistoryItem(item) },
-          ]
-        );
+        Alert.alert("Confirmation", "Êtes-vous sûr de vouloir supprimer cette entrée ?", [
+          { text: "Annuler", style: "cancel" },
+          { text: "Supprimer", onPress: () => deleteHistoryItem(item) },
+        ]);
       }}
     >
       <Text style={styles.deleteButtonText}>Supprimer</Text>
@@ -105,30 +82,39 @@ export default function HomeScreen({ navigation }) {
     >
       <TouchableOpacity
         style={styles.historyButton}
-        onPress={() => {
-          console.log("Element cliqué:", item); // Debug
-          navigation.navigate("MealPlanSummaryScreen", {
-            mealPlan: item.mealPlan,
-            date: item.date,
-          });
-        }}
+        onPress={() => handleClickInList(item)} // Ajout de l'élément cliqué
       >
         <Text style={styles.historyButtonText}>{item.title}</Text>
       </TouchableOpacity>
     </Swipeable>
   );
 
+  const handleClickInList = (item) => {
+    console.log(item)
+    if (item.mealPlan && "2000-01-01" in item.mealPlan) {
+      console.log("Clé '2000-01-01' trouvée dans mealPlan :", item.mealPlan["2000-01-01"]);
+  
+      console.log("Navigation vers ShoppingListScreen avec :", item);
+
+      // Naviguer vers ShoppingListScreen
+      navigation.navigate("ShoppingListScreen", {
+        mealPlan: item.mealPlan,
+        date: item.date,
+      });
+    } else {
+      console.log("Element cliqué:", item); // Debug
+      navigation.navigate("MealPlanSummaryScreen", {
+        mealPlan: item.mealPlan,
+        date: item.date,
+      });
+    }
+  };
+
   return (
-    <ImageBackgroundWrapper
-      backgroundIndex={backgroundIndex}
-      imageOpacity={0.6}
-    >
+    <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.6}>
       <View>
         {/* Bouton pour changer le fond */}
-        <TouchableOpacity
-          onPress={selectRandomBackground}
-          style={styles.changeBackgroundButton}
-        >
+        <TouchableOpacity onPress={selectRandomBackground} style={styles.changeBackgroundButton}>
           <Text style={styles.infoButtonText}>🎨</Text>
         </TouchableOpacity>
 
@@ -144,64 +130,35 @@ export default function HomeScreen({ navigation }) {
           style={styles.historyList}
           ListHeaderComponent={() => (
             <View style={styles.container}>
-              <Text style={[styles.title, globalStyles.textTitleUn]}>
-                Bienvenue dans PlanEat
-              </Text>
+              <Text style={[styles.title, globalStyles.textTitleUn]}>Bienvenue dans PlanEat</Text>
 
               {/* Section des boutons */}
               <View style={styles.section}>
-                <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
-                  Accès rapide
-                </Text>
+                <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Accès rapide</Text>
                 <View style={styles.buttonContainer}>
                   <TouchableOpacity
                     style={styles.mainButton}
-                    onPress={() =>
-                      navigation.navigate("RecipeLibrary", { refresh: true })
-                    }
+                    onPress={() => navigation.navigate("RecipeLibrary", { refresh: true })}
                   >
-                    <Text
-                      style={[
-                        styles.mainButtonText,
-                        globalStyles.textTitleTrois,
-                      ]}
-                    >
-                      Bibliothèque de recettes
-                    </Text>
+                    <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Bibliothèque de recettes</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.mainButton}
-                    onPress={() =>
-                      navigation.navigate("MealPlanScreen", { fromHome: true })
-                    }
+                    onPress={() => navigation.navigate("MealPlanScreen", { fromHome: true })}
                   >
-                    <Text
-                      style={[
-                        styles.mainButtonText,
-                        globalStyles.textTitleTrois,
-                      ]}
-                    >
-                      Planifier vos repas
-                    </Text>
+                    <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Planifier vos repas</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.mainButton}
                     onPress={() => {
                       if (mealPlanHistory && mealPlanHistory.length > 0) {
                         const sortedHistory = [...mealPlanHistory].sort(
-                          (a, b) =>
-                            moment(b.date, "DD/MM/YYYY à HH:mm") -
-                            moment(a.date, "DD/MM/YYYY à HH:mm")
+                          (a, b) => moment(b.date, "DD/MM/YYYY à HH:mm") - moment(a.date, "DD/MM/YYYY à HH:mm")
                         );
                         const lastMealPlan = sortedHistory[0].mealPlan;
                         const dateLastMealPlan = sortedHistory[0].date;
 
-                        console.log(
-                          "Dernier MealPlan: ",
-                          dateLastMealPlan,
-                          " lastMealPlan ",
-                          lastMealPlan
-                        );
+                        console.log("Dernier MealPlan: ", dateLastMealPlan, " lastMealPlan ", lastMealPlan);
                         navigation.navigate("ShoppingListScreen", {
                           mealPlan: lastMealPlan,
                           date: dateLastMealPlan,
@@ -215,12 +172,7 @@ export default function HomeScreen({ navigation }) {
                       }
                     }}
                   >
-                    <Text
-                      style={[
-                        styles.mainButtonText,
-                        globalStyles.textTitleTrois,
-                      ]}
-                    >
+                    <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>
                       Voir ma dernière liste de courses
                     </Text>
                   </TouchableOpacity>
@@ -228,27 +180,16 @@ export default function HomeScreen({ navigation }) {
                   {/* Nouveau bouton pour accéder au calendrier des fruits et légumes */}
                   <TouchableOpacity
                     style={styles.mainButton}
-                    onPress={() =>
-                      navigation.navigate("SeasonalCalendarScreen")
-                    }
+                    onPress={() => navigation.navigate("SeasonalCalendarScreen")}
                   >
-                    <Text
-                      style={[
-                        styles.mainButtonText,
-                        globalStyles.textTitleTrois,
-                      ]}
-                    >
-                      Calendrier de saison
-                    </Text>
+                    <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Calendrier de saison</Text>
                   </TouchableOpacity>
                 </View>
               </View>
 
               {/* Section historique */}
               <View style={styles.section}>
-                <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
-                  Historique des listes de courses
-                </Text>
+                <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Historique des listes de courses</Text>
               </View>
             </View>
           )}
@@ -312,7 +253,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   historyButton: {
-    // height: 40,
+    height: 40, // avoir la même taille que le bouton supprimer
     paddingVertical: 10,
     paddingHorizontal: 5,
     backgroundColor: "#f0f0f0",

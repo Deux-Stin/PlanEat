@@ -1,21 +1,5 @@
-import React, {
-  useState,
-  useRef,
-  useMemo,
-  useEffect,
-  useLayoutEffect,
-} from "react";
-import {
-  Platform,
-  View,
-  Text,
-  Button,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-  Modal,
-} from "react-native";
+import React, { useState, useRef, useMemo, useEffect, useLayoutEffect } from "react";
+import { Platform, View, Text, Button, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper"; // Import du wrapper
@@ -24,18 +8,10 @@ import RecipeUtils from "../utils/RecipeUtils"; // Import des fonctions utilitai
 import { globalStyles } from "../globalStyles";
 
 export default function RecipeLibrary({ navigation, route }) {
-  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage(
-    "backgroundIndex",
-    0
-  ); // Recupère l'index du background actuel
-  const [recipes, setRecipes, getStoredRecipes] = useAsyncStorage(
-    "recipes",
-    []
-  );
-  const [mealChoice, setMealChoice, getStoredMealChoice] = useAsyncStorage(
-    "mealChoice",
-    []
-  );
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage("backgroundIndex", 0); // Recupère l'index du background actuel
+  const [recipes, setRecipes, getStoredRecipes] = useAsyncStorage("recipes", []);
+  const [mealChoice, setMealChoice, getStoredMealChoice] = useAsyncStorage("mealChoice", []);
+    const [defaultServings, setDefaultServings] = useAsyncStorage("defaultServings", 2);
   const [mealPlanFromAssignation, setMealPlanFromAssignation] = useAsyncStorage("mealPlanFromAssignation", {});
   const [expandedCategory, setExpandedCategory] = useState(null);
 
@@ -55,11 +31,7 @@ export default function RecipeLibrary({ navigation, route }) {
   };
 
   const toggleSeason = (season) => {
-    setSelectedSeason((prev) =>
-      prev.includes(season)
-        ? prev.filter((s) => s !== season)
-        : [...prev, season]
-    );
+    setSelectedSeason((prev) => (prev.includes(season) ? prev.filter((s) => s !== season) : [...prev, season]));
   };
 
   const toggleDuration = (duration) => {
@@ -78,10 +50,7 @@ export default function RecipeLibrary({ navigation, route }) {
         console.error("Erreur lors de la sauvegarde des recettes :", error);
       }
     } else {
-      console.error(
-        "Tentative de sauvegarde d'un tableau invalide.",
-        newRecipes
-      );
+      console.error("Tentative de sauvegarde d'un tableau invalide.", newRecipes);
     }
   };
 
@@ -101,6 +70,7 @@ export default function RecipeLibrary({ navigation, route }) {
       const storedMealChoice = await getStoredMealChoice();
       // console.log("Reloading mealChoice on focus:", storedMealChoice);
       setMealChoice(storedMealChoice);
+      // console.log(JSON.stringify(storedMealChoice,2,null));
     });
 
     return unsubscribe; // Nettoie l'écouteur lors du démontage
@@ -118,18 +88,11 @@ export default function RecipeLibrary({ navigation, route }) {
         </TouchableOpacity>
       ),
       headerRight: () => (
-        <TouchableOpacity
-          onPress={() => handlePanierClick()}
-          style={styles.menuButton}
-        >
+        <TouchableOpacity onPress={() => handlePanierClick()} style={styles.iconButton}>
           <Text style={styles.panier}>🛒</Text>
           <View style={styles.recipesNumber}>
             <Text style={styles.recipesNumberText}>
-              {Array.isArray(recipeNames)
-                ? recipeNames.length > 10
-                  ? "..."
-                  : recipeNames.length
-                : "0"}
+              {Array.isArray(recipeNames) ? (recipeNames.length > 10 ? "..." : recipeNames.length) : "0"}
             </Text>
           </View>
         </TouchableOpacity>
@@ -186,35 +149,22 @@ export default function RecipeLibrary({ navigation, route }) {
   };
 
   const deleteAllRecipes = () => {
-    Alert.alert(
-      "Confirmation",
-      "Voulez-vous vraiment supprimer toutes les recettes ?",
-      [
-        { text: "Annuler", style: "cancel" },
-        {
-          text: "Oui",
-          onPress: () => {
-            setRecipes([]);
-            saveRecipes([]);
-          },
+    Alert.alert("Confirmation", "Voulez-vous vraiment supprimer toutes les recettes ?", [
+      { text: "Annuler", style: "cancel" },
+      {
+        text: "Oui",
+        onPress: () => {
+          setRecipes([]);
+          saveRecipes([]);
         },
-      ]
-    );
+      },
+    ]);
   };
 
-  const categories = [
-    "Apéritif",
-    "Petit-déjeuner",
-    "Entrée",
-    "Plat",
-    "Dessert",
-    "Cocktail",
-  ];
+  const categories = ["Apéritif", "Petit-déjeuner", "Entrée", "Plat", "Dessert", "Cocktail"];
 
   const toggleCategory = (category) => {
-    setExpandedCategory((prevCategory) =>
-      prevCategory === category ? null : category
-    );
+    setExpandedCategory((prevCategory) => (prevCategory === category ? null : category));
   };
 
   const renderRecipe = (recipe) => {
@@ -239,18 +189,14 @@ export default function RecipeLibrary({ navigation, route }) {
       <TouchableOpacity
         key={recipe.id}
         style={styles.recipeItem}
-        onPress={() =>
-          navigation.navigate("RecipeDetail", { recipe }, { refresh: true })
-        }
+        onPress={() => navigation.navigate("RecipeDetail", { recipe }, { refresh: true })}
       >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text style={[styles.recipeSource, { marginRight: 10 }]}>
             {getSourceIcon(recipe.source)}
             {/* Affiche l'émoticône et la source */}
           </Text>
-          <Text style={[styles.recipeName, globalStyles.textTitleDeux]}>
-            {recipe.name}
-          </Text>
+          <Text style={[styles.recipeName, globalStyles.textTitleDeux]}>{recipe.name}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -261,11 +207,9 @@ export default function RecipeLibrary({ navigation, route }) {
       // console.log('recipe.source : ', recipe.source)
       const recipeSeasons = recipe.season || [];
       const matchesSeason =
-        selectedSeasons.length === 0 ||
-        recipeSeasons.some((season) => selectedSeasons.includes(season));
+        selectedSeasons.length === 0 || recipeSeasons.some((season) => selectedSeasons.includes(season));
       const matchesDuration =
-        selectedDuration === null ||
-        (recipe.duration && recipe.duration.includes(selectedDuration));
+        selectedDuration === null || (recipe.duration && recipe.duration.includes(selectedDuration));
       // console.log('recipe.duration :', recipe.duration)
       // console.log('matchesDuration', matchesDuration)
       return matchesSeason && matchesDuration;
@@ -275,9 +219,7 @@ export default function RecipeLibrary({ navigation, route }) {
   const renderFilters = () => (
     <View style={styles.section}>
       {/* <Text style={styles.filtersHeader}></Text> */}
-      <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
-        Filtres
-      </Text>
+      <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Filtres</Text>
       <View style={styles.filterRow}>
         {Object.keys(seasonColors)
           .slice(0, -1)
@@ -287,20 +229,12 @@ export default function RecipeLibrary({ navigation, route }) {
               style={[
                 styles.filterButton,
                 {
-                  backgroundColor: selectedSeasons.includes(season)
-                    ? seasonColors[season]
-                    : "#fff", // Couleur par défaut
+                  backgroundColor: selectedSeasons.includes(season) ? seasonColors[season] : "#fff", // Couleur par défaut
                 },
               ]}
               onPress={() => toggleSeason(season)}
             >
-              <Text
-                style={[
-                  styles.filterText,
-                  globalStyles.textTitleDeux,
-                  { fontSize: 16 },
-                ]}
-              >
+              <Text style={[styles.filterText, globalStyles.textTitleDeux, { fontSize: 16 }]}>
                 {season.charAt(0).toUpperCase() + season.slice(1)}
               </Text>
             </TouchableOpacity>
@@ -311,15 +245,12 @@ export default function RecipeLibrary({ navigation, route }) {
           style={[
             styles.durationButton,
             {
-              backgroundColor:
-                selectedDuration === "court" ? "#FCE7E8" : "#fff",
+              backgroundColor: selectedDuration === "court" ? "#FCE7E8" : "#fff",
             },
           ]}
           onPress={() => toggleDuration("court")}
         >
-          <Text style={[styles.filterText, globalStyles.textTitleDeux]}>
-            Court
-          </Text>
+          <Text style={[styles.filterText, globalStyles.textTitleDeux]}>Court</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
@@ -330,9 +261,7 @@ export default function RecipeLibrary({ navigation, route }) {
           ]}
           onPress={() => toggleDuration("long")}
         >
-          <Text style={[styles.filterText, globalStyles.textTitleDeux]}>
-            Long
-          </Text>
+          <Text style={[styles.filterText, globalStyles.textTitleDeux]}>Long</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -347,25 +276,16 @@ export default function RecipeLibrary({ navigation, route }) {
 
     return (
       <View key={category} style={styles.categoryContainer}>
-        <TouchableOpacity
-          style={styles.categoryHeader}
-          onPress={() => toggleCategory(category)}
-        >
-          <Text style={[styles.categoryTitle, globalStyles.textTitleDeux]}>
-            {category}
-          </Text>
-          <Text style={styles.categoryToggle}>
-            {expandedCategory === category ? "-" : "+"}
-          </Text>
+        <TouchableOpacity style={styles.categoryHeader} onPress={() => toggleCategory(category)}>
+          <Text style={[styles.categoryTitle, globalStyles.textTitleDeux]}>{category}</Text>
+          <Text style={styles.categoryToggle}>{expandedCategory === category ? "-" : "+"}</Text>
         </TouchableOpacity>
         {expandedCategory === category && (
           <View style={styles.recipeList}>
             {categoryRecipes.length > 0 ? (
               categoryRecipes.map((recipe) => renderRecipe(recipe))
             ) : (
-              <Text style={styles.noRecipeText}>
-                Aucune recette dans cette catégorie.
-              </Text>
+              <Text style={styles.noRecipeText}>Aucune recette dans cette catégorie.</Text>
             )}
           </View>
         )}
@@ -385,10 +305,7 @@ export default function RecipeLibrary({ navigation, route }) {
       setMealChoice([]);
       setMealPlanFromAssignation([]);
       // setIsResetting(true); // Indiquer qu'une réinitialisation est en cours
-      Alert.alert(
-        "Réinitialisation",
-        "Les recettes sélectionnées ont été réinitialisées."
-      );
+      Alert.alert("Réinitialisation", "Les recettes sélectionnées ont été réinitialisées.");
 
       // Annuler le timeout actif pour éviter d'afficher le modal
       if (timeoutRef.current) {
@@ -414,11 +331,53 @@ export default function RecipeLibrary({ navigation, route }) {
     }
   };
 
+  const deleteRecipeModal = (indexToDelete) => {
+    setMealChoice((prevChoices) => prevChoices.filter((_, index) => index !== indexToDelete));
+  };
+
+  const handleGoToShoppingList = async () => {
+    setModalVisible(false);
+  
+    try {
+      // Récupérer les recettes sélectionnées depuis le stockage
+      const storedMealChoice = await getStoredMealChoice();
+  
+      if (!storedMealChoice || storedMealChoice.length === 0) {
+        Alert.alert("Erreur", "Aucune recette sélectionnée pour la liste de courses.");
+        return;
+      }
+  
+      const mealPlan = {};
+      const date = "2000-01-01"; // Ajouter votre date ici
+
+      // Transformer les données pour la liste de courses
+      mealPlan[date] = storedMealChoice.reduce((acc, recipe) => {
+        const categoryKey = recipe.category; // Catégorie en minuscule
+        if (!acc[categoryKey]) acc[categoryKey] = []; // Initialiser la catégorie si nécessaire
+  
+        acc[categoryKey].push({
+          ...recipe,
+          servingsSelected: defaultServings || recipe.servingsSelected, // Ajouter ou conserver les portions sélectionnées
+        });
+  
+        return acc;
+      }, {});
+  
+      // Vérification des données avant de naviguer
+      // console.log("Liste pour la liste de courses :", JSON.stringify(mealChoiceForShoppingList, null, 2));
+      console.log(mealPlan);
+  
+      // Navigation vers l'écran de liste de courses
+      navigation.navigate("ShoppingListScreen", { mealPlan });
+    } catch (error) {
+      console.error("Erreur lors de la récupération des recettes :", error);
+      Alert.alert("Erreur", "Impossible de récupérer les recettes pour la liste de courses.");
+    }
+  };
+  
+
   return (
-    <ImageBackgroundWrapper
-      backgroundIndex={backgroundIndex}
-      imageOpacity={0.6}
-    >
+    <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.6}>
       <View>
         {/* Votre contenu principal */}
         <Modal
@@ -429,18 +388,31 @@ export default function RecipeLibrary({ navigation, route }) {
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
-              <Text>Recettes sélectionnées :</Text>
+              {/* Bouton de fermeture en haut à droite */}
+              <TouchableOpacity style={styles.closeIcon} onPress={() => setModalVisible(false)}>
+                <View style={styles.iconButtonBackground} />
+                <Text style={styles.closeIconText}>✕</Text>
+              </TouchableOpacity>
+
+              {/* Titre du Modal */}
+              <Text style={styles.sectionTitle}>Recettes sélectionnées :</Text>
+
+              {/* Liste des Recettes */}
+              <ScrollView>
               {mealChoice.map((recipe, index) => (
-                <View key={index}>
-                  <Text>{recipe.name}</Text>
+                <View key={index} style={styles.recipeRow}>
+                  <Text style={styles.recipeName}>{recipe.name}</Text>
+                  <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={() => deleteRecipeModal(index)} // Appelle la fonction de suppression
+                  >
+                    <Text style={styles.deleteButtonText}>Supprimer</Text>
+                  </TouchableOpacity>
                 </View>
               ))}
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                style={styles.closeButton}
-              >
-                <Text style={styles.closeButtonText}>Fermer</Text>
-              </TouchableOpacity>
+              </ScrollView>
+
+               {/* Boutons */}
               <TouchableOpacity
                 onPress={() => {
                   setModalVisible(false);
@@ -448,24 +420,15 @@ export default function RecipeLibrary({ navigation, route }) {
                 }}
                 style={styles.closeButton}
               >
-                <Text style={styles.closeButtonText}>
-                  Passer à l'attribution
-                </Text>
+                <Text style={styles.closeButtonText}>Passer à l'attribution</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={() => {
-                  setModalVisible(false);
-                  console.log("Ajouter une fonction qui permet de mettre une date random au mealChoice pour qu'il devienne un mealPlan")
-                  navigation.navigate("ShoppingListScreen");
-                }}
+                onPress={handleGoToShoppingList}
                 style={styles.closeButton}
               >
-                <Text style={styles.closeButtonText}>
-                  Voir ma liste de courses
-                </Text>
+                <Text style={styles.closeButtonText}>Voir ma liste de courses</Text>
               </TouchableOpacity>
-
             </View>
           </View>
         </Modal>
@@ -484,45 +447,17 @@ export default function RecipeLibrary({ navigation, route }) {
         <View style={styles.section}>
           <View style={styles.buttonContainer}>
             <Text style={styles.sectionTitle}></Text>
-            <TouchableOpacity
-              style={styles.mainButton}
-              onPress={() => navigation.navigate("AddRecipe")}
-            >
-              <Text
-                style={[styles.mainButtonText, globalStyles.textTitleTrois]}
-              >
-                Ajouter une recette
-              </Text>
+            <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate("AddRecipe")}>
+              <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Ajouter une recette</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.mainButton}
-              onPress={importRecipesFromJsonOrTxt}
-            >
-              <Text
-                style={[styles.mainButtonText, globalStyles.textTitleTrois]}
-              >
-                Importer un fichier
-              </Text>
+            <TouchableOpacity style={styles.mainButton} onPress={importRecipesFromJsonOrTxt}>
+              <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Importer un fichier</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.mainButton}
-              onPress={exportRecipesWithSelection}
-            >
-              <Text
-                style={[styles.mainButtonText, globalStyles.textTitleTrois]}
-              >
-                Exporter des recettes
-              </Text>
+            <TouchableOpacity style={styles.mainButton} onPress={exportRecipesWithSelection}>
+              <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Exporter des recettes</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.mainButton}
-              onPress={deleteAllRecipes}
-            >
-              <Text
-                style={[styles.mainButtonText, globalStyles.textTitleTrois]}
-              >
-                Supprimer mes recettes
-              </Text>
+            <TouchableOpacity style={styles.mainButton} onPress={deleteAllRecipes}>
+              <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Supprimer mes recettes</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -640,6 +575,9 @@ const styles = StyleSheet.create({
   },
   recipeName: {
     fontSize: 16,
+    flex: 1, // Le texte peut s'étendre dans l'espace disponible
+    flexShrink: 1, // Réduire la taille du texte si nécessaire
+    marginRight: 10, // Espacement entre le texte et le bouton
   },
   noRecipeText: {
     fontSize: 14,
@@ -700,6 +638,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
+    bottom: 25,
   },
   recipesNumberText: {
     color: "#fff",
@@ -712,23 +651,73 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     backgroundColor: "white",
-    maxHeight: "80%",  // Limiter la hauteur du modal
-    marginVertical: "10%",  // Ajuster cette valeur pour tenir compte de la hauteur de l'en-tête
-    marginHorizontal: "10%",  // Créer une marge horizontale pour ne pas remplir toute la largeur
+    maxHeight: "90%", // Limiter la hauteur du modal
+    marginVertical: "10%", // Ajuster cette valeur pour tenir compte de la hauteur de l'en-tête
+    marginHorizontal: "10%", // Créer une marge horizontale pour ne pas remplir toute la largeur
     borderRadius: 10,
-    padding: 20,
+    padding: 15,
+    // alignItems: "center",
+    // paddingTop: 40, // Espace pour la croix de fermeture
+    // position: "relative",
+  },
+  iconButtonBackground: {
+    ...StyleSheet.absoluteFillObject, // Prend tout l'espace du bouton
+    backgroundColor: "#D8D8D8",
+    opacity: 0.5, // Opacité appliquée uniquement au fond
+    borderRadius: 5, // Coins arrondis pour le fond
+  },
+  closeIcon: {
+    position: "absolute",
+    top: 15,
+    right: 20,
+    width: 20,
+    zIndex: 1,
+    backgroundColor: '#fff',
+    alignItems : 'center',
+  },
+  closeIconText: {
+    fontSize: 15,
+    color: "#000",
+    fontWeight: "bold",
+  },
+  recipeRow: {
+    flexDirection: "row",
+    justifyContent: "space-between", // Place le texte et le bouton aux extrémités
     alignItems: "center",
+    marginVertical: 2.5,
+    paddingVertical: 2.5,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+    // paddingHorizontal: 5,
+  },
+  deleteButton: {
+    backgroundColor: "#ff4d4d", // Rouge pour le bouton
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  deleteButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "bold",
   },
   closeButton: {
     backgroundColor: "#007bff",
-    padding: 5,
+    padding: 10,
     borderRadius: 10,
-    marginVertical: 2.5,
-    alignItems: "center",
+    marginTop: 10,
   },
   closeButtonText: {
-    color: "#fff", // Couleur du texte
-    fontSize: 16, // Taille du texte
-    textAlign: "center", // Centre le texte
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+
+  iconButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative", // Nécessaire pour positionner le cercle
   },
 });
