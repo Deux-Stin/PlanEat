@@ -2,9 +2,9 @@
   "expo": {
     "name": "PlanEat",
     "slug": "PlanEat",
-    "version": "2.0.1",
+    "version": "2.1.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/monkey_favicon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "resizeMode": "contain",
@@ -16,13 +16,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/monkey_favicon.png",
         "backgroundColor": "#F9F9F9"
       },
       "package": "com.dustyn.PlanEat"
     },
     "web": {
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/monkey_favicon.png"
     },
     "extra": {
       "eas": {

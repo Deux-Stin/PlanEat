@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
   changeBackgroundButton: {
     position: "absolute",
     zIndex: 10, // S'assurer que le bouton est au-dessus
-    top: height * 0.075, // Par exemple, 5% de la hauteur de l'écran
+    top: height * 0.05, // Par exemple, 5% de la hauteur de l'écran
     left: width * 0.05, // 5% de la largeur de l'écran width: 40,
     height: 50,
     borderRadius: 25,
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
   infoButton: {
     position: "absolute",
     zIndex: 10, // Ajout d'un zIndex pour le rendre au-dessus
-    top: height * 0.075,
+    top: height * 0.05,
     right: width * 0.05, // Ajuste la position pour qu'il ne soit pas superposé avec le bouton menu
     width: 35,
     height: 35,

@@ -109,9 +109,9 @@ export default function App() {
     <MealPlanProvider>
       {/* Gestion globale de la barre de statut */}
       <StatusBar
-        barStyle="default" // Couleur du texte (icônes et heure)
+        // barStyle="default" // Couleur du texte (icônes et heure)
         // backgroundColor="transparent" // Arrière-plan transparent
-        translucent={true} // Permet au contenu de passer sous la barre
+        translucent={false} // Permet au contenu de passer sous la barre
       />
 
       <NavigationContainer>
