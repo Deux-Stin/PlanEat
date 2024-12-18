@@ -90,10 +90,10 @@ export default function HomeScreen({ navigation }) {
   );
 
   const handleClickInList = (item) => {
-    console.log(item)
+    console.log(item);
     if (item.mealPlan && "2000-01-01" in item.mealPlan) {
       console.log("Clé '2000-01-01' trouvée dans mealPlan :", item.mealPlan["2000-01-01"]);
-  
+
       console.log("Navigation vers ShoppingListScreen avec :", item);
 
       // Naviguer vers ShoppingListScreen
@@ -202,7 +202,7 @@ export default function HomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 60,
+    marginTop: height * 0.08,
     padding: 10,
     // backgroundColor: '#fff',
     alignItems: "center",
@@ -287,9 +287,9 @@ const styles = StyleSheet.create({
   changeBackgroundButton: {
     position: "absolute",
     zIndex: 10, // S'assurer que le bouton est au-dessus
-    top: height * 0.05, // Par exemple, 5% de la hauteur de l'écran
+    top: height * 0.075, // Par exemple, 5% de la hauteur de l'écran
     left: width * 0.05, // 5% de la largeur de l'écran width: 40,
-    height: 40,
+    height: 50,
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
   infoButton: {
     position: "absolute",
     zIndex: 10, // Ajout d'un zIndex pour le rendre au-dessus
-    top: height * 0.05,
+    top: height * 0.075,
     right: width * 0.05, // Ajuste la position pour qu'il ne soit pas superposé avec le bouton menu
     width: 35,
     height: 35,

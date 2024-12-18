@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity, Modal, Alert } from "react-native";
+import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity, Modal, Alert, Dimensions } from "react-native";
 import moment from "moment";
 import * as Clipboard from "expo-clipboard";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -7,10 +7,11 @@ import { MealPlanContext } from "./MealPlanContext";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper"; // Import du wrapper
 import { globalStyles } from "../globalStyles";
+const { width, height } = Dimensions.get("window");
 
 export default function MealPlanSummaryScreen({ route, navigation }) {
   const [backgroundIndex, setBackgroundIndex] = useAsyncStorage("backgroundIndex", 0); //Recupère l'index du background
-    const [mealPlanFromAssignation, setMealPlanFromAssignation] = useAsyncStorage("mealPlanFromAssignation", {});
+  const [mealPlanFromAssignation, setMealPlanFromAssignation] = useAsyncStorage("mealPlanFromAssignation", {});
 
   const { mealPlan, setMealPlan } = useContext(MealPlanContext);
   const [showPortionModal, setShowPortionModal] = useState(false);
@@ -29,7 +30,7 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
 
     if (route.params?.mealPlanFromAssignation) {
       setMealPlan(route.params.mealPlanFromAssignation);
-      console.log('MealPlan mis à jour depuis MealAssignmentScreen')
+      console.log("MealPlan mis à jour depuis MealAssignmentScreen");
     }
   }, [route.params?.mealPlan, route.params?.mealPlanFromAssignation]);
 
@@ -37,9 +38,7 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
     console.log("Retour avec le plan modifié");
     // navigation.navigate("MealAssignmentScreen", { mealPlanFromAssignation: mealPlan });
     navigation.navigate("MealAssignmentScreen", { fromMealPlanSummaryScreen: true });
-
   };
-  
 
   useEffect(() => {
     // Vérifiez d'où provient la navigation avant de configurer le bouton retour
@@ -83,7 +82,7 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
           onPress={() => {
             const recipe = recipes.find((r) => r.name === name); // Trouve la recette dans la liste
             if (recipe) {
-              navigation.navigate("RecipeDetail", { recipe });
+              navigation.navigate("RecipeDetail", { recipe, showPaniers : false});
             }
           }}
         >
@@ -151,45 +150,56 @@ export default function MealPlanSummaryScreen({ route, navigation }) {
 
   const generateSummaryText = () => {
     let summary = "Résumé de vos repas :\n\n";
-
+  
     Object.keys(mealPlan).forEach((date) => {
       const formattedDate = moment(date).format("DD-MM-YYYY");
       summary += `${formattedDate} :\n`;
-
-      // On parcourt les types de repas (petit déjeuner, déjeuner, dîner)
-      ["breakfast", "lunch", "dinner"].forEach((mealType) => {
+  
+      // Parcours des types de repas
+      ["apéritif", "breakfast", "lunch", "dinner", "cocktail"].forEach((mealType) => {
         const meal = mealPlan[date][mealType];
         if (meal) {
-          // Titre du repas : Petit déjeuner, Déjeuner, ou Dîner
-          summary += `  ${
-            mealType === "breakfast" ? "Petit déjeuner" : mealType === "lunch" ? "Déjeuner" : "Dîner"
-          } :\n`;
-
-          // Si c'est le petit déjeuner, on affiche directement le nom du plat (s'il y en a un)
-          if (mealType === "breakfast") {
+          // Titre du repas
+          const mealTitle =
+            mealType === "breakfast"
+              ? "Petit-déjeuner"
+              : mealType === "apéritif"
+              ? "Apéritif"
+              : mealType === "cocktail"
+              ? "Cocktail"
+              : mealType === "lunch"
+              ? "Déjeuner"
+              : "Dîner";
+  
+          summary += `  ${mealTitle} :\n`;
+  
+          // Gestion des types simples (apéritif, breakfast, cocktail)
+          if (["apéritif", "breakfast", "cocktail"].includes(mealType)) {
             if (meal.name && meal.servingsSelected !== undefined) {
-              summary += `    ${meal.name} - ${meal.servingsSelected}p\n`;
+              summary += `    ${meal.name} - ${meal.servingsSelected}p\n\n`;
+            } else {
+              summary += `    Aucun plat sélectionné\n`;
             }
           } else {
-            // Pour le déjeuner et dîner, on vérifie les sous-catégories : entrée, plat, dessert
+            // Gestion des types complexes (lunch, dinner)
             ["entrée", "plat", "dessert"].forEach((category) => {
               const item = meal[category];
               if (item && item.name && item.servingsSelected !== undefined) {
                 summary += `    ${category.charAt(0).toUpperCase() + category.slice(1)} : ${item.name} - ${
                   item.servingsSelected
-                }p\n`;
+                }p\n\n`;
               }
             });
           }
         }
       });
-
+  
       summary += "\n";
     });
-
+  
     return summary;
   };
-
+  
   // Fonction pour copier le résumé dans le presse-papier
   const copyToClipboard = () => {
     const summaryText = generateSummaryText();
@@ -293,31 +303,52 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginLeft: 10,
   },
+  // mealItem: {
+  //   borderBottomWidth: 0.25,
+  //   borderBottomColor: "#bdbdbd",
+  //   flexDirection: "row",
+  //   // alignItems: "center",
+  //   marginVertical: 5,
+  //   marginLeft: 20,
+  //   flexWrap: "wrap",
+  //   justifyContent: "space-between",
+  // },
   mealItem: {
-    borderBottomWidth: 0.25,
-    borderBottomColor: "#bdbdbd",
     flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 5,
-    marginLeft: 20,
-    flexWrap: "wrap",
-    justifyContent: "space-between",
+    alignItems: "center", // Aligner les éléments verticalement au centre
+    marginVertical: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 5,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#ddd",
   },
   mealName: {
     fontSize: 16,
   },
+  // mealItemLabel: {
+  //   // width: width * 0.2, // Fixe la largeur des labels
+  //   // fontWeight: 'bold',
+  //   fontSize: 16,
+  //   marginHorizontal: 5,
+  // },
   mealItemLabel: {
-    width: 80, // Fixe la largeur des labels
-    // fontWeight: 'bold',
+    width: '25%', // Fixe la largeur des étiquettes (par exemple, "Entrée", "Plat")
     fontSize: 16,
+    // fontWeight: "bold",
+    // marginRight: 10,
+    marginLeft: 20,
   },
   mealItemValue: {
     flex: 1, // Prend le reste de l'espace disponible
+    fontSize: 16,
+    // borderLeftWidth: 2,
+    // borderLeftColor: "#ddd",
   },
   portionSelector: {
     // width: 40,
     alignSelf: "flex-end", // Le texte occupera uniquement l'espace nécessaire
     // height: 30,
+    marginLeft: 10,
     paddingHorizontal: 10,
     paddingVertical: 5,
     marginBottom: 5,

@@ -11,7 +11,7 @@ export default function RecipeLibrary({ navigation, route }) {
   const [backgroundIndex, setBackgroundIndex] = useAsyncStorage("backgroundIndex", 0); // Recupère l'index du background actuel
   const [recipes, setRecipes, getStoredRecipes] = useAsyncStorage("recipes", []);
   const [mealChoice, setMealChoice, getStoredMealChoice] = useAsyncStorage("mealChoice", []);
-    const [defaultServings, setDefaultServings] = useAsyncStorage("defaultServings", 2);
+  const [defaultServings, setDefaultServings] = useAsyncStorage("defaultServings", 2);
   const [mealPlanFromAssignation, setMealPlanFromAssignation] = useAsyncStorage("mealPlanFromAssignation", {});
   const [expandedCategory, setExpandedCategory] = useState(null);
 
@@ -337,16 +337,16 @@ export default function RecipeLibrary({ navigation, route }) {
 
   const handleGoToShoppingList = async () => {
     setModalVisible(false);
-  
+
     try {
       // Récupérer les recettes sélectionnées depuis le stockage
       const storedMealChoice = await getStoredMealChoice();
-  
+
       if (!storedMealChoice || storedMealChoice.length === 0) {
         Alert.alert("Erreur", "Aucune recette sélectionnée pour la liste de courses.");
         return;
       }
-  
+
       const mealPlan = {};
       const date = "2000-01-01"; // Ajouter votre date ici
 
@@ -354,19 +354,19 @@ export default function RecipeLibrary({ navigation, route }) {
       mealPlan[date] = storedMealChoice.reduce((acc, recipe) => {
         const categoryKey = recipe.category; // Catégorie en minuscule
         if (!acc[categoryKey]) acc[categoryKey] = []; // Initialiser la catégorie si nécessaire
-  
+
         acc[categoryKey].push({
           ...recipe,
           servingsSelected: defaultServings || recipe.servingsSelected, // Ajouter ou conserver les portions sélectionnées
         });
-  
+
         return acc;
       }, {});
-  
+
       // Vérification des données avant de naviguer
       // console.log("Liste pour la liste de courses :", JSON.stringify(mealChoiceForShoppingList, null, 2));
       console.log(mealPlan);
-  
+
       // Navigation vers l'écran de liste de courses
       navigation.navigate("ShoppingListScreen", { mealPlan });
     } catch (error) {
@@ -374,7 +374,6 @@ export default function RecipeLibrary({ navigation, route }) {
       Alert.alert("Erreur", "Impossible de récupérer les recettes pour la liste de courses.");
     }
   };
-  
 
   return (
     <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.6}>
@@ -399,20 +398,20 @@ export default function RecipeLibrary({ navigation, route }) {
 
               {/* Liste des Recettes */}
               <ScrollView>
-              {mealChoice.map((recipe, index) => (
-                <View key={index} style={styles.recipeRow}>
-                  <Text style={styles.recipeName}>{recipe.name}</Text>
-                  <TouchableOpacity
-                    style={styles.deleteButton}
-                    onPress={() => deleteRecipeModal(index)} // Appelle la fonction de suppression
-                  >
-                    <Text style={styles.deleteButtonText}>Supprimer</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
+                {mealChoice.map((recipe, index) => (
+                  <View key={index} style={styles.recipeRow}>
+                    <Text style={styles.recipeName}>{recipe.name}</Text>
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={() => deleteRecipeModal(index)} // Appelle la fonction de suppression
+                    >
+                      <Text style={styles.deleteButtonText}>Supprimer</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
               </ScrollView>
 
-               {/* Boutons */}
+              {/* Boutons */}
               <TouchableOpacity
                 onPress={() => {
                   setModalVisible(false);
@@ -423,10 +422,7 @@ export default function RecipeLibrary({ navigation, route }) {
                 <Text style={styles.closeButtonText}>Passer à l'attribution</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={handleGoToShoppingList}
-                style={styles.closeButton}
-              >
+              <TouchableOpacity onPress={handleGoToShoppingList} style={styles.closeButton}>
                 <Text style={styles.closeButtonText}>Voir ma liste de courses</Text>
               </TouchableOpacity>
             </View>
@@ -672,8 +668,8 @@ const styles = StyleSheet.create({
     right: 20,
     width: 20,
     zIndex: 1,
-    backgroundColor: '#fff',
-    alignItems : 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
   },
   closeIconText: {
     fontSize: 15,
@@ -703,17 +699,18 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     backgroundColor: "#007bff",
+    opacity: 0.9,
     padding: 10,
     borderRadius: 10,
-    marginTop: 10,
+    marginVertical: 5,
+    alignItems: 'center',
   },
   closeButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "bold",
+    // fontWeight: "bold",
     textAlign: "center",
   },
-
   iconButton: {
     flexDirection: "row",
     alignItems: "center",

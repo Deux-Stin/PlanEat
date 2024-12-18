@@ -8,8 +8,8 @@ import { globalStyles } from "../globalStyles";
 
 export default function RecipeDetail({ route, navigation }) {
   const [backgroundIndex, setBackgroundIndex] = useAsyncStorage("backgroundIndex", 0); //Recupère l'index du background
-  const { recipe } = route.params; //, addRecipe, deleteRecipe
-
+  const { recipe, showPaniers = true } = route.params; // affiche les caddy pour "+" et "-" sauf si on envoie la variable showPaniers à false 
+  
   const [storedRecipes, setStoredRecipes] = useAsyncStorage("recipes", []);
   const [mealChoice, setMealChoice] = useAsyncStorage("mealChoice", []);
 
@@ -78,27 +78,33 @@ export default function RecipeDetail({ route, navigation }) {
       <ScrollView contentContainerStyle={styles.container}>
         {/* En-tête avec le titre */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.iconButton} onPress={removeFromMealChoice}>
-            {/* Fond semi-transparent */}
-            <View style={styles.iconButtonBackground} />
+          
+        {showPaniers && (
+   <TouchableOpacity style={styles.iconButton} onPress={removeFromMealChoice}>
+      {/* Fond semi-transparent */}
+      <View style={styles.iconButtonBackground} />
 
-            {/* Contenu (icônes) */}
-            <View style={styles.iconButtonContent}>
-              <Text style={styles.panier}>🛒</Text>
-              <Text style={styles.iconMoreOrLess}>-</Text>
-            </View>
-          </TouchableOpacity>
-          <Text style={[styles.title, globalStyles.textTitleDeux]}>{recipe.name}</Text>
-          <TouchableOpacity style={styles.iconButton} onPress={addToMealChoice}>
-            {/* Fond semi-transparent */}
-            <View style={styles.iconButtonBackground} />
+      {/* Contenu (icônes) */}
+      <View style={styles.iconButtonContent}>
+         <Text style={styles.panier}>🛒</Text>
+         <Text style={styles.iconMoreOrLess}>-</Text>
+      </View>
+   </TouchableOpacity>
+)}
+<Text style={[styles.title, globalStyles.textTitleDeux]}>{recipe.name}</Text>
+{showPaniers && (
+   <TouchableOpacity style={styles.iconButton} onPress={addToMealChoice}>
+      {/* Fond semi-transparent */}
+      <View style={styles.iconButtonBackground} />
 
-            {/* Contenu (icônes) */}
-            <View style={styles.iconButtonContent}>
-              <Text style={styles.panier}>🛒</Text>
-              <Text style={styles.iconMoreOrLess}>+</Text>
-            </View>
-          </TouchableOpacity>
+      {/* Contenu (icônes) */}
+      <View style={styles.iconButtonContent}>
+         <Text style={styles.panier}>🛒</Text>
+         <Text style={styles.iconMoreOrLess}>+</Text>
+      </View>
+   </TouchableOpacity>
+)}
+
         </View>
 
         {/* Affichage de l'image de la recette */}

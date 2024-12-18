@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { View,  ScrollView,  StyleSheet,  TouchableOpacity,  Alert,  Modal} from "react-native";
+import { View, ScrollView, StyleSheet, TouchableOpacity, Alert, Modal } from "react-native";
 import { Text, Checkbox } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { Calendar, LocaleConfig } from "react-native-calendars";
@@ -27,36 +27,15 @@ LocaleConfig.locales["fr"] = {
     "Novembre",
     "Décembre",
   ],
-  monthNamesShort: [
-    "Janv.",
-    "Févr.",
-    "Mars",
-    "Avril",
-    "Mai",
-    "Juin",
-    "Juil.",
-    "Août",
-    "Sept.",
-    "Oct.",
-    "Nov.",
-    "Déc.",
-  ],
-  dayNames: [
-    "Dimanche",
-    "Lundi",
-    "Mardi",
-    "Mercredi",
-    "Jeudi",
-    "Vendredi",
-    "Samedi"
-  ],
+  monthNamesShort: ["Janv.", "Févr.", "Mars", "Avril", "Mai", "Juin", "Juil.", "Août", "Sept.", "Oct.", "Nov.", "Déc."],
+  dayNames: ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
   dayNamesShort: ["Dim.", "Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam."],
   today: "Aujourd'hui",
 };
 LocaleConfig.defaultLocale = "fr";
 
 export default function MealPlanScreen({ navigation, route }) {
-  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage('backgroundIndex', 0); //Recupère l'index du background
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage("backgroundIndex", 0); //Recupère l'index du background
   const [selectedDates, setSelectedDates] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
   const [mealsSelection, setMealsSelection] = useState({});
@@ -66,7 +45,6 @@ export default function MealPlanScreen({ navigation, route }) {
   const { mealPlan, setMealPlan } = useContext(MealPlanContext);
   const [recipes] = useAsyncStorage("recipes", []);
   const [defaultServings, setDefaultServings] = useAsyncStorage("defaultServings", 2);
-
 
   // Obtenir la date actuelle
   const today = moment().format("YYYY-MM-DD");
@@ -150,9 +128,11 @@ export default function MealPlanScreen({ navigation, route }) {
   }, [mealPlan]);
 
   const mealTypeToCategory = {
+    apéritif : "Apéritif",
     breakfast: "Petit-déjeuner",
     lunch: "Déjeuner",
     dinner: "Dîner",
+    cocktail: "Cocktail"
   };
 
   const markedDates = {};
@@ -175,7 +155,6 @@ export default function MealPlanScreen({ navigation, route }) {
       return; // Ne rien faire si la date est dans le passé
     }
 
-
     setSelectedDates((prevDates) => {
       const updatedDates = { ...prevDates };
       if (updatedDates[day.dateString]) {
@@ -188,7 +167,7 @@ export default function MealPlanScreen({ navigation, route }) {
       }
       return updatedDates;
     });
-  
+
     setMealsSelection((prevSelections) => {
       const updatedSelections = { ...prevSelections };
       if (updatedSelections[day.dateString]) {
@@ -207,7 +186,7 @@ export default function MealPlanScreen({ navigation, route }) {
   const handleMealCheckboxChange = (date, meal) => {
     console.log("=== Avant mise à jour ===");
     console.log("mealPlan:", mealPlan);
-  
+
     setMealsSelection((prevSelections) => {
       const updatedSelections = { ...prevSelections };
       updatedSelections[date] = {
@@ -216,32 +195,28 @@ export default function MealPlanScreen({ navigation, route }) {
       };
       return updatedSelections;
     });
-  
+
     setMealPlan((prevMealPlan) => {
       const updatedMealPlan = { ...prevMealPlan };
-  
+
       if (!prevMealPlan[date]) {
         updatedMealPlan[date] = {};
       }
-  
+
       if (updatedMealPlan[date][meal]) {
         // Si le repas est désélectionné
         delete updatedMealPlan[date][meal];
-        if (
-          !updatedMealPlan[date]?.breakfast &&
-          !updatedMealPlan[date]?.lunch &&
-          !updatedMealPlan[date]?.dinner
-        ) {
+        if (!updatedMealPlan[date]?.breakfast && !updatedMealPlan[date]?.lunch && !updatedMealPlan[date]?.dinner) {
           delete updatedMealPlan[date]; // Supprime la date si plus de repas
         }
       }
-        
+
       console.log("=== Mise à jour mealPlan ===");
       console.log("Updated mealPlan:", updatedMealPlan);
       return updatedMealPlan;
     });
   };
-  
+
   const handleRecipeSelection = (date, mealType, recipeName, category) => {
     // Supprimez `portions` du paramètre
     if (!mealPlan[date]) {
@@ -263,7 +238,7 @@ export default function MealPlanScreen({ navigation, route }) {
         updatedMealPlan[date][mealType] = {};
       }
 
-      if (mealType === "breakfast") {
+      if (mealType === "breakfast" || mealType === "apéritif" || mealType === "cocktail") {
         updatedMealPlan[date][mealType] = {
           ...selectedRecipe,
           servingsSelected: defaultServings, // Valeur par défaut
@@ -289,16 +264,11 @@ export default function MealPlanScreen({ navigation, route }) {
 
   const handleSaveMealPlan = () => {
     const hasMealsSelected = Object.keys(mealPlan).some(
-      (date) =>
-        mealPlan[date].breakfast ||
-        mealPlan[date].lunch ||
-        mealPlan[date].dinner
+      (date) => mealPlan[date].apéritif || mealPlan[date].breakfast || mealPlan[date].lunch || mealPlan[date].dinner || mealPlan[date].cocktail
     );
 
     if (!hasMealsSelected) {
-      alert(
-        "Veuillez sélectionner au moins un repas avant de générer la liste de courses."
-      );
+      alert("Veuillez sélectionner au moins un repas avant de générer la liste de courses.");
       return;
     }
 
@@ -313,7 +283,7 @@ export default function MealPlanScreen({ navigation, route }) {
     if (!category) return []; // Si category n'existe pas, retourne un tableau vide
 
     return recipes.filter((recipe) => {
-      if (mealType === "breakfast") {
+      if (mealType === "breakfast" || mealType === "apéritif" || mealType === "cocktail") {
         return Array.isArray(recipe.category)
           ? recipe.category.includes(category) // Si recipe.category est un tableau, on cherche la catégorie dedans
           : recipe.category === category; // Sinon, on compare directement
@@ -324,8 +294,7 @@ export default function MealPlanScreen({ navigation, route }) {
         console.log(
           "recipe.category:",
           recipe.category,
-          formattedCategory === category.toLowerCase() ||
-            ["entrée", "plat", "dessert"].includes(formattedCategory)
+          formattedCategory === category.toLowerCase() || ["entrée", "plat", "dessert"].includes(formattedCategory)
         );
 
         // Vérification si la catégorie est valide
@@ -351,9 +320,7 @@ export default function MealPlanScreen({ navigation, route }) {
       // console.log('category :', category)
       const normalizedCategory = category.toLowerCase(); // Normaliser la casse de la catégorie entrée
       if (Array.isArray(recipe.category)) {
-        return recipe.category.some(
-          (cat) => cat.toLowerCase() === normalizedCategory
-        ); // Vérifie chaque catégorie si c'est un tableau
+        return recipe.category.some((cat) => cat.toLowerCase() === normalizedCategory); // Vérifie chaque catégorie si c'est un tableau
       }
       return recipe.category.toLowerCase() === normalizedCategory; // Comparaison directe pour une seule catégorie
     });
@@ -384,15 +351,14 @@ export default function MealPlanScreen({ navigation, route }) {
         updatedMealPlan[date][mealType] = {}; // Crée le type de repas si nécessaire
       }
 
-      if (mealType === "breakfast") {
+      if (mealType === "breakfast" || mealType === "apéritif" || mealType === "cocktail") {
         updatedMealPlan[date][mealType].servingsSelected = newServings;
       } else {
         // Pour le déjeuner ou dîner, on vérifie également la catégorie
         if (!updatedMealPlan[date][mealType][category]) {
           updatedMealPlan[date][mealType][category] = {}; // Crée la catégorie si elle n'existe pas
         }
-        updatedMealPlan[date][mealType][category].servingsSelected =
-          newServings;
+        updatedMealPlan[date][mealType][category].servingsSelected = newServings;
       }
 
       return updatedMealPlan;
@@ -404,11 +370,9 @@ export default function MealPlanScreen({ navigation, route }) {
       <MealPlanProvider>
         <View style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <View style={[styles.section, {alignItems: 'stretch', paddingHorizontal: 5}]}>
+            <View style={[styles.section, { alignItems: "stretch", paddingHorizontal: 5 }]}>
               <View style={styles.somespace}></View>
-              <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
-                Planifier vos repas
-              </Text>
+              <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Planifier vos repas</Text>
 
               <Calendar
                 current={today} // Affiche la date actuelle
@@ -416,9 +380,7 @@ export default function MealPlanScreen({ navigation, route }) {
                 markedDates={{ ...selectedDates, ...markedDates }}
                 hideExtraDays={true}
                 enableSwipeMonths={true}
-                renderArrow={(direction) => (
-                  <Text>{direction === "left" ? "<" : ">"}</Text>
-                )}
+                renderArrow={(direction) => <Text>{direction === "left" ? "<" : ">"}</Text>}
                 monthFormat={"MMMM yyyy"}
                 firstDay={1}
                 style={{
@@ -433,8 +395,8 @@ export default function MealPlanScreen({ navigation, route }) {
                   // height: 350,
                 }}
                 theme={{
-                  backgroundColor: '#ffffff',
-                  calendarBackground: '#ffffff',
+                  backgroundColor: "#ffffff",
+                  calendarBackground: "#ffffff",
                   // textSectionTitleColor: '#b6c1cd',
                   // textSectionTitleDisabledColor: '#d9e1e8',
                   // selectedDayBackgroundColor: '#00adf5',
@@ -469,217 +431,175 @@ export default function MealPlanScreen({ navigation, route }) {
                 style={[styles.portionPicker, globalStyles.textTitleTrois]}
               >
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                  <Picker.Item key={num} label={`${num} portions`} value={num} 
-                  style={[styles.mainButtonText, globalStyles.textTitleTrois]}/>
+                  <Picker.Item
+                    key={num}
+                    label={`${num} portions`}
+                    value={num}
+                    style={[styles.mainButtonText, globalStyles.textTitleTrois]}
+                  />
                 ))}
               </Picker>
             </View>
 
-
             <View style={styles.section}>
-              <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>
-                Sélection des repas
-              </Text>
+              <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Sélection des repas</Text>
 
               {Object.keys(selectedDates).length > 0 ? (
                 Object.keys(selectedDates)
                   .sort((a, b) => new Date(a) - new Date(b)) // Trier les dates par ordre croissant
                   .map((date) => (
-                  <View key={date} style={styles.mealSection}>
-                    <View style={styles.mealHeader}>
-                      {/* Affichage de la date et des repas */}
-                      <View style={styles.dateTextContainer}>
-                        <Text style={styles.dateText}>
-                          {moment(date).format("DD/MM/YYYY")} - {moment(date).format("dddd").charAt(0).toUpperCase() + moment(date).format("dddd").slice(1)}
-                        </Text>
+                    <View key={date} style={styles.mealSection}>
+                      <View style={styles.mealHeader}>
+                        {/* Affichage de la date et des repas */}
+                        <View style={styles.dateTextContainer}>
+                          <Text style={styles.dateText}>
+                            {moment(date).format("DD/MM/YYYY")} -{" "}
+                            {moment(date).format("dddd").charAt(0).toUpperCase() + moment(date).format("dddd").slice(1)}
+                          </Text>
+                        </View>
+
+                        {/* Affichage des repas */}
+                        <View style={styles.mealTypesContainer}>
+
+                        <View style={styles.mealTypeWrapper}>
+                            <Text>Apéritif</Text>
+                            <Checkbox
+                              status={mealsSelection[date]?.apéritif ? "checked" : "unchecked"}
+                              onPress={() => handleMealCheckboxChange(date, "apéritif")}
+                            />
+                          </View>
+
+                          <View style={styles.mealTypeWrapper}>
+                            <Text>Petit-déjeuner</Text>
+                            <Checkbox
+                              status={mealsSelection[date]?.breakfast ? "checked" : "unchecked"}
+                              onPress={() => handleMealCheckboxChange(date, "breakfast")}
+                            />
+                          </View>
+
+                          <View style={styles.mealTypeWrapper}>
+                            <Text>Déjeuner</Text>
+                            <Checkbox
+                              status={mealsSelection[date]?.lunch ? "checked" : "unchecked"}
+                              onPress={() => handleMealCheckboxChange(date, "lunch")}
+                            />
+                          </View>
+
+                          <View style={styles.mealTypeWrapper}>
+                            <Text>Dîner</Text>
+                            <Checkbox
+                              status={mealsSelection[date]?.dinner ? "checked" : "unchecked"}
+                              onPress={() => handleMealCheckboxChange(date, "dinner")}
+                            />
+                          </View>
+
+                          <View style={styles.mealTypeWrapper}>
+                            <Text>Cocktail</Text>
+                            <Checkbox
+                              status={mealsSelection[date]?.cocktail ? "checked" : "unchecked"}
+                              onPress={() => handleMealCheckboxChange(date, "cocktail")}
+                            />
+                          </View>
+
+                        </View>
                       </View>
 
-                      {/* Affichage des repas */}
-                      <View style={styles.mealTypesContainer}>
-                        <View style={styles.mealTypeWrapper}>
-                          <Text>Petit-déjeuner</Text>
-                          <Checkbox
-                            status={
-                              mealsSelection[date]?.breakfast
-                                ? "checked"
-                                : "unchecked"
-                            }
-                            onPress={() =>
-                              handleMealCheckboxChange(date, "breakfast")
-                            }
-                          />
-                        </View>
-
-                        <View style={styles.mealTypeWrapper}>
-                          <Text>Déjeuner</Text>
-                          <Checkbox
-                            status={
-                              mealsSelection[date]?.lunch
-                                ? "checked"
-                                : "unchecked"
-                            }
-                            onPress={() =>
-                              handleMealCheckboxChange(date, "lunch")
-                            }
-                          />
-                        </View>
-
-                        <View style={styles.mealTypeWrapper}>
-                          <Text>Dîner</Text>
-                          <Checkbox
-                            status={
-                              mealsSelection[date]?.dinner
-                                ? "checked"
-                                : "unchecked"
-                            }
-                            onPress={() =>
-                              handleMealCheckboxChange(date, "dinner")
-                            }
-                          />
-                        </View>
-                      </View>
-                    </View>
-
-                    {/* Sélection des recettes pour les repas cochés */}
-                    {["breakfast", "lunch", "dinner"].map(
-                      (mealType) =>
-                        mealsSelection[date]?.[mealType] && (
-                          <View style={styles.mealAttribution} key={mealType}>
-                            <Text style={styles.textAttribution}>
-                              Sélectionner une recette pour le
-                              <Text style={styles.boldText}>
-                                {" "}
-                                {mealTypeToCategory[mealType].toLowerCase()}
+                      {/* Sélection des recettes pour les repas cochés */}
+                      {["apéritif", "breakfast", "lunch", "dinner", "cocktail"].map(
+                        (mealType) =>
+                          mealsSelection[date]?.[mealType] && (
+                            <View style={styles.mealAttribution} key={mealType}>
+                              <Text style={styles.textAttribution}>
+                                Sélectionner une recette pour le
+                                <Text style={styles.boldText}> {mealTypeToCategory[mealType].toLowerCase()}</Text>
                               </Text>
-                            </Text>
 
-                            {mealType === "breakfast" ? (
-                              <View style={styles.pickerContainer}>
-                                <View style={styles.categoryTextWrapper}>
-                                  <Text style={styles.categoryText}>
-                                    {"Petit-Dej"}
-                                  </Text>
-                                </View>
-                                <Picker
-                                  style={styles.recipePicker}
-                                  selectedValue={
-                                    mealPlan[date]?.[mealType]?.name || ""
-                                  }
-                                  onValueChange={(itemValue) =>
-                                    handleRecipeSelection(
-                                      date,
-                                      mealType,
-                                      itemValue,
-                                      "breakfast"
-                                    )
-                                  }
-                                >
-                                  <Picker.Item
-                                    label="Sélectionner une recette"
-                                    value=""
-                                    style={styles.pickerItem}
-                                  />
-                                  {filterRecipesByMealType(mealType).map(
-                                    (recipe, index) => (
+                              {["breakfast", "apéritif", "cocktail"].includes(mealType) ? (
+                                <View style={styles.pickerContainer}>
+                                  <View style={styles.categoryTextWrapper}>
+                                    <Text style={styles.categoryText}>{mealTypeToCategory[mealType] || mealType}</Text>
+                                  </View>
+                                  <Picker
+                                    style={styles.recipePicker}
+                                    selectedValue={mealPlan[date]?.[mealType]?.name || ""}
+                                    onValueChange={(itemValue) =>
+                                      handleRecipeSelection(date, mealType, itemValue, mealType)
+                                    }
+                                  >
+                                    <Picker.Item label="Sélectionner une recette" value="" style={styles.pickerItem} />
+                                    {filterRecipesByMealType(mealType).map((recipe, index) => (
                                       <Picker.Item
                                         key={index}
                                         label={recipe.name}
                                         value={recipe.name}
                                         style={styles.pickerItem}
                                       />
-                                    )
-                                  )}
-                                </Picker>
-
-                                {/* Sélecteur de portions pour le petit-déjeuner */}
-                                {mealPlan[date]?.[mealType]?.name && (
-                                  <TouchableOpacity
-                                    style={styles.portionSelector}
-                                    onPress={() => {
-                                      setShowPortionModal(true);
-                                      setSelectedCategory(null);
-                                      setSelectedMealType(mealType);
-                                      setSelectedDate(date);
-                                    }}
-                                  >
-                                    <Text style={styles.portionText}>
-                                      {mealPlan[date][mealType]
-                                        .servingsSelected || defaultServings}
-                                      p
-                                    </Text>
-                                  </TouchableOpacity>
-                                )}
-                              </View>
-                            ) : (
-                              ["entrée", "plat", "dessert"].map((category) => (
-                                <View
-                                  key={category}
-                                  style={styles.pickerContainer}
-                                >
-                                  <View style={styles.categoryTextWrapper}>
-                                    <Text style={styles.categoryText}>
-                                      {category.charAt(0).toUpperCase() +
-                                        category.slice(1)}
-                                    </Text>
-                                  </View>
-
-                                  <Picker
-                                    style={styles.recipePicker}
-                                    selectedValue={
-                                      mealPlan[date]?.[mealType]?.[category]
-                                        ?.name || ""
-                                    }
-                                    onValueChange={(itemValue) =>
-                                      handleRecipeSelection(
-                                        date,
-                                        mealType,
-                                        itemValue,
-                                        category
-                                      )
-                                    }
-                                  >
-                                    <Picker.Item
-                                      label={`Sélectionner un(e) ${category}`}
-                                      value=""
-                                    />
-                                    {filterRecipesByCategory(category).map(
-                                      (recipe, index) => (
-                                        <Picker.Item
-                                          key={index}
-                                          label={recipe.name}
-                                          value={recipe.name}
-                                        />
-                                      )
-                                    )}
+                                    ))}
                                   </Picker>
 
-                                  {/* Sélecteur de portions pour entrée/plat/dessert */}
-                                  {mealPlan[date]?.[mealType]?.[category]
-                                    ?.name && (
+                                  {/* Sélecteur de portions pour le petit-déjeuner */}
+                                  {mealPlan[date]?.[mealType]?.name && (
                                     <TouchableOpacity
                                       style={styles.portionSelector}
                                       onPress={() => {
                                         setShowPortionModal(true);
-                                        setSelectedCategory(category);
+                                        setSelectedCategory(null);
                                         setSelectedMealType(mealType);
                                         setSelectedDate(date);
                                       }}
                                     >
                                       <Text style={styles.portionText}>
-                                        {mealPlan[date][mealType][category]
-                                          .servingsSelected || defaultServings}
-                                        p
+                                        {mealPlan[date][mealType].servingsSelected || defaultServings}p
                                       </Text>
                                     </TouchableOpacity>
                                   )}
                                 </View>
-                              ))
-                            )}
-                          </View>
-                        )
-                    )}
-                  </View>
-                ))
+                              ) : (
+                                ["entrée", "plat", "dessert"].map((category) => (
+                                  <View key={category} style={styles.pickerContainer}>
+                                    <View style={styles.categoryTextWrapper}>
+                                      <Text style={styles.categoryText}>
+                                        {category.charAt(0).toUpperCase() + category.slice(1)}
+                                      </Text>
+                                    </View>
+
+                                    <Picker
+                                      style={styles.recipePicker}
+                                      selectedValue={mealPlan[date]?.[mealType]?.[category]?.name || ""}
+                                      onValueChange={(itemValue) =>
+                                        handleRecipeSelection(date, mealType, itemValue, category)
+                                      }
+                                    >
+                                      <Picker.Item label={`Sélectionner un(e) ${category}`} value="" />
+                                      {filterRecipesByCategory(category).map((recipe, index) => (
+                                        <Picker.Item key={index} label={recipe.name} value={recipe.name} />
+                                      ))}
+                                    </Picker>
+
+                                    {/* Sélecteur de portions pour entrée/plat/dessert */}
+                                    {mealPlan[date]?.[mealType]?.[category]?.name && (
+                                      <TouchableOpacity
+                                        style={styles.portionSelector}
+                                        onPress={() => {
+                                          setShowPortionModal(true);
+                                          setSelectedCategory(category);
+                                          setSelectedMealType(mealType);
+                                          setSelectedDate(date);
+                                        }}
+                                      >
+                                        <Text style={styles.portionText}>
+                                          {mealPlan[date][mealType][category].servingsSelected || defaultServings}p
+                                        </Text>
+                                      </TouchableOpacity>
+                                    )}
+                                  </View>
+                                ))
+                              )}
+                            </View>
+                          )
+                      )}
+                    </View>
+                  ))
               ) : (
                 <Text>Aucune date sélectionnée pour le moment.</Text>
               )}
@@ -687,27 +607,18 @@ export default function MealPlanScreen({ navigation, route }) {
           </ScrollView>
 
           {/* Modal pour sélectionner les portions */}
-          <Modal
-            visible={showPortionModal}
-            transparent={true}
-            animationType="slide"
-          >
+          <Modal visible={showPortionModal} transparent={true} animationType="slide">
             <View style={styles.modalContainer}>
               <View style={styles.modalContent}>
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                   <TouchableOpacity
                     key={num}
                     onPress={() => {
-                      handleServingsChange(
-                        selectedDate,
-                        selectedMealType,
-                        selectedCategory,
-                        num
-                      );
+                      handleServingsChange(selectedDate, selectedMealType, selectedCategory, num);
                       setShowPortionModal(false);
                     }}
                   >
-                    <Text style={styles.modalText}>{num}p</Text>
+                    <Text style={styles.modalText}>{num} portions</Text>
                   </TouchableOpacity>
                 ))}
                 <TouchableOpacity onPress={() => setShowPortionModal(false)}>
@@ -720,25 +631,11 @@ export default function MealPlanScreen({ navigation, route }) {
           {/* Boutons fixes en bas */}
           <View style={styles.section}>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.mainButton}
-                onPress={handleSaveMealPlan}
-              >
-                <Text
-                  style={[styles.mainButtonText, globalStyles.textTitleTrois]}
-                >
-                  Voir mon récapitulatif
-                </Text>
+              <TouchableOpacity style={styles.mainButton} onPress={handleSaveMealPlan}>
+                <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Voir mon récapitulatif</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.mainButton}
-                onPress={resetSelections}
-              >
-                <Text
-                  style={[styles.mainButtonText, globalStyles.textTitleTrois]}
-                >
-                  Réinitialiser
-                </Text>
+              <TouchableOpacity style={styles.mainButton} onPress={resetSelections}>
+                <Text style={[styles.mainButtonText, globalStyles.textTitleTrois]}>Réinitialiser</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -824,7 +721,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     // marginBottom: 10,
     marginHorizontal: 20,
-    justifyContent: "space-around"
+    justifyContent: "space-around",
   },
 
   mealAttribution: {
@@ -861,7 +758,7 @@ const styles = StyleSheet.create({
   portionPicker: {
     flex: 1, // Prend l'espace restant
     height: 50,
-    alignContent: 'center',
+    alignContent: "center",
     marginHorizontal: 5,
     backgroundColor: "#fff",
     opacity: 0.8,
