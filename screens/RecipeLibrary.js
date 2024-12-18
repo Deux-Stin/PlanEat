@@ -204,7 +204,8 @@ export default function RecipeLibrary({ navigation, route }) {
 
   const filterRecipes = () => {
     return recipes.filter((recipe) => {
-      // console.log('recipe.source : ', recipe.source)
+      console.log('recipe', recipe)
+      console.log('recipe.source : ', recipe.source)
       const recipeSeasons = recipe.season || [];
       const matchesSeason =
         selectedSeasons.length === 0 || recipeSeasons.some((season) => selectedSeasons.includes(season));

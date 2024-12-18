@@ -194,7 +194,7 @@ const RecipeUtils = {
    * @returns {string} - Chaîne formatée.
    */
   formatRecipes(recipes, format) {
-    if (format === "json") {
+    if (format === "json" || format === "txt") {
       return JSON.stringify({ recipes }, null, 2);
     }
     return recipes

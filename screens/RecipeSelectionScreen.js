@@ -62,7 +62,10 @@ const RecipeSelectionScreen = ({ route, navigation }) => {
   };
 
   const handleAction = () => {
-    const selected = recipes.filter((recipe) => selectedRecipes[recipe.id]);
+    const selected = recipes
+    .filter((recipe) => selectedRecipes[recipe.id])
+    .map(({ image, ...rest }) => rest); // Supprime la clé "image" et conserve le reste
+
     if (mode === "import") onImport(selected);
     if (mode === "export") onExport(selected);
     navigation.goBack();

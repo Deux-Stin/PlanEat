@@ -9,7 +9,7 @@ import { globalStyles } from "../globalStyles";
 export default function RecipeDetail({ route, navigation }) {
   const [backgroundIndex, setBackgroundIndex] = useAsyncStorage("backgroundIndex", 0); //Recupère l'index du background
   const { recipe, showPaniers = true } = route.params; // affiche les caddy pour "+" et "-" sauf si on envoie la variable showPaniers à false 
-  
+
   const [storedRecipes, setStoredRecipes] = useAsyncStorage("recipes", []);
   const [mealChoice, setMealChoice] = useAsyncStorage("mealChoice", []);
 

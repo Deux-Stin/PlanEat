@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAsyncStorage } from "./useAsyncStorage";
 import * as FileSystem from "expo-file-system";
+import recipes from "../assets/recipes/recipes_base.json";
 
 export default function useInitializeRecipes() {
   const [storedRecipes, setStoredRecipes] = useAsyncStorage("recipes", []);
@@ -14,45 +15,43 @@ export default function useInitializeRecipes() {
   useEffect(() => {
     const initializeRecipes = async () => {
       if (initialized || storedRecipes.length > 0) {
-        // Si les recettes sont déjà présentes ou si elles ont été initialisées, on ne fait rien
-        // console.log('Recettes déjà présentes ou initialisées.');
-        setLoading(false);
-        return;
+          setLoading(false);
+          return;
       }
+  
       try {
-        const fileUri = `${FileSystem.documentDirectory}recipes.json`;
-        const fileExists = await FileSystem.getInfoAsync(fileUri);
-
-        if (fileExists.exists) {
-          // Charger les recettes depuis le fichier JSON
-          const fileContent = await FileSystem.readAsStringAsync(fileUri);
-          const recipesData = JSON.parse(fileContent);
-
-          // Enregistrer les recettes dans AsyncStorage
-          await setStoredRecipes(recipesData);
-          console.log("Recettes chargées depuis recipes.json.");
-        } else {
-          console.log("Le fichier recipes.json n'existe pas. Utilisation de recettes par défaut.");
-        }
-
-        setInitialized(true); // Marquer comme initialisé après la première lecture
-
-        // Réinitialisation du mealChoice à chaque nouveau lancement de l'app
-        setMealChoice([]);
-        console.log("Données du mealChoice réinitialisées.");
-
-        // Réinitialisation du mealPlanFromAssignation (depuis la librairie de recette) au chargement de l'app
-        setMealPlanFromAssignation({});
-        console.log("Données du MealPlanFromAssignation réinitialisées.")
-        
+          const fileUri = `${FileSystem.documentDirectory}recipes.json`;
+          const fileExists = await FileSystem.getInfoAsync(fileUri);
+  
+          let recipesArray;
+  
+          if (!fileExists.exists) {
+              recipesArray = recipes.recipes || recipes; // Supporte les deux formats
+          } else {
+              const fileContent = await FileSystem.readAsStringAsync(fileUri);
+              const recipesData = JSON.parse(fileContent);
+              recipesArray = recipesData.recipes || recipesData; // Supporte les deux formats
+          }
+  
+          if (Array.isArray(recipesArray)) {
+              await setStoredRecipes(recipesArray);
+          } else {
+              console.error("Format des recettes incorrect :", recipesArray);
+              await setStoredRecipes([]);
+          }
+          setMealChoice([]);
+          setMealPlanFromAssignation({});
       } catch (error) {
-        console.error("Erreur lors du chargement des recettes :", error);
+          console.error("Erreur lors de l'initialisation des recettes :", error);
+      } finally {
+          setInitialized(true);
+          setLoading(false);
       }
-      setLoading(false);
-    };
+  };
+  
 
     initializeRecipes();
-  }, [initialized, storedRecipes, setStoredRecipes]);
+  }, [initialized, setStoredRecipes]);
 
   return loading;
 }
