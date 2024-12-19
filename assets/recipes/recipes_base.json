@@ -1,0 +1,403 @@
+{
+  "recipes": [
+    {
+      "id": "56e4df68-1d54-4621-a102-94876b310113",
+      "name": "Pan Con Tomate",
+      "source": "Livre",
+      "category": "Apéritif",
+      "duration": "court",
+      "season": ["printemps", "été"],
+      "servings": 4,
+      "ingredients": [
+        {
+          "name": "ciabatta",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Boulangerie"
+        },
+        {
+          "name": "tomates concassées",
+          "quantity": 450,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "ail",
+          "quantity": 2,
+          "unit": "gousse(s)",
+          "rayon": "Fruits et légumes"
+        }
+      ],
+      "recipe": [
+        "Couper le pain en deux dans le sens de la longueur puis chaque tranche en 4. Couper les gousses d'ail en deux.",
+        "Faire chauffer une poêle-gril et arroser le pain d'un filet d'huile d'olive, faire griller les morceaux de pain des deux côtés puis frotter la mie avec l'ail.",
+        "Recouvrir de tomates concassées. Saler, poivrer puis verser à nouveau un filet d'huile d'olive pour le côté généreux."
+      ],
+      "nutritionalValues": {
+        "glucides": "0",
+        "proteines": "0",
+        "graisses": "0",
+        "kiloCalories": "0"
+      }
+    },
+    {
+      "id": "c475aeec-0368-4cb3-9f01-b76e48c510d1",
+      "name": "Crème de Champignons",
+      "category": "Entrée",
+      "duration": "long",
+      "source": "Livre",
+      "season": ["automne", "hiver"],
+      "servings": 2,
+      "ingredients": [
+        {
+          "name": "champignons",
+          "quantity": 500,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "beurre",
+          "quantity": 25,
+          "unit": "g",
+          "rayon": "Produits frais"
+        },
+        {
+          "name": "oignon",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "ail",
+          "quantity": 2,
+          "unit": "gousse(s)",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "persil",
+          "quantity": 2,
+          "unit": "c. à soupe",
+          "rayon": "Herbes aromatiques"
+        },
+        {
+          "name": "maïzena",
+          "quantity": 1,
+          "unit": "c. à soupe",
+          "rayon": "Epicerie"
+        },
+        {
+          "name": "crème fraîche liquide",
+          "quantity": 500,
+          "unit": "ml",
+          "rayon": "Produits frais"
+        }
+      ],
+      "recipe": [
+        "Nettoyer, préparer les champignons et les couper en tranches.",
+        "Dans une grande casserolle, faire fondre le beurre, ajouter l'ail et l'oignon finement hachés ainsi que les champignons.",
+        "Assaisonner et ajouter le persil.",
+        "Mélanger et laisser cuire 10-15min à feu doux en remuant régulièrement.",
+        "Ajouter la crème fraiche et un peu de lait si besoin et laisser cuire à feu doux pendant 15min.",
+        "Mixer et rajouter du lait ou de la maïzena selon la consistance souhaitée."
+      ],
+      "nutritionalValues": {
+        "glucides": "",
+        "proteines": "",
+        "graisses": "",
+        "kiloCalories": ""
+      }
+    },
+    {
+      "id": "394abda9-4a89-44df-92ae-9805428df417",
+      "name": "Omelette aux champignons",
+      "category": "Petit-déjeuner",
+      "duration": "court",
+      "source": "ChatGPT",
+      "season": ["printemps", "été", "automne", "hiver"],
+      "servings": 2,
+      "ingredients": [
+        {
+          "name": "oeufs",
+          "quantity": 3,
+          "unit": "unité",
+          "rayon": "Produits frais"
+        },
+        {
+          "name": "champignons",
+          "quantity": 100,
+          "unit": "g",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "beurre",
+          "quantity": 10,
+          "unit": "g",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "fromage râpé",
+          "quantity": 30,
+          "unit": "g",
+          "rayon": "Fromagerie"
+        }
+      ],
+      "recipe": [
+        "Couper les champignons en tranches.",
+        "Faire revenir les champignons dans le beurre.",
+        "Battre les oeufs et ajouter les champignons.",
+        "Cuire l'omelette à feu doux et ajouter le fromage râpé."
+      ],
+      "nutritionalValues": {
+        "glucides": "5g",
+        "proteines": "20g",
+        "graisses": "15g",
+        "kiloCalories": "210kCal"
+      }
+    },
+    {
+      "id": "83d6ed99-158b-4a59-8d7c-bb0979989c27",
+      "name": "Porridge à l'avoine",
+      "category": "Petit-déjeuner",
+      "duration": "court",
+      "source": "ChatGPT",
+      "season": ["printemps", "été", "automne", "hiver"],
+      "servings": 2,
+      "ingredients": [
+        {
+          "name": "flocons d'avoine",
+          "quantity": 100,
+          "unit": "g",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "lait",
+          "quantity": 250,
+          "unit": "ml",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "banane",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "miel",
+          "quantity": 20,
+          "unit": "g",
+          "rayon": "Épicerie"
+        }
+      ],
+      "recipe": [
+        "Chauffer le lait dans une casserole.",
+        "Ajouter les flocons d'avoine et cuire à feu doux jusqu'à épaississement.",
+        "Ajouter des tranches de banane et un filet de miel."
+      ],
+      "nutritionalValues": {
+        "glucides": "50g",
+        "proteines": "8g",
+        "graisses": "7g",
+        "kiloCalories": "320kCal"
+      }
+    },
+    {
+      "id": "16ed83d4-2fb9-4642-b443-49acfe636ec1",
+      "name": "Salade César",
+      "category": "Plat",
+      "duration": "court",
+      "source": "ChatGPT",
+      "season": ["printemps", "été"],
+      "servings": 2,
+      "ingredients": [
+        {
+          "name": "laitue romaine",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "poulet",
+          "quantity": 150,
+          "unit": "g",
+          "rayon": "Boucherie"
+        },
+        {
+          "name": "parmesan",
+          "quantity": 30,
+          "unit": "g",
+          "rayon": "Fromagerie"
+        },
+        {
+          "name": "croûtons",
+          "quantity": 50,
+          "unit": "g",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "sauce César",
+          "quantity": 30,
+          "unit": "ml",
+          "rayon": "Épicerie"
+        }
+      ],
+      "recipe": [
+        "Griller le poulet.",
+        "Laver et couper la laitue.",
+        "Mélanger la laitue avec la sauce, le parmesan et les croûtons.",
+        "Ajouter le poulet grillé."
+      ],
+      "nutritionalValues": {
+        "glucides": "20g",
+        "proteines": "25g",
+        "graisses": "10g",
+        "kiloCalories": "400kCal"
+      }
+    },
+    {
+      "id": "d7c966a3-6f21-4c6f-85cb-c87df658b351",
+      "name": "Poulet Curry",
+      "category": "Plat",
+      "duration": "long",
+      "source": "ChatGPT",
+      "season": ["printemps", "automne", "hiver"],
+      "servings": 2,
+      "ingredients": [
+        {
+          "name": "poulet",
+          "quantity": 300,
+          "unit": "g",
+          "rayon": "Boucherie"
+        },
+        {
+          "name": "lait de coco",
+          "quantity": 200,
+          "unit": "ml",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "pâte de curry",
+          "quantity": 2,
+          "unit": "cuillères à soupe",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "riz",
+          "quantity": 100,
+          "unit": "g",
+          "rayon": "Épicerie"
+        }
+      ],
+      "recipe": [
+        "Faire cuire le riz.",
+        "Faire revenir le poulet dans une poêle.",
+        "Ajouter la pâte de curry et le lait de coco.",
+        "Laisser mijoter jusqu'à ce que le poulet soit bien cuit."
+      ],
+      "nutritionalValues": {
+        "glucides": "40g",
+        "proteines": "30g",
+        "graisses": "15g",
+        "kiloCalories": "480kCal"
+      }
+    },
+    {
+      "id": "f9b96114-da2a-44cf-9c9e-6bcf2c141153",
+      "name": "Mojito",
+      "category": "Cocktail",
+      "duration": "court",
+      "source": "ChatGPT",
+      "season": ["printemps", "été"],
+      "servings": 1,
+      "ingredients": [
+        {
+          "name": "rhum blanc",
+          "quantity": 50,
+          "unit": "ml",
+          "rayon": "Alcool"
+        },
+        {
+          "name": "menthe",
+          "quantity": 10,
+          "unit": "feuilles",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "sucre",
+          "quantity": 1,
+          "unit": "cuillère à soupe",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "citron vert",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Fruits et légumes"
+        },
+        {
+          "name": "eau gazeuse",
+          "quantity": 100,
+          "unit": "ml",
+          "rayon": "Épicerie"
+        }
+      ],
+      "recipe": [
+        "Écraser la menthe et le sucre dans un verre.",
+        "Ajouter le jus du citron vert et le rhum.",
+        "Remplir le verre de glace et compléter avec de l'eau gazeuse."
+      ],
+      "nutritionalValues": {
+        "glucides": "15g",
+        "proteines": "0g",
+        "graisses": "0g",
+        "kiloCalories": "200kCal"
+      }
+    },
+    {
+      "id": "e915bb79-73cb-4a69-80f0-10a3b8fc3e86",
+      "name": "Tarte Tatin",
+      "category": "Dessert",
+      "duration": "long",
+      "source": "ChatGPT",
+      "season": ["automne", "hiver"],
+      "servings": 6,
+      "ingredients": [
+        {
+          "name": "pommes",
+          "quantity": 1,
+          "unit": "kg",
+          "rayon": "Fruits"
+        },
+        {
+          "name": "sucre",
+          "quantity": 150,
+          "unit": "g",
+          "rayon": "Épicerie"
+        },
+        {
+          "name": "beurre",
+          "quantity": 100,
+          "unit": "g",
+          "rayon": "Produits laitiers, oeufs"
+        },
+        {
+          "name": "pâte brisée",
+          "quantity": 1,
+          "unit": "unité",
+          "rayon": "Épicerie"
+        }
+      ],
+      "recipe": [
+        "Préchauffer le four à 180°C.",
+        "Peler et couper les pommes en quartiers.",
+        "Faire fondre le beurre et le sucre dans une poêle, ajouter les pommes et caraméliser.",
+        "Transférer les pommes dans un moule, recouvrir de pâte brisée et enfourner pendant 30 minutes."
+      ],
+      "nutritionalValues": {
+        "glucides": "60g",
+        "proteines": "2g",
+        "graisses": "15g",
+        "kiloCalories": "320kCal"
+      }
+    }
+  ]
+}
