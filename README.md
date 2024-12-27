@@ -60,7 +60,7 @@ For any suggestions or bug reports, feel free to reach out at: **dustyn.naya@gma
 
 ## Contributing
 
-We welcome contributions! 🚀 
+I welcome contributions! 🚀 
 
 Feel free to:
 - Fork this repository.

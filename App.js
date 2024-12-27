@@ -4,13 +4,9 @@ import React, { useEffect, useState, useRef  } from 'react';
 import { useFonts } from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { ActivityIndicator, View, Text, StyleSheet, PermissionsAndroid, Platform, TouchableOpacity  } from 'react-native';
+import { ActivityIndicator, Dimensions, View, StyleSheet, PermissionsAndroid, Platform, StatusBar } from 'react-native';
 import { globalStyles } from './globalStyles';
-// import AppLoading from 'expo-app-loading'; // Utilisez cette ligne si vous avez encore besoin de l'écran de chargement
-import * as SplashScreen from 'expo-splash-screen';
 import LottieView from 'lottie-react-native';
-
-// SplashScreen.preventAutoHideAsync(); // Bloque l'affichage du splash jusqu'à ce qu'il soit explicitement masqué
 
 import HomeScreen from './screens/HomeScreen';
 import RecipeLibrary from './screens/RecipeLibrary';
@@ -18,12 +14,22 @@ import AddRecipe from './screens/AddRecipe';
 import RecipeDetail from './screens/RecipeDetail';
 import MealPlanScreen from './screens/MealPlanScreen';
 import ShoppingListScreen from './screens/ShoppingListScreen';
-import useInitializeRecipes from './hooks/useInitializeRecipes'; // Export par défaut
+import useInitializeRecipes from './hooks/useInitializeRecipes';
 import SeasonalCalendarScreen from './screens/SeasonalCalendarScreen';
 import MealPlanSummaryScreen from './screens/MealPlanSummaryScreen';
+import RecipeSelectionScreen from './screens/RecipeSelectionScreen';
+import MealAssignmentScreen from './screens/MealAssignmentScreen';
 import { MealPlanProvider } from './screens/MealPlanContext';
 
+StatusBar.setBarStyle("light-content");
+if (Platform.OS === "android") {
+  StatusBar.setBackgroundColor("rgba(0,0,0,0)");
+  StatusBar.setTranslucent(true);
+}
+
 const Stack = createStackNavigator();
+
+const { width, height } = Dimensions.get('window');
 
 export default function App() {
 
@@ -41,8 +47,17 @@ export default function App() {
     montserrat_alternates: require('./assets/fonts/montserrat-alternates/MontserratAlternates-Regular.ttf'),
   });
 
-    // Initialiser les recettes au démarrage
-    const loading = useInitializeRecipes(); 
+  // Initialiser les recettes au démarrage
+  const loading = useInitializeRecipes(); 
+
+  if (!__DEV__) {
+    global.console = {
+      info: () => {},
+      log: () => {},
+      warn: console.warn,
+      error: console.error,
+    };
+  }
 
   // Gestion des autorisations android
   const requestStoragePermission = async () => {
@@ -71,7 +86,6 @@ export default function App() {
     requestStoragePermission();
   }, []);
 
-
   // Déclenche la mise à jour de l'état quand les ressources sont prêtes
   useEffect(() => {
     if (fontsLoaded && !loading) {
@@ -88,7 +102,6 @@ export default function App() {
       setIsAnimationDone(true); // Passe à l'écran principal quand tout est prêt
     }
   };
-
 
   // Affiche l'écran de chargement si les ressources ou l'animation ne sont pas prêtes
   if (!isAnimationDone) {
@@ -109,55 +122,89 @@ export default function App() {
 
   return (
     <MealPlanProvider>
+      {/* Gestion globale de la barre de statut */}
+      <StatusBar
+        barStyle="dark-content" // Couleur du texte (icônes et heure)
+        backgroundColor="rgba(0,0,0,0)" // Arrière-plan transparent
+        translucent={false} // Permet au contenu de passer sous la barre
+      />
 
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="HomeScreen">
-        {/* Page d'accueil */}
-        <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }}/> 
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="HomeScreen">
+          {/* Page d'accueil */}
+          <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
 
-        {/* Bibliothèque de recettes */}
-        <Stack.Screen name="RecipeLibrary" component={RecipeLibrary} options={{ title: 'Bibliothèque de recettes' }} />
+          {/* Bibliothèque de recettes */}
+          <Stack.Screen
+            name="RecipeLibrary"
+            component={RecipeLibrary}
+            options={{ title: "Bibliothèque de recettes" }}
+          />
 
-        {/* Ajouter une recette */}
-        <Stack.Screen name="AddRecipe" component={AddRecipe} options={{ title: 'Ajouter une Recette' }} />
+          {/* Ajouter une recette */}
+          <Stack.Screen name="AddRecipe" component={AddRecipe} options={{ title: "Ajouter une Recette" }} />
 
-        {/* Détails de la recette */}
-        <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ title: 'Détails de la Recette' }} />
+          {/* Détails de la recette */}
+          <Stack.Screen name="RecipeDetail" component={RecipeDetail} options={{ title: "Détails de la Recette" }} />
 
-        {/* Calendrier de saison */}
-        <Stack.Screen 
-          name="SeasonalCalendarScreen" 
-          component={SeasonalCalendarScreen} 
-          options={({ navigation }) => ({
-            title: 'Calendrier des saisons',
-            headerShown: true,
-            // headerLeft: () => (
-            //   <Button onPress={() => navigation.goBack()} title="Retour" />
-            // ),
-            // headerRight: () => (
-            //   <TouchableOpacity
-            //     style={styles.favorisButton}
-            //     onPress={() => setShowOnlyFavoris(prev => !prev)}
-            //   >
-            //     <Text style={styles.favorisButtonText}>
-            //       {showOnlyFavoris ? 'Réinitialiser' : 'Afficher les favoris'}
-            //     </Text>
-            //   </TouchableOpacity>
-            // ),
-          })}
-        />
+          {/* Ecran de sélection des recettes */}
+          <Stack.Screen
+            name="RecipeSelectionScreen"
+            component={RecipeSelectionScreen}
+            options={{ title: "Faites vos choix" }}
+          />
 
-        {/* Planifier les repas */}
-        <Stack.Screen name="MealPlanScreen" component={MealPlanScreen} options={{ title: 'Planifier vos repas' }} />
+          {/* Attribution après le choix des recettes */}
+          <Stack.Screen
+            name="MealAssignmentScreen"
+            component={MealAssignmentScreen}
+            options={{ title: "Attribuer vos recettes" }}
+          />
 
-        {/* Page de résumé des menus attribués selon la date */}
-        <Stack.Screen name="MealPlanSummaryScreen" component={MealPlanSummaryScreen}  options={{ title: 'Résumé de vos choix' }} />
+          {/* Calendrier de saison */}
+          <Stack.Screen
+            name="SeasonalCalendarScreen"
+            component={SeasonalCalendarScreen}
+            options={({ navigation }) => ({
+              title: "Calendrier des saisons",
+              headerShown: true,
+              // headerLeft: () => (
+              //   <Button onPress={() => navigation.goBack()} title="Retour" />
+              // ),
+              // headerRight: () => (
+              //   <TouchableOpacity
+              //     style={styles.favorisButton}
+              //     onPress={() => setShowOnlyFavoris(prev => !prev)}
+              //   >
+              //     <Text style={styles.favorisButtonText}>
+              //       {showOnlyFavoris ? 'Réinitialiser' : 'Afficher les favoris'}
+              //     </Text>
+              //   </TouchableOpacity>
+              // ),
+            })}
+          />
 
-        {/* Liste de courses */}
-        <Stack.Screen name="ShoppingListScreen" component={ShoppingListScreen} options={{ title: 'Liste de courses', headerShown: true }} />
-      </Stack.Navigator>
-    </NavigationContainer>
+          {/* Planifier les repas */}
+          <Stack.Screen name="MealPlanScreen" component={MealPlanScreen} options={{ title: "Planification" }} />
 
+          {/* Page de résumé des menus attribués selon la date */}
+          <Stack.Screen
+            name="MealPlanSummaryScreen"
+            component={MealPlanSummaryScreen}
+            options={{
+              title: "Résumé de vos choix",
+              headerShown: true,
+            }}
+          />
+
+          {/* Liste de courses */}
+          <Stack.Screen
+            name="ShoppingListScreen"
+            component={ShoppingListScreen}
+            options={{ title: "Liste de courses", headerShown: true }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
     </MealPlanProvider>
   );
 }
@@ -170,7 +217,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9F9F9',
   },
   lottie: {
-    width: 300,
-    height: 300,
+    width: width * 1.1,
+    height: width * 1.0,
+    paddingRight: width * 0.1
   },
 });

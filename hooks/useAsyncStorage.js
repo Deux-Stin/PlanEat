@@ -6,6 +6,11 @@ const FILE_PATHS = {
   recipes: `${FileSystem.documentDirectory}recipes.json`,
   mealPlanHistory: `${FileSystem.documentDirectory}mealPlanHistory.json`,
   favoris: `${FileSystem.documentDirectory}favoris.json`,
+  backgroundIndex: `${FileSystem.documentDirectory}backgroundIndex.json`,
+  defaultServings: `${FileSystem.documentDirectory}defaultServings.json`,
+  mealChoice: `${FileSystem.documentDirectory}mealChoice.json`,
+  mealPlanFromAssignation: `${FileSystem.documentDirectory}mealPlanFromAssignation.json`,
+  initialized: `${FileSystem.documentDirectory}initialized.json`,
 };
 
 export const useAsyncStorage = (key, initialValue) => {
@@ -76,6 +81,7 @@ export const useAsyncStorage = (key, initialValue) => {
   const saveToJson = async (filePath, data) => {
     try {
       if (data !== null && data !== undefined) {
+        // console.log('data to store with useAsyncStorage :', data)
         await FileSystem.writeAsStringAsync(filePath, JSON.stringify(data));
         console.log(`Données sauvegardées dans ${filePath}`);
       } else {
