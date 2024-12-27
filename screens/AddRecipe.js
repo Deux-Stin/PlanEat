@@ -1041,8 +1041,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   imageWithBorder: {
-    width: 300,
-    height: 300,
+    width: width * 0.8, 
+    height: width * 0.8,
     borderWidth: 2.5,
     borderColor: '#FFFFFF', // Bordure blanche
     borderRadius: 50, // Coins arrondis plus extrêmes

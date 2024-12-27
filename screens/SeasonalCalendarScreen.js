@@ -743,7 +743,7 @@ export default function SeasonalCalendarScreen({ navigation }) {
           key={item}
           style={[
             styles.itemButton,
-            { borderColor: isFavori(category, item) ? "red" : "#ccc" },
+            { borderColor: isFavori(category, item) ? "red" : "#fff" },
           ]}
           onPress={() => toggleFavoris(category, item)}
         >
@@ -931,7 +931,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   flatList: {
-    paddingVertical: height * 0.02,
+    paddingVertical: height * 0.01,
     paddingHorizontal: width * 0.02,
     // paddingBottom: 0,
   },
@@ -944,13 +944,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   monthContainer: {
-    marginVertical: height * 0.01,
+    marginVertical: height * 0.005,
     marginHorizontal: width * 0.03,
     padding: width * 0.02,
     borderRadius: 25,
     width: width * 0.9, // 90% de la largeur de l'écran
     // minHeight: height * 0.7, // Minimum 70% de la hauteur
-    maxHeight: height * 0.8,
+    maxHeight: height * 0.95,
     // backgroundColor: '#f0f0f0',
     overflow: 'hidden', // Empêche le contenu de déborder
     alignSelf: 'center',
@@ -961,18 +961,18 @@ const styles = StyleSheet.create({
     elevation: 5, // Pour Android
 },
   monthTitle: {
-    fontSize: Math.min(60, width * 0.15), // Ajuste la taille du titre
-    marginBottom: height * 0.04,
+    fontSize: Math.min(60, width * 0.125), // Ajuste la taille du titre
+    marginBottom: height * 0.02,
     textAlign: 'center',
   },
   categoryContainer: {
-    marginBottom: height * 0.01,
+    marginBottom: height * 0.005,
   },
   categoryTitle: {
     fontSize: 20,
     //   fontFamily: 'rubik_moonrocks',
     //   fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: '2%',
   },
   categoryText: {
     fontSize: 16,
@@ -982,7 +982,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-evenly",
-    marginBottom: 20,
+    marginBottom: '5%',
   },
   itemButton: {
     borderWidth: 1,
@@ -993,7 +993,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     marginHorizontal: 2.5,
     marginVertical: 1.5,
-    borderRadius: 15,
+    borderRadius: 5,
     flexBasis: "30%", // Ajuste la largeur selon tes besoins
     alignItems: "center",
   },

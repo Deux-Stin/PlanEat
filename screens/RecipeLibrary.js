@@ -1,11 +1,12 @@
 import React, { useState, useRef, useMemo, useEffect, useLayoutEffect } from "react";
-import { Platform, View, Text, Button, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal } from "react-native";
+import { Platform, View, Text, Button, StyleSheet, TouchableOpacity, ScrollView, Alert, Modal, Dimensions } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper"; // Import du wrapper
 import RecipeUtils from "../utils/RecipeUtils"; // Import des fonctions utilitaires
 
 import { globalStyles } from "../globalStyles";
+const { width, height } = Dimensions.get('window');
 
 export default function RecipeLibrary({ navigation, route }) {
   const [backgroundIndex, setBackgroundIndex] = useAsyncStorage("backgroundIndex", 0); // Recupère l'index du background actuel
@@ -19,6 +20,7 @@ export default function RecipeLibrary({ navigation, route }) {
   const [selectedDuration, setSelectedDuration] = useState([]);
   const [menuVisible, setMenuVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [isDebugModalVisible, setDebugModalVisible] = useState(false);
   const clickCountRef = useRef(0); // Utiliser une référence pour stocker le compteur
   const timeoutRef = useRef(null); // Référence pour le timeout actif
 
@@ -103,6 +105,8 @@ export default function RecipeLibrary({ navigation, route }) {
   const loadRecipes = async () => {
     const recipes = await getStoredRecipes(); // Récupère les recettes depuis le stockage
     setRecipes(recipes); // Met à jour l'état local
+
+    console.log(JSON.stringify(recipes, null, 2));
   };
 
   // Gestion de l'import des recettes
@@ -204,8 +208,8 @@ export default function RecipeLibrary({ navigation, route }) {
 
   const filterRecipes = () => {
     return recipes.filter((recipe) => {
-      console.log('recipe', recipe)
-      console.log('recipe.source : ', recipe.source)
+      // console.log('recipe', recipe)
+      // console.log('recipe.source : ', recipe.source)
       const recipeSeasons = recipe.season || [];
       const matchesSeason =
         selectedSeasons.length === 0 || recipeSeasons.some((season) => selectedSeasons.includes(season));
@@ -219,7 +223,6 @@ export default function RecipeLibrary({ navigation, route }) {
 
   const renderFilters = () => (
     <View style={styles.section}>
-      {/* <Text style={styles.filtersHeader}></Text> */}
       <Text style={[styles.sectionTitle, globalStyles.textTitleDeux]}>Filtres</Text>
       <View style={styles.filterRow}>
         {Object.keys(seasonColors)
@@ -235,7 +238,7 @@ export default function RecipeLibrary({ navigation, route }) {
               ]}
               onPress={() => toggleSeason(season)}
             >
-              <Text style={[styles.filterText, globalStyles.textTitleDeux, { fontSize: 16 }]}>
+              <Text style={[styles.filterText, globalStyles.textTitleDeux]}>
                 {season.charAt(0).toUpperCase() + season.slice(1)}
               </Text>
             </TouchableOpacity>
@@ -376,6 +379,22 @@ export default function RecipeLibrary({ navigation, route }) {
     }
   };
 
+  const DebugModal = ({ isVisible, jsonData, onClose }) => {
+    
+    return (
+      <Modal visible={isVisible} transparent={true} animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <ScrollView>
+              <Text style={styles.jsonText}>{JSON.stringify(jsonData, null, 2)}</Text>
+            </ScrollView>
+            <Button title="Fermer" onPress={onClose} />
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
   return (
     <ImageBackgroundWrapper backgroundIndex={backgroundIndex} imageOpacity={0.6}>
       <View>
@@ -441,6 +460,12 @@ export default function RecipeLibrary({ navigation, route }) {
           {categories.map((category) => renderCategory(category))}
         </View>
 
+        {/* Debug mode ! */}
+        {/* <View>
+          <Button title="Afficher le debug" onPress={() => setDebugModalVisible(true)} />
+          <DebugModal isVisible={isDebugModalVisible} jsonData={recipes} onClose={() => setDebugModalVisible(false)} />
+        </View> */}
+
         <View style={styles.section}>
           <View style={styles.buttonContainer}>
             <Text style={styles.sectionTitle}></Text>
@@ -478,11 +503,6 @@ const styles = StyleSheet.create({
   filtersContainer: {
     marginBottom: 20,
   },
-  filtersHeader: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
   filterRow: {
     flexDirection: "row",
     justifyContent: "space-evenly", // Espace uniforme entre les boutons
@@ -513,12 +533,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#b0e0e6",
   },
   filterText: {
-    color: "#000",
-    fontSize: 16,
+    color: "#000",    
+    fontSize: Math.min(16, width * 0.04), // Ajuste la taille du titre
     textAlign: "center", // Centrer le texte dans les boutons
-  },
-  filtersContainer: {
-    marginBottom: 20,
   },
   filtersHeader: {
     fontSize: 20,
@@ -650,7 +667,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     maxHeight: "90%", // Limiter la hauteur du modal
     marginVertical: "10%", // Ajuster cette valeur pour tenir compte de la hauteur de l'en-tête
-    marginHorizontal: "10%", // Créer une marge horizontale pour ne pas remplir toute la largeur
+    marginHorizontal: "5%", // Créer une marge horizontale pour ne pas remplir toute la largeur
     borderRadius: 10,
     padding: 15,
     // alignItems: "center",
@@ -704,7 +721,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginVertical: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   closeButtonText: {
     color: "#fff",
@@ -718,4 +735,24 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "relative", // Nécessaire pour positionner le cercle
   },
+
+  // Debug :
+  // modalOverlay: {
+  //   flex: 1,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   backgroundColor: "rgba(0, 0, 0, 0.5)",
+  // },
+  // modalContent: {
+  //   width: "90%",
+  //   maxHeight: "80%",
+  //   backgroundColor: "white",
+  //   padding: 20,
+  //   borderRadius: 10,
+  // },
+  // jsonText: {
+  //   fontFamily: "monospace",
+  //   fontSize: 12,
+  //   color: "#333",
+  // },
 });

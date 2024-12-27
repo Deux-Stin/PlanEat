@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAsyncStorage } from "./useAsyncStorage";
 import * as FileSystem from "expo-file-system";
-import recipes from "../assets/recipes/recipes_base.json";
+import recipes from "../assets/data/recipes_base.json";
 
 export default function useInitializeRecipes() {
   const [storedRecipes, setStoredRecipes] = useAsyncStorage("recipes", []);

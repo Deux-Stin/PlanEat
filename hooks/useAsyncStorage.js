@@ -10,6 +10,7 @@ const FILE_PATHS = {
   defaultServings: `${FileSystem.documentDirectory}defaultServings.json`,
   mealChoice: `${FileSystem.documentDirectory}mealChoice.json`,
   mealPlanFromAssignation: `${FileSystem.documentDirectory}mealPlanFromAssignation.json`,
+  initialized: `${FileSystem.documentDirectory}initialized.json`,
 };
 
 export const useAsyncStorage = (key, initialValue) => {

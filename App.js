@@ -21,6 +21,12 @@ import RecipeSelectionScreen from './screens/RecipeSelectionScreen';
 import MealAssignmentScreen from './screens/MealAssignmentScreen';
 import { MealPlanProvider } from './screens/MealPlanContext';
 
+StatusBar.setBarStyle("light-content");
+if (Platform.OS === "android") {
+  StatusBar.setBackgroundColor("rgba(0,0,0,0)");
+  StatusBar.setTranslucent(true);
+}
+
 const Stack = createStackNavigator();
 
 const { width, height } = Dimensions.get('window');
@@ -43,6 +49,15 @@ export default function App() {
 
   // Initialiser les recettes au démarrage
   const loading = useInitializeRecipes(); 
+
+  if (!__DEV__) {
+    global.console = {
+      info: () => {},
+      log: () => {},
+      warn: console.warn,
+      error: console.error,
+    };
+  }
 
   // Gestion des autorisations android
   const requestStoragePermission = async () => {
@@ -109,8 +124,8 @@ export default function App() {
     <MealPlanProvider>
       {/* Gestion globale de la barre de statut */}
       <StatusBar
-        // barStyle="default" // Couleur du texte (icônes et heure)
-        // backgroundColor="transparent" // Arrière-plan transparent
+        barStyle="dark-content" // Couleur du texte (icônes et heure)
+        backgroundColor="rgba(0,0,0,0)" // Arrière-plan transparent
         translucent={false} // Permet au contenu de passer sous la barre
       />
 

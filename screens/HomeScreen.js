@@ -12,7 +12,7 @@ const { width, height } = Dimensions.get("window");
 
 export default function HomeScreen({ navigation }) {
   const [mealPlanHistory, setmealPlanHistory] = useAsyncStorage("mealPlanHistory", []);
-  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage("backgroundIndex", 0); // Sauvegarde l'index du fond
+  const [backgroundIndex, setBackgroundIndex] = useAsyncStorage("backgroundIndex", Math.floor(Math.random() * 10)); // Sauvegarde l'index du fond avec un random pour l'initialisation
 
   const swipeableRefs = useRef([]);
 
@@ -115,7 +115,7 @@ export default function HomeScreen({ navigation }) {
       <View>
         {/* Bouton pour changer le fond */}
         <TouchableOpacity onPress={selectRandomBackground} style={styles.changeBackgroundButton}>
-          <Text style={styles.infoButtonText}>🎨</Text>
+          <Text style={styles.changeBackgroundText}>🎨</Text>
         </TouchableOpacity>
 
         {/* Bouton d'information */}
@@ -255,16 +255,16 @@ const styles = StyleSheet.create({
   historyButton: {
     height: 40, // avoir la même taille que le bouton supprimer
     paddingVertical: 10,
-    paddingHorizontal: 5,
+    paddingHorizontal: '2%',
     backgroundColor: "#f0f0f0",
     borderRadius: 5,
     marginBottom: 5,
-    marginHorizontal: 5,
+    marginHorizontal: '2%',
     justifyContent: "center",
     alignItems: "center",
   },
   historyButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: "center",
   },
   deleteButton: {
@@ -290,18 +290,22 @@ const styles = StyleSheet.create({
     top: height * 0.05, // Par exemple, 5% de la hauteur de l'écran
     left: width * 0.05, // 5% de la largeur de l'écran width: 40,
     height: 50,
+    // width: 50,
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
     // elevation: 4, // Ombre pour Android
+  },
+  changeBackgroundText:{
+    fontSize : 35,
   },
   infoButton: {
     position: "absolute",
     zIndex: 10, // Ajout d'un zIndex pour le rendre au-dessus
     top: height * 0.05,
     right: width * 0.05, // Ajuste la position pour qu'il ne soit pas superposé avec le bouton menu
-    width: 35,
-    height: 35,
+    width: 45,
+    height: 45,
     borderRadius: 25,
     backgroundColor: "#ccc", // Couleur du bouton d'information
     justifyContent: "center",

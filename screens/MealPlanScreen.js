@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { View, ScrollView, StyleSheet, TouchableOpacity, Alert, Modal } from "react-native";
+import { View, ScrollView, StyleSheet, TouchableOpacity, Alert, Modal, Dimensions } from "react-native";
 import { Text, Checkbox } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { Calendar, LocaleConfig } from "react-native-calendars";
@@ -11,6 +11,7 @@ import moment from "moment";
 moment.locale("fr");
 import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper"; // Import du wrapper
 import { globalStyles } from "../globalStyles";
+const { width, height } = Dimensions.get("window");
 
 LocaleConfig.locales["fr"] = {
   monthNames: [
@@ -460,47 +461,53 @@ export default function MealPlanScreen({ navigation, route }) {
 
                         {/* Affichage des repas */}
                         <View style={styles.mealTypesContainer}>
-
-                        <View style={styles.mealTypeWrapper}>
-                            <Text>Apéritif</Text>
+                          <View style={styles.mealTypeWrapper}>
+                            <Text style={styles.mealTypeText}>Apéritif</Text>
                             <Checkbox
                               status={mealsSelection[date]?.apéritif ? "checked" : "unchecked"}
                               onPress={() => handleMealCheckboxChange(date, "apéritif")}
                             />
                           </View>
 
+                          <Text style={styles.mealTypeText}> - </Text>
+
                           <View style={styles.mealTypeWrapper}>
-                            <Text>Petit-déjeuner</Text>
+                            <Text style={styles.mealTypeText}>Petit-déjeuner</Text>
                             <Checkbox
                               status={mealsSelection[date]?.breakfast ? "checked" : "unchecked"}
                               onPress={() => handleMealCheckboxChange(date, "breakfast")}
                             />
                           </View>
 
+                          <Text style={styles.mealTypeText}> - </Text>
+
                           <View style={styles.mealTypeWrapper}>
-                            <Text>Déjeuner</Text>
+                            <Text style={styles.mealTypeText}>Déjeuner</Text>
                             <Checkbox
                               status={mealsSelection[date]?.lunch ? "checked" : "unchecked"}
                               onPress={() => handleMealCheckboxChange(date, "lunch")}
                             />
                           </View>
 
+                          <Text style={styles.mealTypeText}> - </Text>
+
                           <View style={styles.mealTypeWrapper}>
-                            <Text>Dîner</Text>
+                            <Text style={styles.mealTypeText}>Dîner</Text>
                             <Checkbox
                               status={mealsSelection[date]?.dinner ? "checked" : "unchecked"}
                               onPress={() => handleMealCheckboxChange(date, "dinner")}
                             />
                           </View>
 
+                          <Text style={styles.mealTypeText}> - </Text>
+
                           <View style={styles.mealTypeWrapper}>
-                            <Text>Cocktail</Text>
+                            <Text style={styles.mealTypeText}>Cocktail</Text>
                             <Checkbox
                               status={mealsSelection[date]?.cocktail ? "checked" : "unchecked"}
                               onPress={() => handleMealCheckboxChange(date, "cocktail")}
                             />
                           </View>
-
                         </View>
                       </View>
 
@@ -526,13 +533,17 @@ export default function MealPlanScreen({ navigation, route }) {
                                       handleRecipeSelection(date, mealType, itemValue, mealType)
                                     }
                                   >
-                                    <Picker.Item label="Sélectionner une recette" value="" style={styles.pickerItem} />
+                                    <Picker.Item
+                                      label="Sélectionner une recette"
+                                      value=""
+                                      style={[styles.pickerItem]}
+                                    />
                                     {filterRecipesByMealType(mealType).map((recipe, index) => (
                                       <Picker.Item
                                         key={index}
                                         label={recipe.name}
                                         value={recipe.name}
-                                        style={styles.pickerItem}
+                                        style={styles.pickerItemSelected}
                                       />
                                     ))}
                                   </Picker>
@@ -713,18 +724,24 @@ const styles = StyleSheet.create({
   },
   mealTypesContainer: {
     flexDirection: "row", // Checkbox sous chaque repas
-    marginHorizontal: 10,
+    flexWrap: "wrap",
+    marginHorizontal: '2%',
     marginTop: 5,
   },
   mealTypeWrapper: {
     flexDirection: "column", // Intitulé et checkbox sur la même ligne
     alignItems: "center",
     // marginBottom: 10,
-    marginHorizontal: 20,
-    justifyContent: "space-around",
+    marginHorizontal: '0.5%',
+    justifyContent: 'space-around',
+    // flexBasis: '20%',
+  },
+  mealTypeText: {
+    fontSize: 15,
   },
 
   mealAttribution: {
+    flex: 1,
     // backgroundColor: 'red',
   },
   textAttribution: {
@@ -739,9 +756,6 @@ const styles = StyleSheet.create({
   boldText: {
     fontWeight: "bold",
   },
-  test: {
-    // height:100,
-  },
   pickerContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -749,11 +763,19 @@ const styles = StyleSheet.create({
     padding: 0,
     borderRadius: 5,
     elevation: 5,
-    marginBottom: 5,
+    marginVertical: 2.5,
+
   },
+  // pickerItem: {
+  //   backgroundColor: 'red',
+  // },
+  // pickerItemSelected: {
+  //   // backgroundColor: 'red', // Fond gris pour "Sélectionner une recette"
+  // },
   recipePicker: {
     flex: 1, // Prend l'espace restant
-    height: 50,
+    height: '2%',
+    fontSize : 10,
   },
   portionPicker: {
     flex: 1, // Prend l'espace restant
@@ -766,8 +788,8 @@ const styles = StyleSheet.create({
     // borderRadius: 10,
   },
   portionSelector: {
-    width: 50,
-    height: 50,
+    width: height * 0.06,
+    height: height * 0.06,
     backgroundColor: "#d6d6d6",
     borderRadius: 5,
     justifyContent: "center",
@@ -775,6 +797,7 @@ const styles = StyleSheet.create({
     marginRight: 2, // Ajoute un peu d'espace entre le picker et le sélecteur de portions
   },
   portionText: {
+    fontSize: 14,
     fontWeight: "bold",
     color: "#333",
   },
@@ -785,21 +808,24 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: 150,
+    width: width * 0.7,
     padding: 20,
     backgroundColor: "#fff",
     borderRadius: 10,
     // marginBottom: 10,
   },
   modalText: {
-    fontSize: 18,
+    fontSize: 16,
     padding: 10,
     textAlign: "center",
   },
   modalCancel: {
     marginTop: 10,
     fontSize: 16,
-    color: "#ff3333",
+    color: "#fff",
+    borderRadius: 10,
+    padding: 5,
+    backgroundColor: "red",
     textAlign: "center",
   },
 
@@ -808,17 +834,18 @@ const styles = StyleSheet.create({
     alignItems: "center", // Centrer verticalement le texte
     justifyContent: "space-evenly", // Centrer horizontalement si nécessaire
     // marginLeft: 10,
-    width: 80, // La largeur fixe du conteneur
-    height: 50, // La hauteur fixe du conteneur
+    width: width * 0.25, // La largeur fixe du conteneur
+    height: height * 0.06, // La hauteur fixe du conteneur
     marginLeft: 2,
     borderRadius: 5,
+    marginVertical: 2.5,
     backgroundColor: "#ebebeb", // La couleur de fond
   },
   categoryText: {
-    fontSize: 15,
+    fontSize: Math.min(14, height * 0.02),
     fontWeight: "bold",
     margin: 0, // Supprimer toute marge du texte
-    padding: 0, // Supprimer le padding autour du texte
+    paddingHorizontal: 2, // Supprimer le padding autour du texte
   },
 
   checkboxContainer: {

@@ -1,14 +1,15 @@
 import { useKeepAwake } from "expo-keep-awake";
 import React from "react";
 import uuid from "react-native-uuid";
-import { ScrollView, Text, Button, Image, Alert, StyleSheet, View, TouchableOpacity } from "react-native";
+import { ScrollView, Text, Button, Image, Alert, StyleSheet, View, TouchableOpacity, Dimensions } from "react-native";
 import { useAsyncStorage } from "../hooks/useAsyncStorage";
 import ImageBackgroundWrapper from "../components/ImageBackgroundWrapper"; // Import du wrapper
 import { globalStyles } from "../globalStyles";
+const { width, height } = Dimensions.get("window");
 
 export default function RecipeDetail({ route, navigation }) {
   const [backgroundIndex, setBackgroundIndex] = useAsyncStorage("backgroundIndex", 0); //Recupère l'index du background
-  const { recipe, showPaniers = true } = route.params; // affiche les caddy pour "+" et "-" sauf si on envoie la variable showPaniers à false 
+  const { recipe, showPaniers = true } = route.params; // affiche les caddy pour "+" et "-" sauf si on envoie la variable showPaniers à false
 
   const [storedRecipes, setStoredRecipes] = useAsyncStorage("recipes", []);
   const [mealChoice, setMealChoice] = useAsyncStorage("mealChoice", []);
@@ -78,33 +79,31 @@ export default function RecipeDetail({ route, navigation }) {
       <ScrollView contentContainerStyle={styles.container}>
         {/* En-tête avec le titre */}
         <View style={styles.header}>
-          
-        {showPaniers && (
-   <TouchableOpacity style={styles.iconButton} onPress={removeFromMealChoice}>
-      {/* Fond semi-transparent */}
-      <View style={styles.iconButtonBackground} />
+          {showPaniers && (
+            <TouchableOpacity style={styles.iconButton} onPress={removeFromMealChoice}>
+              {/* Fond semi-transparent */}
+              <View style={styles.iconButtonBackground} />
 
-      {/* Contenu (icônes) */}
-      <View style={styles.iconButtonContent}>
-         <Text style={styles.panier}>🛒</Text>
-         <Text style={styles.iconMoreOrLess}>-</Text>
-      </View>
-   </TouchableOpacity>
-)}
-<Text style={[styles.title, globalStyles.textTitleDeux]}>{recipe.name}</Text>
-{showPaniers && (
-   <TouchableOpacity style={styles.iconButton} onPress={addToMealChoice}>
-      {/* Fond semi-transparent */}
-      <View style={styles.iconButtonBackground} />
+              {/* Contenu (icônes) */}
+              <View style={styles.iconButtonContent}>
+                <Text style={styles.panier}>🛒</Text>
+                <Text style={styles.iconMoreOrLess}>-</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          <Text style={[styles.title, globalStyles.textTitleDeux]}>{recipe.name}</Text>
+          {showPaniers && (
+            <TouchableOpacity style={styles.iconButton} onPress={addToMealChoice}>
+              {/* Fond semi-transparent */}
+              <View style={styles.iconButtonBackground} />
 
-      {/* Contenu (icônes) */}
-      <View style={styles.iconButtonContent}>
-         <Text style={styles.panier}>🛒</Text>
-         <Text style={styles.iconMoreOrLess}>+</Text>
-      </View>
-   </TouchableOpacity>
-)}
-
+              {/* Contenu (icônes) */}
+              <View style={styles.iconButtonContent}>
+                <Text style={styles.panier}>🛒</Text>
+                <Text style={styles.iconMoreOrLess}>+</Text>
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Affichage de l'image de la recette */}
@@ -310,7 +309,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     marginRight: 8,
     borderRadius: 10, // Border radius appliqué ici
-    flexBasis: "48%",
+    flexBasis: "47%",
     alignItems: "center",
     justifyContent: "space-evenly",
   },
@@ -339,8 +338,8 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   imageWithBorder: {
-    width: 300,
-    height: 300,
+    width: width * 0.8, 
+    height: width * 0.8,
     borderWidth: 2.5,
     borderColor: "#FFFFFF", // Bordure blanche
     borderRadius: 50, // Coins arrondis plus extrêmes
@@ -360,8 +359,8 @@ const styles = StyleSheet.create({
   iconButton: {
     position: "relative", // Nécessaire pour superposer les éléments
     borderRadius: 10,
-    width: 55, // Dimensions fixes pour le bouton (modifiez selon vos besoins)
-    height: 55,
+    width: width * 0.15, // Dimensions fixes pour le bouton (modifiez selon vos besoins)
+    height: width * 0.15,
     overflow: "hidden", // Assurez-vous que les enfants ne débordent pas
   },
   iconButtonBackground: {
@@ -377,20 +376,20 @@ const styles = StyleSheet.create({
     justifyContent: "center", // Centrage horizontal
   },
   panier: {
-    fontSize: 30,
+    fontSize: width * 0.08, // Taille proportionnelle à la largeur de l'écran
     color: "#000", // Couleur noire pour le caddy
-    marginRight: 5, // Espace entre le caddy et le bouton rouge
+    marginRight: width * 0.01, // Espace proportionnel entre le caddy et le bouton rouge
   },
   iconMoreOrLess: {
-    fontSize: 15,
+    fontSize: width * 0.04, // Taille proportionnelle à la largeur de l'écran
     color: "#fff",
     backgroundColor: "red", // Fond rouge pour le bouton + ou -
-    width: 20,
-    height: 20,
-    borderRadius: 10, // Cercle parfait
+    width: width * 0.05, // Largeur proportionnelle
+    height: width * 0.05, // Hauteur proportionnelle
+    borderRadius: width * 0.025, // Cercle parfait
     textAlign: "center", // Centrage horizontal
-    lineHeight: 20, // Centrage vertical
-    bottom: 15,
-    marginLeft: -20, // Ajustement pour chevauchement
+    lineHeight: width * 0.05, // Centrage vertical
+    bottom: width * 0.0375,
+    marginLeft: -width * 0.05, // Ajustement pour chevauchement
   },
 });
